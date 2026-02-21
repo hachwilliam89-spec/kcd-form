@@ -11,7 +11,7 @@ public class Main {
         System.out.println("Instanciation des formes\n");
 
         // Triangle
-        Triangle archer = new Triangle("Archer", "rouge", 10, 8);
+        Triangle archer = new Triangle("Archer", 10, 8);
         System.out.println("TRIANGLE (Archer)");
         System.out.println(archer);
         System.out.println("Aire     : " + archer.aire());
@@ -19,7 +19,7 @@ public class Main {
         System.out.println();
 
         // Cercle
-        Cercle catapulte = new Cercle("Catapulte", "bleu", 6);
+        Cercle catapulte = new Cercle("Catapulte", 6);
         System.out.println("CERCLE (Catapulte)");
         System.out.println(catapulte);
         System.out.println("Aire     : " + catapulte.aire());
@@ -27,7 +27,7 @@ public class Main {
         System.out.println();
 
         // Rectangle
-        Rectangle muraille = new Rectangle("Muraille", "gris", 12, 6);
+        Rectangle muraille = new Rectangle("Muraille", 12, 6);
         System.out.println("RECTANGLE (Muraille)");
         System.out.println(muraille);
         System.out.println("Aire     : " + muraille.aire());
