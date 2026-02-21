@@ -10,9 +10,13 @@ public abstract class Forme {
         setCouleur(couleur);
     }
 
-    // Méthodes abstraites
+    // Méthodes abstraites géométrie
     public abstract double aire();
     public abstract double perimetre();
+
+    // Méthodes abstraites gameplay
+    public abstract double dps();
+    public abstract int cout();
 
     // Getters
     public String getNom() {
@@ -31,7 +35,7 @@ public abstract class Forme {
         this.nom = nom;
     }
 
-    public void setCouleur(String couleur) {
+    private void setCouleur(String couleur) {
         if (couleur == null || couleur.isBlank()) {
             throw new IllegalArgumentException("La couleur ne peut pas être vide.");
         }

@@ -4,11 +4,13 @@ public class Rectangle extends Forme {
 
     private double largeur;
     private double longueur;
+    private int pv;
 
     public Rectangle(String nom, double largeur, double longueur) {
         super(nom, "gris");
         setLargeur(largeur);
         setLongueur(longueur);
+        this.pv = (int)(aire() * 10);
     }
 
     @Override
@@ -21,14 +23,20 @@ public class Rectangle extends Forme {
         return 2 * (largeur + longueur);
     }
 
-    // Getters
-    public double getLargeur() {
-        return largeur;
+    @Override
+    public double dps() {
+        return 0;
     }
 
-    public double getLongueur() {
-        return longueur;
+    @Override
+    public int cout() {
+        return (int)(aire() * 2.5);
     }
+
+    // Getters
+    public double getLargeur() { return largeur; }
+    public double getLongueur() { return longueur; }
+    public int getPv() { return pv; }
 
     // Setters avec validation
     public void setLargeur(double largeur) {
@@ -48,6 +56,7 @@ public class Rectangle extends Forme {
     @Override
     public String toString() {
         return "Rectangle " + getNom() + " [couleur=" + getCouleur()
-                + ", largeur=" + largeur + ", longueur=" + longueur + "]";
+                + ", largeur=" + largeur + ", longueur=" + longueur
+                + ", PV=" + pv + ", cout=" + cout() + " or]";
     }
 }

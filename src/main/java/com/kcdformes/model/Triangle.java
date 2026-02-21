@@ -4,11 +4,15 @@ public class Triangle extends Forme {
 
     private double base;
     private double hauteur;
+    private double coeff;
+    private double cadence;
 
     public Triangle(String nom, double base, double hauteur) {
         super(nom, "rouge");
         setBase(base);
         setHauteur(hauteur);
+        this.coeff = 1.8;
+        this.cadence = 3.0;
     }
 
     @Override
@@ -22,14 +26,21 @@ public class Triangle extends Forme {
         return base + 2 * coteOblique;
     }
 
-    // Getters
-    public double getBase() {
-        return base;
+    @Override
+    public double dps() {
+        return aire() * coeff * cadence;
     }
 
-    public double getHauteur() {
-        return hauteur;
+    @Override
+    public int cout() {
+        return (int)(aire() * 2.5);
     }
+
+    // Getters
+    public double getBase() { return base; }
+    public double getHauteur() { return hauteur; }
+    public double getCoeff() { return coeff; }
+    public double getCadence() { return cadence; }
 
     // Setters avec validation
     public void setBase(double base) {
@@ -49,6 +60,7 @@ public class Triangle extends Forme {
     @Override
     public String toString() {
         return "Triangle " + getNom() + " [couleur=" + getCouleur()
-                + ", base=" + base + ", hauteur=" + hauteur + "]";
+                + ", base=" + base + ", hauteur=" + hauteur
+                + ", DPS=" + dps() + ", cout=" + cout() + " or]";
     }
 }

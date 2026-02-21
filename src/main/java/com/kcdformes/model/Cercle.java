@@ -3,10 +3,14 @@ package com.kcdformes.model;
 public class Cercle extends Forme {
 
     private double rayon;
+    private double coeff;
+    private double cadence;
 
     public Cercle(String nom, double rayon) {
         super(nom, "bleu");
         setRayon(rayon);
+        this.coeff = 0.7;
+        this.cadence = 1.0;
     }
 
     @Override
@@ -19,10 +23,20 @@ public class Cercle extends Forme {
         return 2 * Math.PI * rayon;
     }
 
-    // Getter
-    public double getRayon() {
-        return rayon;
+    @Override
+    public double dps() {
+        return aire() * coeff * cadence;
     }
+
+    @Override
+    public int cout() {
+        return (int)(aire() * 2.5);
+    }
+
+    // Getter
+    public double getRayon() { return rayon; }
+    public double getCoeff() { return coeff; }
+    public double getCadence() { return cadence; }
 
     // Setter avec validation
     public void setRayon(double rayon) {
@@ -35,6 +49,7 @@ public class Cercle extends Forme {
     @Override
     public String toString() {
         return "Cercle " + getNom() + " [couleur=" + getCouleur()
-                + ", rayon=" + rayon + "]";
+                + ", rayon=" + rayon
+                + ", DPS=" + dps() + ", cout=" + cout() + " or]";
     }
 }
