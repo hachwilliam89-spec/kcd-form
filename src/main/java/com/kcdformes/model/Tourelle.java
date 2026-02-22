@@ -8,11 +8,24 @@ public class Tourelle {
     private String nom;
     private List<Forme> formes;
     private int position;
+    private int orientation; // 0=haut, 90=droite, 180=bas, 270=gauche
+
+    public void setOrientation(int orientation) {
+        if (orientation != 0 && orientation != 90 && orientation != 180 && orientation != 270) {
+            throw new IllegalArgumentException("L'orientation doit être 0, 90, 180 ou 270.");
+        }
+        this.orientation = orientation;
+    }
+
+    public int getOrientation() {
+        return orientation;
+    }
 
     public Tourelle(String nom, int position) {
         setNom(nom);
         this.formes = new ArrayList<>();
         setPosition(position);
+        this.orientation = 0;
     }
 
     // GESTION DES FORMES
@@ -28,6 +41,14 @@ public class Tourelle {
         return formes.remove(forme);
     }
 
+    public boolean estZone() {
+        for (Forme forme : formes) {
+            if (forme instanceof Cercle) {
+                return true;
+            }
+        }
+        return false;
+    }
     // CALCULS (POLY)
 
     public double aireTotale() {
@@ -52,6 +73,28 @@ public class Tourelle {
             total += forme.dps();
         }
         return total;
+    }
+
+    public double degatsContre(Ennemi ennemi) {
+        double dps = 0;
+        for (Forme forme : formes) {
+            double bonus = 1.0;
+
+            if (forme instanceof Triangle) {
+                // Archer : malus ×0.75 vs Bélier
+                if (ennemi.getForme() instanceof Rectangle) {
+                    bonus = 0.75;
+                }
+            } else if (forme instanceof Cercle) {
+                // Catapulte : bonus ×1.25 vs Bélier
+                if (ennemi.getForme() instanceof Rectangle) {
+                    bonus = 1.25;
+                }
+            }
+
+            dps += forme.dps() * bonus;
+        }
+        return dps;
     }
 
     public int coutTotal() {
@@ -101,6 +144,7 @@ public class Tourelle {
     @Override
     public String toString() {
         return "Tourelle " + nom + " [position=" + position
+                + ", orientation=" + orientation + "°"
                 + ", formes=" + formes.size()
                 + ", DPS=" + dpsTotal()
                 + ", cout=" + coutTotal() + " or]";
