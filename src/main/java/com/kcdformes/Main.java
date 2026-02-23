@@ -78,9 +78,9 @@ public class Main {
         try {
             new Tourelle("Test", -1);
         } catch (IllegalArgumentException e) {
-            System.out.println("Position neg : " + e.getMessage());
+            System.out.println("Position negative : " + e.getMessage());
         }
 
-        System.out.println("\nInstanciation reussie");
+        System.out.println("Instanciation reussie");
     }
 }
