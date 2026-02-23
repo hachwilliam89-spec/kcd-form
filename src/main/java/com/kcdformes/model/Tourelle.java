@@ -62,24 +62,18 @@ public class Tourelle {
 
     // STATS DE GAMEPLAY
 
-    /**
-     * Nombre de tirs = nombre de triangles.
-     * 🔺 = 1 tir, 🔺🔺 = 2 tirs, 🔺🔺🔺 = 3 tirs
-     */
+    /** Nombre de tirs = nombre de triangles. */
     public int getNombreTirs() {
         return compterTriangles();
     }
 
-    /**
-     * La tourelle a des dégâts en zone si elle contient au moins un cercle.
-     */
+    /** La tourelle a des dégâts en zone si elle contient au moins un cercle. */
     public boolean hasAoE() {
         return compterCercles() > 0;
     }
 
     /**
      * Rayon de la zone AoE = somme des rayons des cercles.
-     * 🔴 = rayon de base, 🔴🔴 = plus grand, 🔴🔴🔴 = énorme
      */
     public double getRayonZone() {
         double rayon = 0;
@@ -94,7 +88,6 @@ public class Tourelle {
     /**
      * Points de vie = somme des périmètres des rectangles × 10.
      * Le rectangle est un mur : il a des PV mais ne fait pas de dégâts.
-     * 🟦 = PV de base, 🟦🟦 = plus de PV, 🟦🟦🟦 = PV énormes
      */
     public double getPV() {
         double pv = 0;

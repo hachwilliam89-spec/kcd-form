@@ -9,40 +9,78 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("Instanciation des formes \n");
+        System.out.println("INSTANCIATION DES FORMES");
 
-        // Formes
         Triangle archer = new Triangle("Archer", 4, 3);
         Cercle catapulte = new Cercle("Catapulte", 3);
         Rectangle muraille = new Rectangle("Muraille", 4, 4);
 
         System.out.println(archer);
-        System.out.println("  Aire: " + archer.aire() + " | DPS: " + archer.dps() + " | Cout: " + archer.cout() + " or");
-        System.out.println(catapulte);
-        System.out.println("  Aire: " + catapulte.aire() + " | DPS: " + catapulte.dps() + " | Cout: " + catapulte.cout() + " or");
-        System.out.println(muraille);
-        System.out.println("  Aire: " + muraille.aire() + " | PV: " + muraille.getPv() + " | Cout: " + muraille.cout() + " or");
+        System.out.println("  Aire: " + String.format("%.1f", archer.aire())
+                + " | DPS: " + String.format("%.1f", archer.dps())
+                + " | Cout: " + archer.cout() + " or");
 
-        // Tourelle (Compo + Poly)
-        System.out.println("\n TOURELLE \n");
+        System.out.println(catapulte);
+        System.out.println("  Aire: " + String.format("%.1f", catapulte.aire())
+                + " | DPS: " + String.format("%.1f", catapulte.dps())
+                + " | Cout: " + catapulte.cout() + " or");
+
+        System.out.println(muraille);
+        System.out.println("  Aire: " + String.format("%.1f", muraille.aire())
+                + " | PV: " + muraille.getPv()
+                + " | Cout: " + muraille.cout() + " or");
+
+        // Tourelle avec Triangle + Cercle
+        System.out.println("TOURELLE (COMPOSITION + POLYMORPHISME)");
 
         Tourelle tour1 = new Tourelle("Tour A", 3);
         tour1.ajouterForme(archer);
         tour1.ajouterForme(catapulte);
 
         System.out.println(tour1);
-        System.out.println("  Aire totale: " + tour1.aireTotale());
-        System.out.println("  DPS total: " + tour1.dpsTotal());
+        System.out.println("  Aire totale: " + String.format("%.1f", tour1.aireTotale()));
+        System.out.println("  DPS total: " + String.format("%.1f", tour1.dpsTotal()));
         System.out.println("  Cout total: " + tour1.coutTotal() + " or");
-        System.out.println("  Nombre de formes: " + tour1.getNombreFormes());
+        System.out.println("  Tirs: " + tour1.getNombreTirs());
+        System.out.println("  AoE: " + tour1.hasAoE() + " | Rayon: " + String.format("%.1f", tour1.getRayonZone()));
+        System.out.println("  PV: " + String.format("%.0f", tour1.getPV()));
 
-        // Ajout muraille
+        // Ajout muraille → combo
+        System.out.println(" Ajout de la muraille (combo)");
+
         tour1.ajouterForme(muraille);
-        System.out.println("\nApres ajout muraille :");
         System.out.println(tour1);
-        System.out.println("  DPS total: " + tour1.dpsTotal());
+        System.out.println("  DPS total: " + String.format("%.1f", tour1.dpsTotal()));
+        System.out.println("  PV: " + String.format("%.0f", tour1.getPV()));
         System.out.println("  Cout total: " + tour1.coutTotal() + " or");
 
-        System.out.println("\n Instanciation reussie");
+        // Test validation
+        System.out.println("TEST VALIDATION");
+
+        try {
+            tour1.ajouterForme(new Triangle("Extra", 2, 3));
+        } catch (IllegalStateException e) {
+            System.out.println("Max formes : " + e.getMessage());
+        }
+
+        try {
+            tour1.ajouterForme(null);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Forme null : " + e.getMessage());
+        }
+
+        try {
+            new Tourelle("", 1);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Nom vide : " + e.getMessage());
+        }
+
+        try {
+            new Tourelle("Test", -1);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Position neg : " + e.getMessage());
+        }
+
+        System.out.println("\nInstanciation reussie");
     }
 }
