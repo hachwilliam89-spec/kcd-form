@@ -8,24 +8,14 @@ public class Tourelle {
     private String nom;
     private List<Forme> formes;
     private int position;
-    private int orientation; // 0=haut, 90=droite, 180=bas, 270=gauche
+    private static final int MAX_FORMES = 3;
 
-    public void setOrientation(int orientation) {
-        if (orientation != 0 && orientation != 90 && orientation != 180 && orientation != 270) {
-            throw new IllegalArgumentException("L'orientation doit être 0, 90, 180 ou 270.");
-        }
-        this.orientation = orientation;
-    }
-
-    public int getOrientation() {
-        return orientation;
-    }
+    // CONSTRUCTEUR
 
     public Tourelle(String nom, int position) {
         setNom(nom);
         this.formes = new ArrayList<>();
         setPosition(position);
-        this.orientation = 0;
     }
 
     // GESTION DES FORMES
@@ -34,6 +24,9 @@ public class Tourelle {
         if (forme == null) {
             throw new IllegalArgumentException("La forme ne peut pas être null.");
         }
+        if (formes.size() >= MAX_FORMES) {
+            throw new IllegalStateException("Max " + MAX_FORMES + " formes atteint.");
+        }
         return formes.add(forme);
     }
 
@@ -41,15 +34,88 @@ public class Tourelle {
         return formes.remove(forme);
     }
 
-    public boolean estZone() {
-        for (Forme forme : formes) {
-            if (forme instanceof Cercle) {
-                return true;
+    // COMPTEURS PAR TYPE
+
+    public int compterTriangles() {
+        int count = 0;
+        for (Forme f : formes) {
+            if (f instanceof Triangle) count++;
+        }
+        return count;
+    }
+
+    public int compterRectangles() {
+        int count = 0;
+        for (Forme f : formes) {
+            if (f instanceof Rectangle) count++;
+        }
+        return count;
+    }
+
+    public int compterCercles() {
+        int count = 0;
+        for (Forme f : formes) {
+            if (f instanceof Cercle) count++;
+        }
+        return count;
+    }
+
+    // STATS DE GAMEPLAY
+
+    /** Nombre de tirs = nombre de triangles. */
+    public int getNombreTirs() {
+        return compterTriangles();
+    }
+
+    /** La tourelle a des dégâts en zone si elle contient au moins un cercle. */
+    public boolean hasAoE() {
+        return compterCercles() > 0;
+    }
+
+    /**
+     * Rayon de la zone AoE = somme des rayons des cercles.
+     */
+    public double getRayonZone() {
+        double rayon = 0;
+        for (Forme f : formes) {
+            if (f instanceof Cercle) {
+                rayon += ((Cercle) f).getRayon();
             }
         }
-        return false;
+        return rayon;
     }
-    // CALCULS (POLY)
+
+    /**
+     * Points de vie = somme des périmètres des rectangles × 10.
+     * Le rectangle est un mur : il a des PV mais ne fait pas de dégâts.
+     */
+    public double getPV() {
+        double pv = 0;
+        for (Forme f : formes) {
+            if (f instanceof Rectangle) {
+                pv += f.perimetre() * 10;
+            }
+        }
+        return pv;
+    }
+
+    // CALCULS POLYMORPHIQUES
+
+    public double dpsTotal() {
+        double total = 0;
+        for (Forme forme : formes) {
+            total += forme.dps();
+        }
+        return total;
+    }
+
+    public int coutTotal() {
+        int total = 0;
+        for (Forme forme : formes) {
+            total += forme.cout();
+        }
+        return total;
+    }
 
     public double aireTotale() {
         double total = 0;
@@ -67,43 +133,7 @@ public class Tourelle {
         return total;
     }
 
-    public double dpsTotal() {
-        double total = 0;
-        for (Forme forme : formes) {
-            total += forme.dps();
-        }
-        return total;
-    }
-
-    public double degatsContre(Ennemi ennemi) {
-        double dps = 0;
-        for (Forme forme : formes) {
-            double bonus = 1.0;
-
-            if (forme instanceof Triangle) {
-                // Archer : malus ×0.75 vs Bélier
-                if (ennemi.getForme() instanceof Rectangle) {
-                    bonus = 0.75;
-                }
-            } else if (forme instanceof Cercle) {
-                // Catapulte : bonus ×1.25 vs Bélier
-                if (ennemi.getForme() instanceof Rectangle) {
-                    bonus = 1.25;
-                }
-            }
-
-            dps += forme.dps() * bonus;
-        }
-        return dps;
-    }
-
-    public int coutTotal() {
-        int total = 0;
-        for (Forme forme : formes) {
-            total += forme.cout();
-        }
-        return total;
-    }
+    // INFOS
 
     public int getNombreFormes() {
         return formes.size();
@@ -143,10 +173,23 @@ public class Tourelle {
 
     @Override
     public String toString() {
-        return "Tourelle " + nom + " [position=" + position
-                + ", orientation=" + orientation + "°"
-                + ", formes=" + formes.size()
-                + ", DPS=" + dpsTotal()
-                + ", cout=" + coutTotal() + " or]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Tourelle \"").append(nom).append("\"");
+        sb.append(" [pos=").append(position);
+        sb.append(", formes=").append(formes.size()).append("/").append(MAX_FORMES);
+
+        if (getNombreTirs() > 0) {
+            sb.append(", tirs=").append(getNombreTirs());
+        }
+        if (hasAoE()) {
+            sb.append(", AoE rayon=").append(String.format("%.1f", getRayonZone()));
+        }
+        if (getPV() > 0) {
+            sb.append(", PV=").append(String.format("%.0f", getPV()));
+        }
+
+        sb.append(", DPS=").append(String.format("%.1f", dpsTotal()));
+        sb.append(", coût=").append(coutTotal()).append(" or]");
+        return sb.toString();
     }
 }
