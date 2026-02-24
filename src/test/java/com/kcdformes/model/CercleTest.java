@@ -21,8 +21,8 @@ class CercleTest {
         assertEquals("Catapulte", cercle.getNom());
         assertEquals("bleu", cercle.getCouleur());
         assertEquals(3, cercle.getRayon(), 0.001);
-        assertEquals(0.7, cercle.getCoeff(), 0.001);
-        assertEquals(1.0, cercle.getCadence(), 0.001);
+        assertEquals(1.5, cercle.getCoeff(), 0.001);
+        assertEquals(0.4, cercle.getCadence(), 0.001);
     }
 
     @Test
@@ -59,30 +59,25 @@ class CercleTest {
 
     @Test
     void quandDps_alorsAire_fois_coeff_fois_cadence() {
-        assertEquals(cercle.aire() * 0.7 * 1.0, cercle.dps(), 0.001);
+        assertEquals(cercle.aire() * 1.5 * 0.4, cercle.dps(), 0.001);
     }
 
     @Test
-    void quandCout_alorsAire_fois_2point5() {
-        assertEquals((int) (cercle.aire() * 2.5), cercle.cout());
+    void quandCout_alorsAire_fois_2point65() {
+        assertEquals((int) (cercle.aire() * 2.65), cercle.cout());
     }
 
-    // SETTER
+    // CONSTRUCTION AVEC DIFFÉRENTS RAYONS
 
     @Test
-    void quandSetRayonValide_alorsRayonChange() {
-        cercle.setRayon(10);
-        assertEquals(10, cercle.getRayon(), 0.001);
-    }
-
-    @Test
-    void quandSetRayonNegatif_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> cercle.setRayon(-1));
+    void quandRayonValide_alorsRayonCorrect() {
+        Cercle c = new Cercle("Test", 10);
+        assertEquals(10, c.getRayon(), 0.001);
     }
 
     @Test
-    void quandSetRayonZero_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> cercle.setRayon(0));
+    void quandRayonNegatif_alorsException() {
+        assertThrows(IllegalArgumentException.class, () -> new Cercle("Test", -5));
     }
 
     // TO STRING

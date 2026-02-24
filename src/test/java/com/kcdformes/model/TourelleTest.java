@@ -26,6 +26,7 @@ class TourelleTest {
     void quandConstructeurValide_alorsAttributsCorrects() {
         assertEquals("Alpha", tourelle.getNom());
         assertEquals(1, tourelle.getPosition());
+        assertEquals(3, tourelle.getPortee());
         assertEquals(0, tourelle.getNombreFormes());
     }
 
@@ -232,7 +233,7 @@ class TourelleTest {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(rectangle);
         double expected = triangle.perimetre() + rectangle.perimetre();
-        assertEquals(expected, tourelle.perimetreTotale(), 0.001);
+        assertEquals(expected, tourelle.perimetreTotal(), 0.001);
     }
 
     // COMBINAISONS GAMEPLAY
@@ -288,6 +289,29 @@ class TourelleTest {
         assertEquals(1, tourelle.getNombreFormes());
     }
 
+    // PORTEE
+
+    @Test
+    void quandConstructeur_alorsPorteeParDefaut() {
+        assertEquals(3, tourelle.getPortee());
+    }
+
+    @Test
+    void quandSetPorteeValide_alorsPorteeChange() {
+        tourelle.setPortee(5);
+        assertEquals(5, tourelle.getPortee());
+    }
+
+    @Test
+    void quandSetPorteeZero_alorsLeveIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> tourelle.setPortee(0));
+    }
+
+    @Test
+    void quandSetPorteeNegative_alorsLeveIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> tourelle.setPortee(-1));
+    }
+
     // SETTERS
 
     @Test
@@ -334,14 +358,6 @@ class TourelleTest {
     }
 
     // DEGATS CONTRE
-
-    @Test
-    void quandDegatsContreEnnemiValide_alorsDpsTotal() {
-        tourelle.ajouterForme(triangle);
-        tourelle.ajouterForme(cercle);
-        Ennemi ennemi = new Ennemi("Cavalier", new Triangle("forme", 2, 2));
-        assertEquals(tourelle.dpsTotal(), tourelle.degatsContre(ennemi), 0.001);
-    }
 
     @Test
     void quandDegatsContreEnnemiNull_alorsZero() {

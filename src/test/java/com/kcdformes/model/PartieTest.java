@@ -170,7 +170,7 @@ class PartieTest {
     }
 
     @Test
-    void quandEnnemiMeurt_alorsJoueurGagneRecompense() {
+    void quandEnnemiMeurt_alorsScoreAugmente() {
         Partie p = creerPartieBasique(1);
         Vague v = new Vague(1, 1.0, 1.0);
         Ennemi e = new Ennemi("Goblin", new Triangle("forme", 10, 10));
@@ -183,25 +183,26 @@ class PartieTest {
         p.getCarte().placerTourelle(t, 2);
 
         p.demarrer();
-        int budgetAvant = p.getJoueur().getBudget();
+        int scoreAvant = p.getJoueur().getScore();
         p.update();
-        assertTrue(p.getJoueur().getBudget() > budgetAvant);
+        assertTrue(p.getJoueur().getScore() > scoreAvant);
     }
 
     @Test
-    void quandEnnemiAtteintFin_alorsJoueurPerdVie() {
+    void quandEnnemiAtteintFin_alorsForteresseSubitDegats() {
         Partie p = creerPartieBasique(1);
         Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2));
+        Ennemi e = new Ennemi("Belier", new Rectangle("forme", 6, 3));
         v.ajouterEnnemi(e);
         p.ajouterVague(v);
 
-        e.setPosition(6);
+        // Placer l'ennemi juste avant la fin du chemin
+        e.setPosition(5);
 
         p.demarrer();
-        int viesAvant = p.getJoueur().getVies();
+        int pvForteresseAvant = p.getForteresse().getPvActuels();
         p.update();
-        assertTrue(p.getJoueur().getVies() < viesAvant);
+        assertTrue(p.getForteresse().getPvActuels() < pvForteresseAvant);
     }
 
     @Test
@@ -237,13 +238,20 @@ class PartieTest {
     // FIN DE PARTIE
 
     @Test
-    void quandJoueurElimine_alorsPartiePerdue() {
+    void quandForteresseDetruite_alorsPartiePerdue() {
         Partie p = creerPartieBasique(1);
+        Vague v = new Vague(1, 1.0, 1.0);
+        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2));
+        v.ajouterEnnemi(e);
+        p.ajouterVague(v);
         p.demarrer();
-        p.ajouterVague(new Vague(1, 1.0, 1.0));
-        for (int i = 0; i < 5; i++) {
-            p.getJoueur().perdreVie();
+
+        // Simuler destruction de la forteresse
+        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        while (!p.getForteresse().estDetruite()) {
+            p.getForteresse().subirAttaque(belier);
         }
+
         p.verifierFinPartie();
         assertEquals(EtatPartie.PERDU, p.getEtat());
     }

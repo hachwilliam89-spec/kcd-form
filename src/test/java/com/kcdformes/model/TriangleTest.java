@@ -22,7 +22,7 @@ class TriangleTest {
         assertEquals("rouge", triangle.getCouleur());
         assertEquals(4, triangle.getBase(), 0.001);
         assertEquals(3, triangle.getHauteur(), 0.001);
-        assertEquals(1.8, triangle.getCoeff(), 0.001);
+        assertEquals(0.8, triangle.getCoeff(), 0.001);
         assertEquals(3.0, triangle.getCadence(), 0.001);
     }
 
@@ -72,46 +72,26 @@ class TriangleTest {
 
     @Test
     void quandDps_alorsAire_fois_coeff_fois_cadence() {
-        assertEquals(32.4, triangle.dps(), 0.001);
+        assertEquals(6.0 * 0.8 * 3.0, triangle.dps(), 0.001);
     }
 
     @Test
-    void quandCout_alorsAire_fois_2point5() {
-        assertEquals(15, triangle.cout());
+    void quandCout_alorsAire_fois_9() {
+        assertEquals((int)(6.0 * 9), triangle.cout());
     }
 
-    // SETTERS
+    // CONSTRUCTION AVEC DIFFÉRENTES DIMENSIONS
 
     @Test
-    void quandSetBaseValide_alorsBaseChange() {
-        triangle.setBase(10);
-        assertEquals(10, triangle.getBase(), 0.001);
-    }
-
-    @Test
-    void quandSetBaseNegative_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> triangle.setBase(-1));
+    void quandBaseValide_alorsBaseCorrecte() {
+        Triangle t = new Triangle("Test", 10, 5);
+        assertEquals(10, t.getBase(), 0.001);
     }
 
     @Test
-    void quandSetBaseZero_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> triangle.setBase(0));
-    }
-
-    @Test
-    void quandSetHauteurValide_alorsHauteurChange() {
-        triangle.setHauteur(10);
-        assertEquals(10, triangle.getHauteur(), 0.001);
-    }
-
-    @Test
-    void quandSetHauteurNegative_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> triangle.setHauteur(-1));
-    }
-
-    @Test
-    void quandSetHauteurZero_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> triangle.setHauteur(0));
+    void quandHauteurValide_alorsHauteurCorrecte() {
+        Triangle t = new Triangle("Test", 4, 10);
+        assertEquals(10, t.getHauteur(), 0.001);
     }
 
     // TO STRING

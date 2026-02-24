@@ -8,7 +8,9 @@ public class Tourelle {
     private String nom;
     private List<Forme> formes;
     private int position;
+    private int portee;
     private static final int MAX_FORMES = 3;
+    private static final int PORTEE_DEFAUT = 3;
 
     // CONSTRUCTEUR
 
@@ -16,6 +18,7 @@ public class Tourelle {
         setNom(nom);
         this.formes = new ArrayList<>();
         setPosition(position);
+        this.portee = PORTEE_DEFAUT;
     }
 
     // GESTION DES FORMES
@@ -159,7 +162,7 @@ public class Tourelle {
         return total;
     }
 
-    public double perimetreTotale() {
+    public double perimetreTotal() {
         double total = 0;
         for (Forme forme : formes) {
             total += forme.perimetre();
@@ -183,6 +186,10 @@ public class Tourelle {
         return position;
     }
 
+    public int getPortee() {
+        return portee;
+    }
+
     public List<Forme> getFormes() {
         return new ArrayList<>(formes);
     }
@@ -203,6 +210,13 @@ public class Tourelle {
         this.position = position;
     }
 
+    public void setPortee(int portee) {
+        if (portee <= 0) {
+            throw new IllegalArgumentException("La portée doit être positive. Reçu : " + portee);
+        }
+        this.portee = portee;
+    }
+
     // TO STRING
 
     @Override
@@ -210,6 +224,7 @@ public class Tourelle {
         StringBuilder sb = new StringBuilder();
         sb.append("Tourelle \"").append(nom).append("\"");
         sb.append(" [pos=").append(position);
+        sb.append(", portee=").append(portee);
         sb.append(", formes=").append(formes.size()).append("/").append(MAX_FORMES);
 
         if (getNombreTirs() > 0) {

@@ -2,13 +2,16 @@ package com.kcdformes.model;
 
 public class Cercle extends Forme {
 
-    private double rayon;
-    private double coeff;
-    private double cadence;
+    private final double rayon;
+    private final double coeff;
+    private final double cadence;
 
     public Cercle(String nom, double rayon) {
         super(nom, "bleu");
-        setRayon(rayon);
+        if (rayon <= 0) {
+            throw new IllegalArgumentException("Le rayon doit être strictement positif. Reçu : " + rayon);
+        }
+        this.rayon = rayon;
         this.coeff = 1.5;
         this.cadence = 0.4;
     }
@@ -30,21 +33,13 @@ public class Cercle extends Forme {
 
     @Override
     public int cout() {
-        return (int)(aire() * 1.5);
+        return (int)(aire() * 2.65);
     }
 
-    // Getter
+    // Getters
     public double getRayon() { return rayon; }
     public double getCoeff() { return coeff; }
     public double getCadence() { return cadence; }
-
-    // Setter avec validation
-    public void setRayon(double rayon) {
-        if (rayon <= 0) {
-            throw new IllegalArgumentException("Le rayon doit être strictement positif. Reçu : " + rayon);
-        }
-        this.rayon = rayon;
-    }
 
     @Override
     public String toString() {

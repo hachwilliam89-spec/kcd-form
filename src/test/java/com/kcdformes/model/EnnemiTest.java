@@ -5,25 +5,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EnnemiTest {
 
+    // PV = aire * 25 (coeff 1.0 par défaut)
+    // Triangle(4,3) : aire=6, PV=150
+    // Cercle(3) : aire≈28.27, PV=706
+    // Rectangle(4,4) : aire=16, PV=400
+
     @Test
-    void quandTriangleAire6_alorsPvEgale60() {
+    void quandTriangleAire6_alorsPvEgale150() {
         Ennemi e = new Ennemi("Cavalerie", new Triangle("Tri", 4, 3));
-        assertEquals(60, e.getPvMax());
+        assertEquals(150, e.getPvMax());
     }
 
     @Test
-    void quandCavalerie_alorsVitesse3_5() {
-        assertEquals(3.5, new Ennemi("Cavalerie", new Triangle("T", 4, 3)).getVitesse());
+    void quandCavalerie_alorsVitesse3() {
+        assertEquals(3.0, new Ennemi("Cavalerie", new Triangle("T", 4, 3)).getVitesse());
     }
 
     @Test
-    void quandInfanterie_alorsVitesse1_0() {
+    void quandInfanterie_alorsVitesse1() {
         assertEquals(1.0, new Ennemi("Infanterie", new Cercle("C", 3)).getVitesse());
     }
 
     @Test
-    void quandBelier_alorsVitesse0_7() {
-        assertEquals(0.7, new Ennemi("Belier", new Rectangle("R", 4, 4)).getVitesse());
+    void quandBelier_alorsVitesse1() {
+        assertEquals(1.0, new Ennemi("Belier", new Rectangle("R", 4, 4)).getVitesse());
     }
 
     @Test
@@ -45,7 +50,7 @@ class EnnemiTest {
     void quandSubirDegats20_alorsPvDiminue() {
         Ennemi e = new Ennemi("Cavalerie", new Triangle("Tri", 4, 3));
         e.subirDegats(20);
-        assertEquals(40, e.getPvActuels());
+        assertEquals(130, e.getPvActuels());
     }
 
     @Test
@@ -69,8 +74,18 @@ class EnnemiTest {
     }
 
     @Test
-    void quandAvancer_alorsPositionAugmente() {
+    void quandAvancer_alorsPositionAugmenteDeVitesse() {
+        // Cavalier vitesse 3.0 → avance de 3
         Ennemi e = new Ennemi("Cavalerie", new Triangle("Tri", 4, 3));
+        assertEquals(0, e.getPosition());
+        e.avancer();
+        assertEquals(3, e.getPosition());
+    }
+
+    @Test
+    void quandBelierAvance_alorsPositionAugmenteDe1() {
+        // Bélier vitesse 1.0 → avance de 1
+        Ennemi e = new Ennemi("Belier", new Rectangle("R", 4, 4));
         assertEquals(0, e.getPosition());
         e.avancer();
         assertEquals(1, e.getPosition());
@@ -135,6 +150,40 @@ class EnnemiTest {
         assertEquals(0.5, inf.degatsReels(), 0.05);
     }
 
+    // DEGATS FORTERESSE
+
+    @Test
+    void quandCavalerie_alorsDegatsForteresse10() {
+        Ennemi cav = new Ennemi("Cavalerie", new Triangle("T", 4, 3));
+        assertEquals(10, cav.getDegatsForteresse());
+    }
+
+    @Test
+    void quandInfanterie_alorsDegatsForteresse15() {
+        Ennemi inf = new Ennemi("Infanterie", new Cercle("C", 3));
+        assertEquals(15, inf.getDegatsForteresse());
+    }
+
+    @Test
+    void quandBelier_alorsDegatsForteresse40() {
+        Ennemi belier = new Ennemi("Belier", new Rectangle("R", 4, 4));
+        assertEquals(40, belier.getDegatsForteresse());
+    }
+
+    // COEFF DIFFICULTE
+
+    @Test
+    void quandCoeff2_alorsPvDoubles() {
+        Ennemi e = new Ennemi("Cavalerie", new Triangle("T", 4, 3), 2.0);
+        assertEquals(300, e.getPvMax());
+    }
+
+    @Test
+    void quandCoeff2_alorsDegatsForteresseInchanges() {
+        Ennemi e = new Ennemi("Cavalerie", new Triangle("T", 4, 3), 2.0);
+        assertEquals(10, e.getDegatsForteresse());
+    }
+
     @Test
     void quandGetForme_alorsRetourneFormeCorrecte() {
         Triangle tri = new Triangle("Tri", 4, 3);
@@ -169,7 +218,8 @@ class EnnemiTest {
         Ennemi e = new Ennemi("Cavalerie", new Triangle("Tri", 4, 3));
         String str = e.toString();
         assertTrue(str.contains("Cavalerie"));
-        assertTrue(str.contains("PV=60/60"));
-        assertTrue(str.contains("vitesse=3.5"));
+        assertTrue(str.contains("PV=150/150"));
+        assertTrue(str.contains("vitesse=3.0"));
+        assertTrue(str.contains("degatsForteresse=10"));
     }
 }

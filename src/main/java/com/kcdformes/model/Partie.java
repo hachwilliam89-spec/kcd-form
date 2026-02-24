@@ -33,15 +33,15 @@ public class Partie {
         switch (difficulte) {
             case 1 -> {
                 joueur.setBudget(500);
-                this.forteresse = new Forteresse("Citadelle", 960, 20, 25, 2);
+                this.forteresse = new Forteresse("Citadelle", 960, 15, 25, 2);  // defense 15 → facile
             }
             case 2 -> {
                 joueur.setBudget(400);
-                this.forteresse = new Forteresse("Citadelle", 640, 10, 15, 2);
+                this.forteresse = new Forteresse("Citadelle", 960, 10, 20, 2);  // defense 10 → moyen
             }
             case 3 -> {
                 joueur.setBudget(300);
-                this.forteresse = new Forteresse("Citadelle", 320, 0, 10, 1);
+                this.forteresse = new Forteresse("Citadelle", 960, 5, 15, 1);   // defense 5 → difficile
             }
         }
     }
@@ -84,11 +84,11 @@ public class Partie {
         int tailleChemin = carte.getChemin().size();
         List<Ennemi> ennemisActifs = vague.getEnnemisActifs();
 
-        // Chaque tourelle choisit sa cible
+        //PHASE 1 : TIRS DES TOURELLES
         for (Tourelle t : carte.getTourelles()) {
             List<Ennemi> enPortee = new ArrayList<>();
             for (Ennemi e : ennemisActifs) {
-                if (e.estVivant() && Math.abs(t.getPosition() - e.getPosition()) <= 3) {
+                if (e.estVivant() && Math.abs(t.getPosition() - e.getPosition()) <= t.getPortee()) {
                     enPortee.add(e);
                 }
             }
@@ -101,7 +101,7 @@ public class Partie {
                     e.subirDegats(t.degatsContre(e));
                 }
             } else {
-                // Archer : tape uniquement le premier ennemi (le plus avancé)
+                // Archer : tape uniquement le plus avancé
                 Ennemi cible = enPortee.get(0);
                 for (Ennemi e : enPortee) {
                     if (e.getPosition() > cible.getPosition()) {
@@ -111,23 +111,26 @@ public class Partie {
                 cible.subirDegats(t.degatsContre(cible));
             }
         }
+            //PHASE 2 : TIR DE LA FORTERESSE
+                 for (Ennemi e : ennemisActifs) {
+                   if (e.estVivant() && forteresse.estEnPortee(e.getPosition(), tailleChemin)) {
+                       e.subirDegats(forteresse.tirerSur(e));
+                   }
+        }
 
-        // Forteresse tire
+            //PHASE  : SCORE DES MORTS
         for (Ennemi e : ennemisActifs) {
-            if (e.estVivant() && forteresse.estEnPortee(e.getPosition(), tailleChemin)) {
-                e.subirDegats(forteresse.tirerSur(e));
+            if (!e.estVivant() && !e.isRecompenseRecuperee()) {
+                joueur.ajouterScore(e.getRecompense());
+                e.setRecompenseRecuperee(true);
             }
         }
 
-        // Avancer et vérifier
+
+
+        //PHASE 3 : AVANCER LES VIVANTS
         for (Ennemi e : ennemisActifs) {
-            if (!e.estVivant()) {
-                if (!e.isRecompenseRecuperee()) {
-                    joueur.gagner(e.getRecompense());
-                    e.setRecompenseRecuperee(true);
-                }
-                continue;
-            }
+            if (!e.estVivant()) continue;
 
             e.avancer();
 
@@ -137,6 +140,8 @@ public class Partie {
             }
         }
 
+
+        // PHASE 4 : VÉRIFIER FIN
         verifierFinPartie();
     }
 

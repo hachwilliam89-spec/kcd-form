@@ -92,16 +92,14 @@ class ForteresseTest {
                 () -> new Forteresse("Test", 960, 20, 25, 0));
     }
 
-    // SUBIR ATTAQUE - CAVALIER (Triangle = charge, dégâts PV max)
+    // SUBIR ATTAQUE - CAVALIER (degatsForteresse = 10)
 
     @Test
-    void quandCavalierAttaque_alorsDegatsBaseSurPvMax() {
+    void quandCavalierAttaque_alorsDegatsFixesMoinsDefense() {
         Ennemi cavalier = new Ennemi("Cavalier", new Triangle("forme", 4, 3));
-        cavalier.subirDegats(100); // blessé
-        int pvAvant = forteresse.getPvActuels();
+        // degatsForteresse = 10, defense = 20 → Math.max(1, 10-20) = 1
         forteresse.subirAttaque(cavalier);
-        // Dégâts = pvMax - defense = 150 - 20 = 130
-        assertEquals(pvAvant - (cavalier.getPvMax() - 20), forteresse.getPvActuels());
+        assertEquals(959, forteresse.getPvActuels());
     }
 
     @Test
@@ -116,43 +114,44 @@ class ForteresseTest {
         f1.subirAttaque(cavalierPlein);
         f2.subirAttaque(cavalierBlesse);
 
+        // Dégâts fixes → même résultat blessé ou pas
         assertEquals(f1.getPvActuels(), f2.getPvActuels());
     }
 
-    // SUBIR ATTAQUE - INFANTERIE (Cercle = dégâts PV restants)
+    // SUBIR ATTAQUE - INFANTERIE (degatsForteresse = 15)
 
     @Test
-    void quandInfanterieAttaque_alorsDegatsBaseSurPvRestants() {
+    void quandInfanterieAttaque_alorsDegatsFixesMoinsDefense() {
         Ennemi infanterie = new Ennemi("Infanterie", new Cercle("forme", 2));
-        int pvAvant = forteresse.getPvActuels();
+        // degatsForteresse = 15, defense = 20 → Math.max(1, 15-20) = 1
         forteresse.subirAttaque(infanterie);
-        // Dégâts = pvActuels - defense
-        assertEquals(pvAvant - (infanterie.getPvActuels() - 20), forteresse.getPvActuels());
+        assertEquals(959, forteresse.getPvActuels());
     }
 
     @Test
-    void quandInfanterieBlesseeAttaque_alorsMoinsDeDegats() {
+    void quandInfanterieBlesseeAttaque_alorsMemesDegats() {
+        // Dégâts fixes → blessée ou pas, mêmes dégâts
         Ennemi infPleine = new Ennemi("Inf1", new Cercle("forme", 2));
-        Ennemi infBleessee = new Ennemi("Inf2", new Cercle("forme", 2));
-        infBleessee.subirDegats(200);
+        Ennemi infBlessée = new Ennemi("Inf2", new Cercle("forme", 2));
+        infBlessée.subirDegats(200);
 
         Forteresse f1 = new Forteresse("F1", 960, 20, 25, 2);
         Forteresse f2 = new Forteresse("F2", 960, 20, 25, 2);
 
         f1.subirAttaque(infPleine);
-        f2.subirAttaque(infBleessee);
+        f2.subirAttaque(infBlessée);
 
-        assertTrue(f2.getPvActuels() > f1.getPvActuels());
+        assertEquals(f1.getPvActuels(), f2.getPvActuels());
     }
 
-    // SUBIR ATTAQUE - BELIER (Rectangle = machine, dégâts PV max)
+    // SUBIR ATTAQUE - BELIER (degatsForteresse = 40)
 
     @Test
-    void quandBelierAttaque_alorsDegatsBaseSurPvMax() {
+    void quandBelierAttaque_alorsDegatsFixesMoinsDefense() {
         Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
-        int pvAvant = forteresse.getPvActuels();
+        // degatsForteresse = 40, defense = 20 → 40-20 = 20
         forteresse.subirAttaque(belier);
-        assertEquals(pvAvant - (belier.getPvMax() - 20), forteresse.getPvActuels());
+        assertEquals(940, forteresse.getPvActuels());
     }
 
     @Test
@@ -168,6 +167,26 @@ class ForteresseTest {
         f2.subirAttaque(belierBlesse);
 
         assertEquals(f1.getPvActuels(), f2.getPvActuels());
+    }
+
+    // SUBIR ATTAQUE - DEFENSE REDUIT LES DEGATS
+
+    @Test
+    void quandDefenseFaible_alorsBelierFaitPlusDeDegats() {
+        Forteresse faibleDef = new Forteresse("Faible", 960, 5, 25, 2);
+        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        // degatsForteresse = 40, defense = 5 → 40-5 = 35
+        faibleDef.subirAttaque(belier);
+        assertEquals(925, faibleDef.getPvActuels());
+    }
+
+    @Test
+    void quandDefenseZero_alorsDegatsComplets() {
+        Forteresse zeroDef = new Forteresse("Zero", 960, 0, 25, 2);
+        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        // degatsForteresse = 40, defense = 0 → 40
+        zeroDef.subirAttaque(belier);
+        assertEquals(920, zeroDef.getPvActuels());
     }
 
     // SUBIR ATTAQUE - CAS LIMITES
@@ -190,16 +209,17 @@ class ForteresseTest {
     void quandDegatsSuperieursPV_alorsPVaZero() {
         Forteresse faible = new Forteresse("Faible", 10, 0, 5, 1);
         Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        // degatsForteresse = 40, defense = 0 → 40 > 10
         faible.subirAttaque(belier);
         assertEquals(0, faible.getPvActuels());
     }
 
     @Test
-    void quandDefenseSuperieurePvEnnemi_alorsDegatsMinimum1() {
+    void quandDefenseSuperieureDegats_alorsDegatsMinimum1() {
         Forteresse blindee = new Forteresse("Blindee", 960, 9999, 25, 2);
         Ennemi faible = new Ennemi("Faible", new Triangle("forme", 1, 1));
+        // degatsForteresse = 10, defense = 9999 → Math.max(1, 10-9999) = 1
         blindee.subirAttaque(faible);
-        // Math.max(1, pvMax - 9999) = 1
         assertEquals(959, blindee.getPvActuels());
     }
 
@@ -227,7 +247,6 @@ class ForteresseTest {
 
     @Test
     void quandEnnemiEnPortee_alorsTrue() {
-        // Chemin de 10, portée 2 → en portée à partir de pos 8
         assertTrue(forteresse.estEnPortee(8, 10));
         assertTrue(forteresse.estEnPortee(9, 10));
     }
@@ -240,7 +259,6 @@ class ForteresseTest {
 
     @Test
     void quandEnnemiExactementALimite_alorsTrue() {
-        // tailleChemin - portee = 10 - 2 = 8
         assertTrue(forteresse.estEnPortee(8, 10));
     }
 
@@ -267,15 +285,12 @@ class ForteresseTest {
     }
 
     @Test
-    void quandDemiVie_alors50Pourcent() {
-        // Infliger 480 dégâts (960 / 2)
-        Forteresse f = new Forteresse("Test", 480, 0, 5, 1);
-        Ennemi e = new Ennemi("Test", new Rectangle("forme", 6, 3));
-        // Rectangle(6,3) → aire=18, pvMax=18*25=450
-        f.subirAttaque(e);
-        // dégâts = 450 - 0 = 450 → PV = 480 - 450 = 30
-        double expected = (30.0 / 480.0) * 100;
-        assertEquals(expected, f.getPourcentageVie(), 0.001);
+    void quandBelierAttaque_alorsPourcentageDiminue() {
+        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        forteresse.subirAttaque(belier);
+        // PV = 960 - 20 = 940 → 940/960 * 100 ≈ 97.9%
+        double expected = (940.0 / 960.0) * 100;
+        assertEquals(expected, forteresse.getPourcentageVie(), 0.001);
     }
 
     // SETTERS

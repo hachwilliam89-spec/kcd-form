@@ -10,17 +10,31 @@ public class Ennemi {
     private int position;
     private int recompense;
     private double degatsRempart;
+    private int degatsForteresse;
     private boolean recompenseRecuperee = false;
 
-    public Ennemi(String nom, Forme forme) {
+    // Constructeur avec coefficient de difficulté
+    public Ennemi(String nom, Forme forme, double coeffDifficulte) {
         setNom(nom);
+        if (forme == null) {
+            throw new IllegalArgumentException("La forme ne peut pas être null.");
+        }
+        if (coeffDifficulte <= 0) {
+            throw new IllegalArgumentException("Le coefficient de difficulté doit être positif.");
+        }
         this.forme = forme;
-        this.pvMax = calculerPV();
+        this.pvMax = (int)(calculerPV() * coeffDifficulte);
         this.pvActuels = pvMax;
         this.vitesse = calculerVitesse();
         this.position = 0;
-        this.recompense = calculerRecompense();
+        this.recompense = (int)(calculerRecompense() * coeffDifficulte);
         this.degatsRempart = calculerDegatsRempart();
+        this.degatsForteresse = calculerDegatsForteresse();
+    }
+
+    // Constructeur par défaut (coeff = 1.0)
+    public Ennemi(String nom, Forme forme) {
+        this(nom, forme, 1.0);
     }
 
     // CALCULS BASÉS SUR LA FORME
@@ -41,6 +55,17 @@ public class Ennemi {
         if (forme instanceof Rectangle) return 2.0;
         if (forme instanceof Cercle) return 1.0;
         return 1.0;
+    }
+
+    /**
+     * Dégâts fixes infligés à la forteresse.
+     * Indépendant des PV et du coeff de difficulté.
+     */
+    public int calculerDegatsForteresse() {
+        if (forme instanceof Triangle) return 10;    // Cavalier : rapide mais tape peu
+        if (forme instanceof Cercle) return 15;      // Infanterie : moyen
+        if (forme instanceof Rectangle) return 40;   // Bélier : spécialiste siège
+        return 10;
     }
 
     public int calculerRecompense() {
@@ -120,6 +145,10 @@ public class Ennemi {
         return degatsRempart;
     }
 
+    public int getDegatsForteresse() {
+        return degatsForteresse;
+    }
+
     // SETTERS
 
     public void setNom(String nom) {
@@ -141,6 +170,7 @@ public class Ennemi {
         return "Ennemi " + nom + " [forme=" + forme.getNom()
                 + ", PV=" + pvActuels + "/" + pvMax
                 + ", vitesse=" + vitesse
+                + ", degatsForteresse=" + degatsForteresse
                 + ", position=" + position + "]";
     }
 }

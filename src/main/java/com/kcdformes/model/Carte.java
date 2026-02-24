@@ -2,6 +2,8 @@ package com.kcdformes.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Carte {
 
@@ -12,7 +14,8 @@ public class Carte {
     private List<Integer> emplacementsTourelles;  // hors chemin
     private List<Integer> emplacementsMurailles;  // sur le chemin
     private List<Tourelle> tourelles;
-    private List<Rectangle> murailles;
+    private Map<Integer, Rectangle> murailles;
+
 
     public Carte(String nom, int largeur, int hauteur) {
         setNom(nom);
@@ -22,7 +25,7 @@ public class Carte {
         this.emplacementsTourelles = new ArrayList<>();
         this.emplacementsMurailles = new ArrayList<>();
         this.tourelles = new ArrayList<>();
-        this.murailles = new ArrayList<>();
+        this.murailles = new HashMap<>();
     }
 
     // GESTION DU CHEMIN
@@ -79,21 +82,17 @@ public class Carte {
         if (!emplacementsMurailles.contains(emplacement)) {
             return false;
         }
-        for (Rectangle m : murailles) {
-            if (chemin.indexOf(emplacement) >= 0) {
-                // vérifier si un emplacement muraille est déjà pris
-                // on compare par position dans la liste
-            }
+        if (murailles.containsKey(emplacement)) {
+            return false;
         }
-        murailles.add(muraille);
+        murailles.put(emplacement, muraille);
         return true;
     }
 
     public List<Rectangle> getMuraillesSurChemin(int positionEnnemi) {
         List<Rectangle> surChemin = new ArrayList<>();
-        int index = emplacementsMurailles.indexOf(positionEnnemi);
-        if (index >= 0 && index < murailles.size()) {
-            surChemin.add(murailles.get(index));
+        if (murailles.containsKey(positionEnnemi)) {
+            surChemin.add(murailles.get(positionEnnemi));
         }
         return surChemin;
     }
@@ -103,7 +102,7 @@ public class Carte {
     public List<Tourelle> getTourellesEnPortee(int positionEnnemi) {
         List<Tourelle> enPortee = new ArrayList<>();
         for (Tourelle t : tourelles) {
-            if (Math.abs(t.getPosition() - positionEnnemi) <= 3) {
+            if (Math.abs(t.getPosition() - positionEnnemi) <= t.getPortee()) {
                 enPortee.add(t);
             }
         }
@@ -140,8 +139,8 @@ public class Carte {
         return new ArrayList<>(tourelles);
     }
 
-    public List<Rectangle> getMurailles() {
-        return new ArrayList<>(murailles);
+    public Map<Integer, Rectangle> getMurailles() {
+        return new HashMap<>(murailles);
     }
 
     // SETTERS

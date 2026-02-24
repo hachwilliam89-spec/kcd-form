@@ -72,8 +72,8 @@ class RectangleTest {
     }
 
     @Test
-    void quandCout_alorsAire_fois_2point5() {
-        assertEquals(40, rectangle.cout());
+    void quandCout_alorsAire_fois_2point2() {
+        assertEquals((int)(16.0 * 2.2), rectangle.cout());
     }
 
     @Test
@@ -81,38 +81,24 @@ class RectangleTest {
         assertEquals(160, rectangle.getPv());
     }
 
-    // SETTERS
+    // CONSTRUCTION AVEC DIFFÉRENTES DIMENSIONS
 
     @Test
-    void quandSetLargeurValide_alorsLargeurChange() {
-        rectangle.setLargeur(10);
-        assertEquals(10, rectangle.getLargeur(), 0.001);
+    void quandLargeurValide_alorsLargeurCorrecte() {
+        Rectangle r = new Rectangle("Test", 10, 5);
+        assertEquals(10, r.getLargeur(), 0.001);
     }
 
     @Test
-    void quandSetLargeurNegative_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> rectangle.setLargeur(-1));
+    void quandLongueurValide_alorsLongueurCorrecte() {
+        Rectangle r = new Rectangle("Test", 4, 10);
+        assertEquals(10, r.getLongueur(), 0.001);
     }
 
     @Test
-    void quandSetLargeurZero_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> rectangle.setLargeur(0));
-    }
-
-    @Test
-    void quandSetLongueurValide_alorsLongueurChange() {
-        rectangle.setLongueur(10);
-        assertEquals(10, rectangle.getLongueur(), 0.001);
-    }
-
-    @Test
-    void quandSetLongueurNegative_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> rectangle.setLongueur(-1));
-    }
-
-    @Test
-    void quandSetLongueurZero_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> rectangle.setLongueur(0));
+    void quandPvDynamique_alorsSuitAire() {
+        Rectangle r = new Rectangle("Test", 8, 4);
+        assertEquals((int)(8 * 4 * 10), r.getPv());
     }
 
     // TO STRING

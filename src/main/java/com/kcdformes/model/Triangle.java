@@ -2,15 +2,21 @@ package com.kcdformes.model;
 
 public class Triangle extends Forme {
 
-    private double base;
-    private double hauteur;
-    private double coeff;
-    private double cadence;
+    private final double base;
+    private final double hauteur;
+    private final double coeff;
+    private final double cadence;
 
     public Triangle(String nom, double base, double hauteur) {
         super(nom, "rouge");
-        setBase(base);
-        setHauteur(hauteur);
+        if (base <= 0) {
+            throw new IllegalArgumentException("La base doit être strictement positive. Reçu : " + base);
+        }
+        if (hauteur <= 0) {
+            throw new IllegalArgumentException("La hauteur doit être strictement positive. Reçu : " + hauteur);
+        }
+        this.base = base;
+        this.hauteur = hauteur;
         this.coeff = 0.8;
         this.cadence = 3.0;
     }
@@ -33,7 +39,7 @@ public class Triangle extends Forme {
 
     @Override
     public int cout() {
-        return (int)(aire() * 5);
+        return (int)(aire() * 9);
     }
 
     // Getters
@@ -41,21 +47,6 @@ public class Triangle extends Forme {
     public double getHauteur() { return hauteur; }
     public double getCoeff() { return coeff; }
     public double getCadence() { return cadence; }
-
-    // Setters avec validation
-    public void setBase(double base) {
-        if (base <= 0) {
-            throw new IllegalArgumentException("La base doit être strictement positive. Reçu : " + base);
-        }
-        this.base = base;
-    }
-
-    public void setHauteur(double hauteur) {
-        if (hauteur <= 0) {
-            throw new IllegalArgumentException("La hauteur doit être strictement positive. Reçu : " + hauteur);
-        }
-        this.hauteur = hauteur;
-    }
 
     @Override
     public String toString() {

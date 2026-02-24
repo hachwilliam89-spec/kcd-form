@@ -32,8 +32,17 @@ public class Joueur {
         score += montant;
     }
 
+    public void ajouterScore(int points) {
+        if (points < 0) {
+            throw new IllegalArgumentException("Les points doivent être positifs.");
+        }
+        score += points;
+    }
+
     public void perdreVie() {
-        vies--;
+        if (vies > 0) {
+            vies--;
+        }
     }
 
     public boolean estElimine() {

@@ -40,7 +40,7 @@ public class Main {
                 + " | Cout: " + muraille.cout() + " or");
 
         // === TOURELLE ===
-        System.out.println("\n=== TOURELLE (COMPOSITION + POLYMORPHISME) ===\n");
+        System.out.println("TOURELLE (COMPOSITION + POLYMORPHISME)");
 
         Tourelle tour1 = new Tourelle("Tour A", 3);
         tour1.ajouterForme(archer);
@@ -54,7 +54,7 @@ public class Main {
         System.out.println("  AoE: " + tour1.hasAoE() + " | Rayon: " + String.format("%.1f", tour1.getRayonZone()));
         System.out.println("  PV: " + String.format("%.0f", tour1.getPV()));
 
-        System.out.println("\n--- Ajout de la muraille (combo) ---\n");
+        System.out.println("Ajout de la muraille (combo) ");
 
         tour1.ajouterForme(muraille);
         System.out.println(tour1);
@@ -63,7 +63,7 @@ public class Main {
         System.out.println("  Cout total: " + tour1.coutTotal() + " or");
 
         // === VALIDATION ===
-        System.out.println("\n=== TEST VALIDATION ===\n");
+        System.out.println("TEST VALIDATION");
 
         try {
             tour1.ajouterForme(new Triangle("Extra", 2, 3));
@@ -90,7 +90,7 @@ public class Main {
         }
 
         // === SIMULATION COMPLETE ===
-        System.out.println("\n=== SIMULATION COMPLETE - 5 VAGUES / 800 ENNEMIS ===\n");
+        System.out.println("\n=== SIMULATION COMPLETE - 5 VAGUES (20/40/60/80/100) ===\n");
 
         Joueur joueur = new Joueur("Kim", 0, 5);
         Carte carte = new Carte("Plaine", 10, 10);
@@ -122,58 +122,73 @@ public class Main {
         System.out.println("  " + t2);
         System.out.println("  " + t3);
 
-        // Vague 1 : 50 cavaliers (rush rapide)
+        // Vague 1 : 20 ennemis (20%)
         Vague v1 = new Vague(1, 1.0, 1.0);
-        for (int i = 0; i < 50; i++) {
-            v1.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3)));
+        for (int i = 0; i < 10; i++) {
+            v1.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v1.getCoeffDifficulte()));
+        }
+        for (int i = 0; i < 6; i++) {
+            v1.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v1.getCoeffDifficulte()));
+        }
+        for (int i = 0; i < 4; i++) {
+            v1.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v1.getCoeffDifficulte()));
         }
         partie.ajouterVague(v1);
 
-        // Vague 2 : 100 infanteries (horde)
+        // Vague 2 : 40 ennemis (40%)
         Vague v2 = new Vague(2, 1.0, 1.2);
-        for (int i = 0; i < 100; i++) {
-            v2.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2)));
+        for (int i = 0; i < 20; i++) {
+            v2.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v2.getCoeffDifficulte()));
+        }
+        for (int i = 0; i < 12; i++) {
+            v2.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v2.getCoeffDifficulte()));
+        }
+        for (int i = 0; i < 8; i++) {
+            v2.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v2.getCoeffDifficulte()));
         }
         partie.ajouterVague(v2);
 
-        // Vague 3 : 150 mix
+        // Vague 3 : 60 ennemis (60%)
         Vague v3 = new Vague(3, 1.0, 1.3);
-        for (int i = 0; i < 50; i++) {
-            v3.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3)));
+        for (int i = 0; i < 30; i++) {
+            v3.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v3.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 60; i++) {
-            v3.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2)));
+        for (int i = 0; i < 18; i++) {
+            v3.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v3.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 40; i++) {
-            v3.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3)));
+        for (int i = 0; i < 12; i++) {
+            v3.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v3.getCoeffDifficulte()));
         }
         partie.ajouterVague(v3);
 
-        // Vague 4 : 200 offensive lourde
+        // Vague 4 : 80 ennemis (80%)
         Vague v4 = new Vague(4, 1.0, 1.5);
-        for (int i = 0; i < 60; i++) {
-            v4.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3)));
+        for (int i = 0; i < 40; i++) {
+            v4.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v4.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 80; i++) {
-            v4.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2)));
+        for (int i = 0; i < 24; i++) {
+            v4.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v4.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 60; i++) {
-            v4.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3)));
+        for (int i = 0; i < 16; i++) {
+            v4.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v4.getCoeffDifficulte()));
         }
         partie.ajouterVague(v4);
 
-        // Vague 5 : 300 assaut final
+        // Vague 5 : 100 ennemis (100%)
         Vague v5 = new Vague(5, 1.0, 2.0);
-        for (int i = 0; i < 100; i++) {
-            v5.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3)));
+        for (int i = 0; i < 50; i++) {
+            v5.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v5.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 100; i++) {
-            v5.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2)));
+        for (int i = 0; i < 30; i++) {
+            v5.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v5.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 100; i++) {
-            v5.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3)));
+        for (int i = 0; i < 20; i++) {
+            v5.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v5.getCoeffDifficulte()));
         }
         partie.ajouterVague(v5);
+
+        int totalEnnemis = 20 + 40 + 60 + 80 + 100;
+        System.out.println("Total ennemis : " + totalEnnemis);
 
         // Lancer
         partie.demarrer();

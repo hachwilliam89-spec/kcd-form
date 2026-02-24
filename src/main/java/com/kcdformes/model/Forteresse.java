@@ -20,18 +20,16 @@ public class Forteresse {
 
     // GAMEPLAY
 
+    /**
+     * Un ennemi attaque la forteresse avec ses dégâts fixes.
+     * La defense réduit les dégâts mais ne les annule jamais complètement.
+     */
     public void subirAttaque(Ennemi ennemi) {
         if (ennemi == null || !ennemi.estVivant()) {
             return;
         }
 
-        int degats;
-        if (ennemi.getForme() instanceof Cercle) {
-            degats = Math.max(1, ennemi.getPvActuels() - defense);
-        } else {
-            degats = Math.max(1, ennemi.getPvMax() - defense);
-        }
-
+        int degats = Math.max(1, ennemi.getDegatsForteresse() - defense);
         pvActuels -= degats;
         if (pvActuels < 0) {
             pvActuels = 0;
