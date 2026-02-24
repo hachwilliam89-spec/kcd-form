@@ -9,8 +9,8 @@ public class Cercle extends Forme {
     public Cercle(String nom, double rayon) {
         super(nom, "bleu");
         setRayon(rayon);
-        this.coeff = 0.7;
-        this.cadence = 1.0;
+        this.coeff = 1.5;
+        this.cadence = 0.4;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Cercle extends Forme {
 
     @Override
     public int cout() {
-        return (int)(aire() * 2.5);
+        return (int)(aire() * 1.5);
     }
 
     // Getter

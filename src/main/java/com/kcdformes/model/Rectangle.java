@@ -30,7 +30,7 @@ public class Rectangle extends Forme {
 
     @Override
     public int cout() {
-        return (int)(aire() * 2.5);
+        return (int)(aire() * 1.5);
     }
 
     // Getters

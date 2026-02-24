@@ -101,6 +101,40 @@ public class Tourelle {
 
     // CALCULS POLYMORPHIQUES
 
+    /**
+     * Calcule les dégâts infligés à un ennemi.
+     */
+    public double degatsContre(Ennemi ennemi) {
+        if (ennemi == null || !ennemi.estVivant()) {
+            return 0;
+        }
+
+        double totalDegats = 0;
+        Forme formeEnnemi = ennemi.getForme();
+
+        for (Forme f : formes) {
+            double degats = f.dps();
+
+            if (f instanceof Triangle) {
+                if (formeEnnemi instanceof Triangle) {
+                    degats *= 0.5;   // Archer vs Cavalier : malus
+                } else if (formeEnnemi instanceof Rectangle) {
+                    degats *= 0.75;  // Archer vs Bélier : malus
+                }
+            } else if (f instanceof Cercle) {
+                if (formeEnnemi instanceof Triangle) {
+                    degats *= 1.25;  // Catapulte vs Cavalier : bonus
+                } else if (formeEnnemi instanceof Rectangle) {
+                    degats *= 1.75;  // Catapulte vs Bélier : gros bonus
+                }
+            }
+
+            totalDegats += degats;
+        }
+
+        return totalDegats;
+    }
+
     public double dpsTotal() {
         double total = 0;
         for (Forme forme : formes) {

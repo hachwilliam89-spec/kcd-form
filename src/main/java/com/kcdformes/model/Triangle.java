@@ -11,7 +11,7 @@ public class Triangle extends Forme {
         super(nom, "rouge");
         setBase(base);
         setHauteur(hauteur);
-        this.coeff = 1.8;
+        this.coeff = 0.8;
         this.cadence = 3.0;
     }
 
@@ -33,7 +33,7 @@ public class Triangle extends Forme {
 
     @Override
     public int cout() {
-        return (int)(aire() * 2.5);
+        return (int)(aire() * 5);
     }
 
     // Getters

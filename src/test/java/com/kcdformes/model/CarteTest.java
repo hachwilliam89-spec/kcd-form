@@ -75,4 +75,165 @@ class CarteTest {
             new Carte("", 10, 10);
         });
     }
+
+    // CONSTRUCTEUR VALIDATION
+
+    @Test
+    void constructeurNomNull() {
+        assertThrows(IllegalArgumentException.class, () -> new Carte(null, 10, 10));
+    }
+
+    @Test
+    void constructeurLargeurZero() {
+        assertThrows(IllegalArgumentException.class, () -> new Carte("Test", 0, 10));
+    }
+
+    @Test
+    void constructeurLargeurNegative() {
+        assertThrows(IllegalArgumentException.class, () -> new Carte("Test", -1, 10));
+    }
+
+    @Test
+    void constructeurHauteurZero() {
+        assertThrows(IllegalArgumentException.class, () -> new Carte("Test", 10, 0));
+    }
+
+    @Test
+    void constructeurHauteurNegative() {
+        assertThrows(IllegalArgumentException.class, () -> new Carte("Test", 10, -1));
+    }
+
+// CHEMIN ET EMPLACEMENTS
+
+    @Test
+    void cheminNull() {
+        Carte c = new Carte("Test", 10, 10);
+        assertThrows(IllegalArgumentException.class, () -> c.setChemin(null));
+    }
+
+    @Test
+    void emplacementsTourellesNull() {
+        Carte c = new Carte("Test", 10, 10);
+        assertThrows(IllegalArgumentException.class, () -> c.setEmplacementsTourelles(null));
+    }
+
+    @Test
+    void emplacementsMuraillesNull() {
+        Carte c = new Carte("Test", 10, 10);
+        assertThrows(IllegalArgumentException.class, () -> c.setEmplacementsMurailles(null));
+    }
+
+// TOURELLE NULL
+
+    @Test
+    void placerTourelleNull() {
+        Carte c = creerCarteBasique();
+        assertThrows(IllegalArgumentException.class, () -> c.placerTourelle(null, 10));
+    }
+
+// SUPPRESSION INEXISTANTE
+
+    @Test
+    void supprimerTourelleInexistante() {
+        Carte c = creerCarteBasique();
+        assertFalse(c.supprimerTourelle(99));
+    }
+
+// MURAILLES
+
+    @Test
+    void placerMurailleValide() {
+        Carte c = creerCarteBasique();
+        c.setEmplacementsMurailles(List.of(3));
+        Rectangle mur = new Rectangle("Mur", 4, 4);
+        assertTrue(c.placerMuraille(mur, 3));
+        assertEquals(1, c.getMurailles().size());
+    }
+
+    @Test
+    void placerMurailleNull() {
+        Carte c = creerCarteBasique();
+        c.setEmplacementsMurailles(List.of(3));
+        assertThrows(IllegalArgumentException.class, () -> c.placerMuraille(null, 3));
+    }
+
+    @Test
+    void placerMurailleEmplacementInvalide() {
+        Carte c = creerCarteBasique();
+        c.setEmplacementsMurailles(List.of(3));
+        Rectangle mur = new Rectangle("Mur", 4, 4);
+        assertFalse(c.placerMuraille(mur, 99));
+    }
+
+    @Test
+    void getMuraillesSurChemin() {
+        Carte c = creerCarteBasique();
+        c.setEmplacementsMurailles(List.of(3));
+        Rectangle mur = new Rectangle("Mur", 4, 4);
+        c.placerMuraille(mur, 3);
+        assertEquals(1, c.getMuraillesSurChemin(3).size());
+    }
+
+    @Test
+    void getMuraillesSurCheminVide() {
+        Carte c = creerCarteBasique();
+        assertEquals(0, c.getMuraillesSurChemin(99).size());
+    }
+
+// SETTERS
+
+    @Test
+    void setNomValide() {
+        Carte c = creerCarteBasique();
+        c.setNom("Niveau 2");
+        assertEquals("Niveau 2", c.getNom());
+    }
+
+    @Test
+    void setLargeurValide() {
+        Carte c = creerCarteBasique();
+        c.setLargeur(20);
+        assertEquals(20, c.getLargeur());
+    }
+
+    @Test
+    void setHauteurValide() {
+        Carte c = creerCarteBasique();
+        c.setHauteur(20);
+        assertEquals(20, c.getHauteur());
+    }
+
+// COPIES DEFENSIVES
+
+    @Test
+    void getCheminCopieDefensive() {
+        Carte c = creerCarteBasique();
+        c.getChemin().clear();
+        assertEquals(6, c.getChemin().size());
+    }
+
+    @Test
+    void getTourellesCopieDefensive() {
+        Carte c = creerCarteBasique();
+        c.getTourelles().clear();
+        assertEquals(0, c.getTourelles().size());
+    }
+
+    @Test
+    void getEmplacementsTourellesCopieDefensive() {
+        Carte c = creerCarteBasique();
+        c.getEmplacementsTourelles().clear();
+        assertEquals(3, c.getEmplacementsTourelles().size());
+    }
+
+// TO STRING
+
+    @Test
+    void toStringContientInfos() {
+        Carte c = creerCarteBasique();
+        String result = c.toString();
+        assertTrue(result.contains("Niveau 1"));
+        assertTrue(result.contains("10x10"));
+    }
+
 }

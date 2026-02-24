@@ -17,7 +17,7 @@ class TriangleTest {
     // CONSTRUCTEUR
 
     @Test
-    void constructeurValide() {
+    void quandConstructeurValide_alorsAttributsCorrects() {
         assertEquals("Archer", triangle.getNom());
         assertEquals("rouge", triangle.getCouleur());
         assertEquals(4, triangle.getBase(), 0.001);
@@ -27,102 +27,97 @@ class TriangleTest {
     }
 
     @Test
-    void constructeurNomNull() {
+    void quandNomNull_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Triangle(null, 4, 3));
     }
 
     @Test
-    void constructeurNomVide() {
+    void quandNomVide_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Triangle("", 4, 3));
     }
 
     @Test
-    void constructeurBaseNegative() {
+    void quandBaseNegative_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Triangle("Test", -1, 3));
     }
 
     @Test
-    void constructeurBaseZero() {
+    void quandBaseZero_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Triangle("Test", 0, 3));
     }
 
     @Test
-    void constructeurHauteurNegative() {
+    void quandHauteurNegative_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Triangle("Test", 4, -1));
     }
 
     @Test
-    void constructeurHauteurZero() {
+    void quandHauteurZero_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Triangle("Test", 4, 0));
     }
 
     // CALCULS
 
     @Test
-    void aire() {
-        // (4 * 3) / 2 = 6.0
+    void quandAire_alorsBase_fois_hauteur_divise2() {
         assertEquals(6.0, triangle.aire(), 0.001);
     }
 
     @Test
-    void perimetre() {
-        // coteOblique = sqrt((4/2)² + 3²) = sqrt(4 + 9) = sqrt(13) ≈ 3.606
-        // perimetre = 4 + 2 * 3.606 ≈ 11.211
+    void quandPerimetre_alorsBase_plus_2cotes() {
         double coteOblique = Math.sqrt(Math.pow(2, 2) + Math.pow(3, 2));
         double expected = 4 + 2 * coteOblique;
         assertEquals(expected, triangle.perimetre(), 0.001);
     }
 
     @Test
-    void dps() {
-        // aire * coeff * cadence = 6.0 * 1.8 * 3.0 = 32.4
+    void quandDps_alorsAire_fois_coeff_fois_cadence() {
         assertEquals(32.4, triangle.dps(), 0.001);
     }
 
     @Test
-    void cout() {
-        // (int)(aire * 2.5) = (int)(6.0 * 2.5) = (int)15.0 = 15
+    void quandCout_alorsAire_fois_2point5() {
         assertEquals(15, triangle.cout());
     }
 
     // SETTERS
 
     @Test
-    void setBaseValide() {
+    void quandSetBaseValide_alorsBaseChange() {
         triangle.setBase(10);
         assertEquals(10, triangle.getBase(), 0.001);
     }
 
     @Test
-    void setBaseNegative() {
+    void quandSetBaseNegative_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> triangle.setBase(-1));
     }
 
     @Test
-    void setBaseZero() {
+    void quandSetBaseZero_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> triangle.setBase(0));
     }
 
     @Test
-    void setHauteurValide() {
+    void quandSetHauteurValide_alorsHauteurChange() {
         triangle.setHauteur(10);
         assertEquals(10, triangle.getHauteur(), 0.001);
     }
 
     @Test
-    void setHauteurNegative() {
+    void quandSetHauteurNegative_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> triangle.setHauteur(-1));
     }
 
     @Test
-    void setHauteurZero() {
+    void quandSetHauteurZero_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> triangle.setHauteur(0));
     }
 
     // TO STRING
 
     @Test
-    void toStringContientInfos() {
+    void quandToString_alorsContientInfos() {
         String result = triangle.toString();
         assertTrue(result.contains("Archer"));
         assertTrue(result.contains("rouge"));

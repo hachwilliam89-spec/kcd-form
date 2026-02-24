@@ -63,6 +63,17 @@ public class Vague {
         return new ArrayList<>(ennemis);
     }
 
+    /**
+     * Retourne uniquement les ennemis déjà spawn (actifs sur le terrain).
+     */
+    public List<Ennemi> getEnnemisActifs() {
+        List<Ennemi> actifs = new ArrayList<>();
+        for (int i = 0; i < indexSpawn; i++) {
+            actifs.add(ennemis.get(i));
+        }
+        return actifs;
+    }
+
     public double getDelaiSpawn() {
         return delaiSpawn;
     }

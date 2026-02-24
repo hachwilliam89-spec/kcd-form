@@ -10,10 +10,17 @@ public class Partie {
     private EtatPartie etat;
     private Joueur joueur;
     private Carte carte;
+    private Forteresse forteresse;
     private List<Vague> vagues;
 
     public Partie(int difficulte, Joueur joueur, Carte carte) {
         setDifficulte(difficulte);
+        if (joueur == null) {
+            throw new IllegalArgumentException("Le joueur ne peut pas être null.");
+        }
+        if (carte == null) {
+            throw new IllegalArgumentException("La carte ne peut pas être null.");
+        }
         this.vagueActuelle = 0;
         this.etat = EtatPartie.EN_PAUSE;
         this.joueur = joueur;
@@ -22,13 +29,20 @@ public class Partie {
         appliquerBudgetInitial();
     }
 
-    // BUDGET PAR DIFFICULTE
-
     private void appliquerBudgetInitial() {
         switch (difficulte) {
-            case 1 -> joueur.setBudget(500);
-            case 2 -> joueur.setBudget(400);
-            case 3 -> joueur.setBudget(300);
+            case 1 -> {
+                joueur.setBudget(500);
+                this.forteresse = new Forteresse("Citadelle", 960, 20, 25, 2);
+            }
+            case 2 -> {
+                joueur.setBudget(400);
+                this.forteresse = new Forteresse("Citadelle", 640, 10, 15, 2);
+            }
+            case 3 -> {
+                joueur.setBudget(300);
+                this.forteresse = new Forteresse("Citadelle", 320, 0, 10, 1);
+            }
         }
     }
 
@@ -40,8 +54,6 @@ public class Partie {
             default -> 5;
         };
     }
-
-    // GAMEPLAY
 
     public void demarrer() {
         this.etat = EtatPartie.EN_COURS;
@@ -67,25 +79,61 @@ public class Partie {
         }
 
         Vague vague = vagues.get(vagueActuelle - 1);
+        vague.spawnSuivant();
 
-        Ennemi ennemi = vague.spawnSuivant();
+        int tailleChemin = carte.getChemin().size();
+        List<Ennemi> ennemisActifs = vague.getEnnemisActifs();
 
-        for (Ennemi e : vague.getEnnemis()) {
-            if (!e.estVivant()) continue;
-
-            List<Tourelle> tourellesEnPortee = carte.getTourellesEnPortee(e.getPosition());
-            for (Tourelle t : tourellesEnPortee) {
-                e.subirDegats(t.degatsContre(e));
+        // Chaque tourelle choisit sa cible
+        for (Tourelle t : carte.getTourelles()) {
+            List<Ennemi> enPortee = new ArrayList<>();
+            for (Ennemi e : ennemisActifs) {
+                if (e.estVivant() && Math.abs(t.getPosition() - e.getPosition()) <= 3) {
+                    enPortee.add(e);
+                }
             }
 
-            if (e.estVivant()) {
-                e.avancer();
+            if (enPortee.isEmpty()) continue;
+
+            if (t.hasAoE()) {
+                // Catapulte : tape tous les ennemis en portée
+                for (Ennemi e : enPortee) {
+                    e.subirDegats(t.degatsContre(e));
+                }
             } else {
-                joueur.gagner(e.getRecompense());
+                // Archer : tape uniquement le premier ennemi (le plus avancé)
+                Ennemi cible = enPortee.get(0);
+                for (Ennemi e : enPortee) {
+                    if (e.getPosition() > cible.getPosition()) {
+                        cible = e;
+                    }
+                }
+                cible.subirDegats(t.degatsContre(cible));
+            }
+        }
+
+        // Forteresse tire
+        for (Ennemi e : ennemisActifs) {
+            if (e.estVivant() && forteresse.estEnPortee(e.getPosition(), tailleChemin)) {
+                e.subirDegats(forteresse.tirerSur(e));
+            }
+        }
+
+        // Avancer et vérifier
+        for (Ennemi e : ennemisActifs) {
+            if (!e.estVivant()) {
+                if (!e.isRecompenseRecuperee()) {
+                    joueur.gagner(e.getRecompense());
+                    e.setRecompenseRecuperee(true);
+                }
+                continue;
             }
 
-            if (e.getPosition() >= carte.getChemin().size()) {
-                joueur.perdreVie();
+            e.avancer();
+
+            if (e.getPosition() >= tailleChemin) {
+                forteresse.subirAttaque(e);
+                e.subirDegats(9999);
             }
         }
 
@@ -93,7 +141,7 @@ public class Partie {
     }
 
     public void verifierFinPartie() {
-        if (joueur.estElimine()) {
+        if (forteresse.estDetruite()) {
             etat = EtatPartie.PERDU;
         } else if (vagueActuelle >= vagues.size()
                 && vagues.get(vagues.size() - 1).estTerminee()) {
@@ -123,11 +171,13 @@ public class Partie {
         return carte;
     }
 
+    public Forteresse getForteresse() {
+        return forteresse;
+    }
+
     public List<Vague> getVagues() {
         return new ArrayList<>(vagues);
     }
-
-    // SETTERS
 
     public void setDifficulte(int difficulte) {
         if (difficulte < 1 || difficulte > 3) {
@@ -141,6 +191,7 @@ public class Partie {
         return "Partie [difficulte=" + difficulte
                 + ", vague=" + vagueActuelle + "/" + vagues.size()
                 + ", etat=" + etat
-                + ", joueur=" + joueur.getNom() + "]";
+                + ", joueur=" + joueur.getNom()
+                + ", forteresse=" + forteresse.getPvActuels() + "/" + forteresse.getPvMax() + "]";
     }
 }

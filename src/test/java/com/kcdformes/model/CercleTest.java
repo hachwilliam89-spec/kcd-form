@@ -17,7 +17,7 @@ class CercleTest {
     // CONSTRUCTEUR
 
     @Test
-    void constructeurValide() {
+    void quandConstructeurValide_alorsAttributsCorrects() {
         assertEquals("Catapulte", cercle.getNom());
         assertEquals("bleu", cercle.getCouleur());
         assertEquals(3, cercle.getRayon(), 0.001);
@@ -26,73 +26,69 @@ class CercleTest {
     }
 
     @Test
-    void constructeurNomNull() {
+    void quandNomNull_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Cercle(null, 3));
     }
 
     @Test
-    void constructeurNomVide() {
+    void quandNomVide_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Cercle("", 3));
     }
 
     @Test
-    void constructeurRayonNegatif() {
+    void quandRayonNegatif_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Cercle("Test", -1));
     }
 
     @Test
-    void constructeurRayonZero() {
+    void quandRayonZero_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Cercle("Test", 0));
     }
 
     // CALCULS
 
     @Test
-    void aire() {
-        // PI * 3² = 28.274
+    void quandAire_alorsPI_fois_rayonCarre() {
         assertEquals(Math.PI * 9, cercle.aire(), 0.001);
     }
 
     @Test
-    void perimetre() {
-        // 2 * PI * 3 = 18.849
+    void quandPerimetre_alors2PI_fois_rayon() {
         assertEquals(2 * Math.PI * 3, cercle.perimetre(), 0.001);
     }
 
     @Test
-    void dps() {
-        // aire * 0.7 * 1.0 = 28.274 * 0.7 = 19.792
+    void quandDps_alorsAire_fois_coeff_fois_cadence() {
         assertEquals(cercle.aire() * 0.7 * 1.0, cercle.dps(), 0.001);
     }
 
     @Test
-    void cout() {
-        // (int)(aire * 2.5) = (int)(28.274 * 2.5) = 70
+    void quandCout_alorsAire_fois_2point5() {
         assertEquals((int) (cercle.aire() * 2.5), cercle.cout());
     }
 
     // SETTER
 
     @Test
-    void setRayonValide() {
+    void quandSetRayonValide_alorsRayonChange() {
         cercle.setRayon(10);
         assertEquals(10, cercle.getRayon(), 0.001);
     }
 
     @Test
-    void setRayonNegatif() {
+    void quandSetRayonNegatif_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> cercle.setRayon(-1));
     }
 
     @Test
-    void setRayonZero() {
+    void quandSetRayonZero_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> cercle.setRayon(0));
     }
 
     // TO STRING
 
     @Test
-    void toStringContientInfos() {
+    void quandToString_alorsContientInfos() {
         String result = cercle.toString();
         assertTrue(result.contains("Catapulte"));
         assertTrue(result.contains("bleu"));

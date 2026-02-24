@@ -23,34 +23,34 @@ class TourelleTest {
     // CONSTRUCTEUR
 
     @Test
-    void constructeurValide() {
+    void quandConstructeurValide_alorsAttributsCorrects() {
         assertEquals("Alpha", tourelle.getNom());
         assertEquals(1, tourelle.getPosition());
         assertEquals(0, tourelle.getNombreFormes());
     }
 
     @Test
-    void constructeurNomNull() {
+    void quandNomNull_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Tourelle(null, 1));
     }
 
     @Test
-    void constructeurNomVide() {
+    void quandNomVide_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Tourelle("", 1));
     }
 
     @Test
-    void constructeurNomBlanc() {
+    void quandNomBlanc_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Tourelle("   ", 1));
     }
 
     @Test
-    void constructeurPositionNegative() {
+    void quandPositionNegative_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new Tourelle("Test", -1));
     }
 
     @Test
-    void constructeurPositionZero() {
+    void quandPositionZero_alorsAccepte() {
         Tourelle t = new Tourelle("Test", 0);
         assertEquals(0, t.getPosition());
     }
@@ -58,18 +58,18 @@ class TourelleTest {
     // AJOUT DE FORMES
 
     @Test
-    void ajouterForme() {
+    void quandAjouterForme_alorsNombreFormesAugmente() {
         assertTrue(tourelle.ajouterForme(triangle));
         assertEquals(1, tourelle.getNombreFormes());
     }
 
     @Test
-    void ajouterFormeNull() {
+    void quandAjouterFormeNull_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> tourelle.ajouterForme(null));
     }
 
     @Test
-    void ajouterFormeMax() {
+    void quandAjouterFormeMax_alorsLeveIllegalState() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         tourelle.ajouterForme(rectangle);
@@ -77,7 +77,7 @@ class TourelleTest {
     }
 
     @Test
-    void ajouterTroisFormesValide() {
+    void quandAjouterTroisFormes_alorsNombreFormesEgal3() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         tourelle.ajouterForme(rectangle);
@@ -87,21 +87,21 @@ class TourelleTest {
     // SUPPRESSION DE FORMES
 
     @Test
-    void supprimerForme() {
+    void quandSupprimerForme_alorsNombreFormesDiminue() {
         tourelle.ajouterForme(triangle);
         assertTrue(tourelle.supprimerForme(triangle));
         assertEquals(0, tourelle.getNombreFormes());
     }
 
     @Test
-    void supprimerFormeInexistante() {
+    void quandSupprimerFormeInexistante_alorsRetourneFalse() {
         assertFalse(tourelle.supprimerForme(triangle));
     }
 
     // COMPTEURS PAR TYPE
 
     @Test
-    void compterTriangles() {
+    void quandDeuxTriangles_alorsCompterTrianglesEgal2() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         tourelle.ajouterForme(new Triangle("Archer2", 2, 3));
@@ -109,20 +109,20 @@ class TourelleTest {
     }
 
     @Test
-    void compterRectangles() {
+    void quandDeuxRectangles_alorsCompterRectanglesEgal2() {
         tourelle.ajouterForme(rectangle);
         tourelle.ajouterForme(rectangle);
         assertEquals(2, tourelle.compterRectangles());
     }
 
     @Test
-    void compterCercles() {
+    void quandUnCercle_alorsCompterCerclesEgal1() {
         tourelle.ajouterForme(cercle);
         assertEquals(1, tourelle.compterCercles());
     }
 
     @Test
-    void compteursVides() {
+    void quandAucuneForme_alorsCompteursAZero() {
         assertEquals(0, tourelle.compterTriangles());
         assertEquals(0, tourelle.compterRectangles());
         assertEquals(0, tourelle.compterCercles());
@@ -131,32 +131,32 @@ class TourelleTest {
     // STATS DE GAMEPLAY
 
     @Test
-    void nombreTirs() {
+    void quandDeuxTriangles_alorsDeuxTirs() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(new Triangle("Archer2", 2, 3));
         assertEquals(2, tourelle.getNombreTirs());
     }
 
     @Test
-    void nombreTirsSansTriangle() {
+    void quandSansTriangle_alorsZeroTirs() {
         tourelle.ajouterForme(cercle);
         assertEquals(0, tourelle.getNombreTirs());
     }
 
     @Test
-    void hasAoEAvecCercle() {
+    void quandCercle_alorsAoETrue() {
         tourelle.ajouterForme(cercle);
         assertTrue(tourelle.hasAoE());
     }
 
     @Test
-    void hasAoESansCercle() {
+    void quandSansCercle_alorsAoEFalse() {
         tourelle.ajouterForme(triangle);
         assertFalse(tourelle.hasAoE());
     }
 
     @Test
-    void rayonZone() {
+    void quandDeuxCercles_alorsRayonCumule() {
         Cercle c1 = new Cercle("C1", 3);
         Cercle c2 = new Cercle("C2", 5);
         tourelle.ajouterForme(c1);
@@ -165,26 +165,26 @@ class TourelleTest {
     }
 
     @Test
-    void rayonZoneSansCercle() {
+    void quandSansCercle_alorsRayonZero() {
         tourelle.ajouterForme(triangle);
         assertEquals(0.0, tourelle.getRayonZone(), 0.001);
     }
 
     @Test
-    void pvAvecRectangles() {
-        tourelle.ajouterForme(rectangle); // perimetre = 16, PV = 160
+    void quandUnRectangle_alorsPVCalcules() {
+        tourelle.ajouterForme(rectangle);
         assertEquals(160.0, tourelle.getPV(), 0.001);
     }
 
     @Test
-    void pvDoubleRectangle() {
+    void quandDeuxRectangles_alorsPVDoubles() {
         tourelle.ajouterForme(rectangle);
         tourelle.ajouterForme(new Rectangle("Mur2", 4, 4));
         assertEquals(320.0, tourelle.getPV(), 0.001);
     }
 
     @Test
-    void pvSansRectangle() {
+    void quandSansRectangle_alorsPVZero() {
         tourelle.ajouterForme(triangle);
         assertEquals(0.0, tourelle.getPV(), 0.001);
     }
@@ -192,7 +192,7 @@ class TourelleTest {
     // CALCULS POLYMORPHIQUES
 
     @Test
-    void dpsTotalMix() {
+    void quandMixFormes_alorsDpsTotalCumule() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         double expected = triangle.dps() + cercle.dps();
@@ -200,18 +200,18 @@ class TourelleTest {
     }
 
     @Test
-    void dpsTotalRectangleZero() {
+    void quandRectangleSeul_alorsDpsZero() {
         tourelle.ajouterForme(rectangle);
         assertEquals(0.0, tourelle.dpsTotal(), 0.001);
     }
 
     @Test
-    void dpsTotalVide() {
+    void quandTourelleVide_alorsDpsZero() {
         assertEquals(0.0, tourelle.dpsTotal(), 0.001);
     }
 
     @Test
-    void coutTotal() {
+    void quandTroisFormes_alorsCoutTotalCumule() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         tourelle.ajouterForme(rectangle);
@@ -220,7 +220,7 @@ class TourelleTest {
     }
 
     @Test
-    void aireTotale() {
+    void quandDeuxFormes_alorsAireTotaleCumulee() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         double expected = triangle.aire() + cercle.aire();
@@ -228,7 +228,7 @@ class TourelleTest {
     }
 
     @Test
-    void perimetreTotale() {
+    void quandDeuxFormes_alorsPerimetreTotalCumule() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(rectangle);
         double expected = triangle.perimetre() + rectangle.perimetre();
@@ -238,7 +238,7 @@ class TourelleTest {
     // COMBINAISONS GAMEPLAY
 
     @Test
-    void comboTripleTriangle() {
+    void quandTripleTriangle_alors3TirsSansAoESansPV() {
         tourelle.ajouterForme(new Triangle("A1", 3, 4));
         tourelle.ajouterForme(new Triangle("A2", 3, 4));
         tourelle.ajouterForme(new Triangle("A3", 3, 4));
@@ -248,7 +248,7 @@ class TourelleTest {
     }
 
     @Test
-    void comboTripleRectangle() {
+    void quandTripleRectangle_alorsPVEnormesZeroDps() {
         tourelle.ajouterForme(new Rectangle("M1", 4, 4));
         tourelle.ajouterForme(new Rectangle("M2", 4, 4));
         tourelle.ajouterForme(new Rectangle("M3", 4, 4));
@@ -259,7 +259,7 @@ class TourelleTest {
     }
 
     @Test
-    void comboTripleCercle() {
+    void quandTripleCercle_alorsAoEGrosRayon() {
         tourelle.ajouterForme(new Cercle("C1", 3));
         tourelle.ajouterForme(new Cercle("C2", 3));
         tourelle.ajouterForme(new Cercle("C3", 3));
@@ -269,7 +269,7 @@ class TourelleTest {
     }
 
     @Test
-    void comboEquilibree() {
+    void quandComboEquilibree_alorsToutesStatsPositives() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         tourelle.ajouterForme(rectangle);
@@ -282,7 +282,7 @@ class TourelleTest {
     // COPIE DEFENSIVE
 
     @Test
-    void copieDefensive() {
+    void quandModifierCopie_alorsOriginalInchange() {
         tourelle.ajouterForme(triangle);
         tourelle.getFormes().add(cercle);
         assertEquals(1, tourelle.getNombreFormes());
@@ -291,31 +291,31 @@ class TourelleTest {
     // SETTERS
 
     @Test
-    void setNomValide() {
+    void quandSetNomValide_alorsNomChange() {
         tourelle.setNom("Beta");
         assertEquals("Beta", tourelle.getNom());
     }
 
     @Test
-    void setNomNull() {
+    void quandSetNomNull_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> tourelle.setNom(null));
     }
 
     @Test
-    void setPositionValide() {
+    void quandSetPositionValide_alorsPositionChange() {
         tourelle.setPosition(5);
         assertEquals(5, tourelle.getPosition());
     }
 
     @Test
-    void setPositionNegative() {
+    void quandSetPositionNegative_alorsLeveIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> tourelle.setPosition(-1));
     }
 
     // TO STRING
 
     @Test
-    void toStringContientInfos() {
+    void quandToStringAvecTriangleEtCercle_alorsContientTirsEtAoE() {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         String result = tourelle.toString();
@@ -326,10 +326,34 @@ class TourelleTest {
     }
 
     @Test
-    void toStringMurailleSansDPS() {
+    void quandToStringAvecRectangle_alorsContientPVEtDpsZero() {
         tourelle.ajouterForme(rectangle);
         String result = tourelle.toString();
         assertTrue(result.contains("PV="));
         assertTrue(result.contains("DPS=0"));
+    }
+
+    // DEGATS CONTRE
+
+    @Test
+    void quandDegatsContreEnnemiValide_alorsDpsTotal() {
+        tourelle.ajouterForme(triangle);
+        tourelle.ajouterForme(cercle);
+        Ennemi ennemi = new Ennemi("Cavalier", new Triangle("forme", 2, 2));
+        assertEquals(tourelle.dpsTotal(), tourelle.degatsContre(ennemi), 0.001);
+    }
+
+    @Test
+    void quandDegatsContreEnnemiNull_alorsZero() {
+        tourelle.ajouterForme(triangle);
+        assertEquals(0.0, tourelle.degatsContre(null), 0.001);
+    }
+
+    @Test
+    void quandDegatsContreEnnemiMort_alorsZero() {
+        tourelle.ajouterForme(triangle);
+        Ennemi ennemi = new Ennemi("Cavalier", new Triangle("forme", 2, 2));
+        ennemi.subirDegats(9999);
+        assertEquals(0.0, tourelle.degatsContre(ennemi), 0.001);
     }
 }

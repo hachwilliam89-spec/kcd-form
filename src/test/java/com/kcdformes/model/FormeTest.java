@@ -11,26 +11,26 @@ class FormeTest {
     // NOM
 
     @Test
-    void setNomValide() {
+    void quandSetNomValide_alorsNomChange() {
         Triangle t = new Triangle("Archer", 4, 3);
         t.setNom("Sniper");
         assertEquals("Sniper", t.getNom());
     }
 
     @Test
-    void setNomNull() {
+    void quandSetNomNull_alorsLeveIllegalArgument() {
         Triangle t = new Triangle("Archer", 4, 3);
         assertThrows(IllegalArgumentException.class, () -> t.setNom(null));
     }
 
     @Test
-    void setNomVide() {
+    void quandSetNomVide_alorsLeveIllegalArgument() {
         Triangle t = new Triangle("Archer", 4, 3);
         assertThrows(IllegalArgumentException.class, () -> t.setNom(""));
     }
 
     @Test
-    void setNomBlanc() {
+    void quandSetNomBlanc_alorsLeveIllegalArgument() {
         Triangle t = new Triangle("Archer", 4, 3);
         assertThrows(IllegalArgumentException.class, () -> t.setNom("   "));
     }
@@ -38,19 +38,19 @@ class FormeTest {
     // COULEUR
 
     @Test
-    void couleurTriangle() {
+    void quandTriangle_alorsCouleurRouge() {
         Triangle t = new Triangle("Archer", 4, 3);
         assertEquals("rouge", t.getCouleur());
     }
 
     @Test
-    void couleurCercle() {
+    void quandCercle_alorsCouleurBleu() {
         Cercle c = new Cercle("Catapulte", 3);
         assertEquals("bleu", c.getCouleur());
     }
 
     @Test
-    void couleurRectangle() {
+    void quandRectangle_alorsCouleurGris() {
         Rectangle r = new Rectangle("Muraille", 4, 4);
         assertEquals("gris", r.getCouleur());
     }
@@ -58,7 +58,7 @@ class FormeTest {
     // TO STRING
 
     @Test
-    void toStringContientNomEtCouleur() {
+    void quandToString_alorsContientNomEtCouleur() {
         Triangle t = new Triangle("Archer", 4, 3);
         String result = t.toString();
         assertTrue(result.contains("Archer"));

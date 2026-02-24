@@ -10,6 +10,7 @@ public class Ennemi {
     private int position;
     private int recompense;
     private double degatsRempart;
+    private boolean recompenseRecuperee = false;
 
     public Ennemi(String nom, Forme forme) {
         setNom(nom);
@@ -25,13 +26,13 @@ public class Ennemi {
     // CALCULS BASÉS SUR LA FORME
 
     public int calculerPV() {
-        return (int)(forme.aire() * 10);
+        return (int)(forme.aire() * 25);
     }
 
     public double calculerVitesse() {
-        if (forme instanceof Triangle) return 3.5;
+        if (forme instanceof Triangle) return 3.0;
         if (forme instanceof Cercle) return 1.0;
-        if (forme instanceof Rectangle) return 0.7;
+        if (forme instanceof Rectangle) return 1.0;
         return 1.0;
     }
 
@@ -52,7 +53,7 @@ public class Ennemi {
     // GAMEPLAY
 
     public void avancer() {
-        position++;
+        position += Math.max(1, (int) vitesse);
     }
 
     public void subirDegats(double degats) {
@@ -75,6 +76,14 @@ public class Ennemi {
 
     public double degatsReels() {
         return degatsRempart * getForceAttaque();
+    }
+
+    public boolean isRecompenseRecuperee() {
+        return recompenseRecuperee;
+    }
+
+    public void setRecompenseRecuperee(boolean recompenseRecuperee) {
+        this.recompenseRecuperee = recompenseRecuperee;
     }
 
     // GETTERS
