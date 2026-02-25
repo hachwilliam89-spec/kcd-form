@@ -10,6 +10,7 @@ import com.kcdformes.model.Partie;
 import com.kcdformes.model.Vague;
 import com.kcdformes.model.Ennemi;
 import com.kcdformes.model.EtatPartie;
+import com.kcdformes.model.Difficulte;
 
 import java.util.List;
 
@@ -90,14 +91,15 @@ public class Main {
         }
 
         // === SIMULATION COMPLETE ===
-        System.out.println("\n=== SIMULATION COMPLETE - 5 VAGUES (20/40/60/80/100) ===\n");
+        Difficulte diff = Difficulte.CHEVALIER;
+        System.out.println("\n=== SIMULATION - " + diff.name() + " (" + diff.getNombreVagues() + " vagues) ===\n");
 
         Joueur joueur = new Joueur("Kim", 0, 5);
         Carte carte = new Carte("Plaine", 10, 10);
         carte.setChemin(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
         carte.setEmplacementsTourelles(List.of(2, 5, 8));
 
-        Partie partie = new Partie(1, joueur, carte);
+        Partie partie = new Partie(diff, joueur, carte);
         System.out.println("Budget : " + joueur.getBudget() + " or");
 
         // Placement des tourelles
@@ -122,64 +124,67 @@ public class Main {
         System.out.println("  " + t2);
         System.out.println("  " + t3);
 
-        // Vague 1 : 20 ennemis (20%)
-        Vague v1 = new Vague(1, 1.0, 1.0);
-        for (int i = 0; i < 10; i++) {
+        int dureeVague = diff.getDureeVagueSecondes();
+
+        // Vague 1 : 30 ennemis
+        Vague v1 = new Vague(1, 1.0, 1.0, dureeVague);
+        for (int i = 0; i < 15; i++) {
             v1.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v1.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 10; i++) {
             v1.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v1.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             v1.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v1.getCoeffDifficulte()));
         }
         partie.ajouterVague(v1);
 
-        // Vague 2 : 40 ennemis (40%)
-        Vague v2 = new Vague(2, 1.0, 1.2);
-        for (int i = 0; i < 20; i++) {
+        // Vague 2 : 60 ennemis
+        Vague v2 = new Vague(2, 1.0, 1.2, dureeVague);
+        for (int i = 0; i < 30; i++) {
             v2.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v2.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 20; i++) {
             v2.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v2.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 10; i++) {
             v2.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v2.getCoeffDifficulte()));
         }
         partie.ajouterVague(v2);
 
-        // Vague 3 : 60 ennemis (60%)
-        Vague v3 = new Vague(3, 1.0, 1.3);
-        for (int i = 0; i < 30; i++) {
+        // Vague 3 : 80 ennemis
+        Vague v3 = new Vague(3, 1.0, 1.3, dureeVague);
+        for (int i = 0; i < 40; i++) {
             v3.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v3.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 25; i++) {
             v3.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v3.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 15; i++) {
             v3.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v3.getCoeffDifficulte()));
         }
         partie.ajouterVague(v3);
 
-        // Vague 4 : 80 ennemis (80%)
-        Vague v4 = new Vague(4, 1.0, 1.5);
+        // Vague 4 : 100 ennemis
+        Vague v4 = new Vague(4, 1.0, 1.5, dureeVague);
         for (int i = 0; i < 40; i++) {
             v4.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v4.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; i < 40; i++) {
             v4.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v4.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 20; i++) {
             v4.ajouterEnnemi(new Ennemi("Belier " + (i + 1), new Rectangle("forme", 6, 3), v4.getCoeffDifficulte()));
         }
         partie.ajouterVague(v4);
 
-        // Vague 5 : 100 ennemis (100%)
-        Vague v5 = new Vague(5, 1.0, 2.0);
-        for (int i = 0; i < 50; i++) {
+        // Vague 5 : 100 ennemis (VAGUE FINALE)
+        Vague v5 = new Vague(5, 1.0, 2.0, dureeVague);
+        v5.setDerniereVague(true);
+        for (int i = 0; i < 60; i++) {
             v5.ajouterEnnemi(new Ennemi("Cavalier " + (i + 1), new Triangle("forme", 4, 3), v5.getCoeffDifficulte()));
         }
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 40; i++) {
             v5.ajouterEnnemi(new Ennemi("Infanterie " + (i + 1), new Cercle("forme", 2), v5.getCoeffDifficulte()));
         }
         for (int i = 0; i < 20; i++) {
@@ -194,19 +199,27 @@ public class Main {
         partie.demarrer();
         System.out.println("\n" + partie.getForteresse());
 
-        for (int vague = 1; vague <= 5; vague++) {
+        for (int vague = 1; vague <= diff.getNombreVagues(); vague++) {
             Vague vagueActuelle = partie.getVagues().get(vague - 1);
-            System.out.println("\n====== VAGUE " + vague + " : " + vagueActuelle.getNombreEnnemis() + " ennemis ======");
 
-            for (int tour = 1; tour <= 350; tour++) {
+            if (vagueActuelle.isDerniereVague()) {
+                System.out.println("\n====== VAGUE FINALE " + vague + " : " + vagueActuelle.getNombreEnnemis() + " ennemis — Eliminez-les tous ! ======");
+            } else {
+                System.out.println("\n====== VAGUE " + vague + " : " + vagueActuelle.getNombreEnnemis() + " ennemis (timer: " + dureeVague + "s) ======");
+            }
+
+            for (int tour = 1; tour <= 500; tour++) {
                 partie.update();
 
                 int vivants = vagueActuelle.getNombreVivants();
 
-                // Afficher tous les 10 tours + premier + dernier
-                if (tour == 1 || tour % 10 == 0 || vivants == 0 || partie.getEtat() != EtatPartie.EN_COURS) {
+                if (tour == 1 || tour % 10 == 0 || vagueActuelle.estTerminee() || partie.getEtat() != EtatPartie.EN_COURS) {
+                    String timerInfo = vagueActuelle.isDerniereVague()
+                            ? "FINALE"
+                            : "timer=" + vagueActuelle.getTempsEcoule() + "/" + dureeVague;
                     System.out.println("  Tour " + tour + " : vivants=" + vivants
-                            + " | budget=" + joueur.getBudget()
+                            + " | score=" + joueur.getScore()
+                            + " | " + timerInfo
                             + " | " + partie.getForteresse());
                 }
 
@@ -215,9 +228,13 @@ public class Main {
                     break;
                 }
 
-                if (vivants == 0) {
-                    System.out.println("  Vague " + vague + " terminee !");
-                    partie.lancerVagueSuivante();
+                if (vagueActuelle.estTerminee()) {
+                    if (vagueActuelle.isDerniereVague()) {
+                        System.out.println("  VAGUE FINALE TERMINEE — Tous les ennemis elimines !");
+                    } else {
+                        System.out.println("  Timer expire ! Vague " + vague + " terminee — " + vivants + " survivants passent a la suivante");
+                        partie.lancerVagueSuivante();
+                    }
                     break;
                 }
             }
@@ -228,7 +245,6 @@ public class Main {
         System.out.println("\n=== RESULTAT FINAL ===");
         System.out.println("  Etat : " + partie.getEtat());
         System.out.println("  Score : " + joueur.getScore());
-        System.out.println("  Budget final : " + joueur.getBudget() + " or");
         System.out.println("  " + partie.getForteresse());
     }
 }

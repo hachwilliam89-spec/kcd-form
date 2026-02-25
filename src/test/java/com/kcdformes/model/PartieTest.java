@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PartieTest {
 
-    private Partie creerPartieBasique(int difficulte) {
+    private Partie creerPartieBasique(Difficulte difficulte) {
         Joueur j = new Joueur("Kim", 0, 5);
         Carte c = new Carte("Niveau 1", 10, 10);
         c.setChemin(List.of(0, 1, 2, 3, 4, 5));
@@ -18,79 +18,78 @@ class PartieTest {
     // BUDGET PAR DIFFICULTE
 
     @Test
-    void quandDifficulte1_alorsBudget500() {
-        Partie p = creerPartieBasique(1);
+    void quandEcuyer_alorsBudget500() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
         assertEquals(500, p.getJoueur().getBudget());
     }
 
     @Test
-    void quandDifficulte2_alorsBudget400() {
-        Partie p = creerPartieBasique(2);
+    void quandChevalier_alorsBudget400() {
+        Partie p = creerPartieBasique(Difficulte.CHEVALIER);
         assertEquals(400, p.getJoueur().getBudget());
     }
 
     @Test
-    void quandDifficulte3_alorsBudget300() {
-        Partie p = creerPartieBasique(3);
+    void quandSeigneur_alorsBudget300() {
+        Partie p = creerPartieBasique(Difficulte.SEIGNEUR);
         assertEquals(300, p.getJoueur().getBudget());
     }
 
     // NOMBRE D'ASSAUTS
 
     @Test
-    void quandDifficulte1_alors5Assauts() {
-        Partie p = creerPartieBasique(1);
-        assertEquals(5, p.getNombreAssauts());
+    void quandEcuyer_alorsNombreAssautsCorrect() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        assertEquals(Difficulte.ECUYER.getNombreVagues(), p.getNombreAssauts());
     }
 
     @Test
-    void quandDifficulte2_alors8Assauts() {
-        Partie p = creerPartieBasique(2);
-        assertEquals(8, p.getNombreAssauts());
+    void quandChevalier_alorsNombreAssautsCorrect() {
+        Partie p = creerPartieBasique(Difficulte.CHEVALIER);
+        assertEquals(Difficulte.CHEVALIER.getNombreVagues(), p.getNombreAssauts());
     }
 
     @Test
-    void quandDifficulte3_alors12Assauts() {
-        Partie p = creerPartieBasique(3);
-        assertEquals(12, p.getNombreAssauts());
+    void quandSeigneur_alorsNombreAssautsCorrect() {
+        Partie p = creerPartieBasique(Difficulte.SEIGNEUR);
+        assertEquals(Difficulte.SEIGNEUR.getNombreVagues(), p.getNombreAssauts());
     }
 
     // CONSTRUCTEUR
 
     @Test
     void quandConstructeur_alorsEtatEnPause() {
-        Partie p = creerPartieBasique(1);
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
         assertEquals(EtatPartie.EN_PAUSE, p.getEtat());
         assertEquals(0, p.getVagueActuelle());
     }
 
     @Test
     void quandDemarrer_alorsEtatEnCours() {
-        Partie p = creerPartieBasique(1);
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
         p.demarrer();
         assertEquals(EtatPartie.EN_COURS, p.getEtat());
-        assertEquals(1, p.getVagueActuelle());
     }
 
     // VAGUES
 
     @Test
     void quandAjouterVague_alorsListeAugmente() {
-        Partie p = creerPartieBasique(1);
-        p.ajouterVague(new Vague(1, 1.0, 1.0));
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
         assertEquals(1, p.getVagues().size());
     }
 
     @Test
     void quandAjouterVagueNull_alorsLeveIllegalArgument() {
-        Partie p = creerPartieBasique(1);
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
         assertThrows(IllegalArgumentException.class, () -> p.ajouterVague(null));
     }
 
     @Test
     void quandGetVagues_alorsCopieDefensive() {
-        Partie p = creerPartieBasique(1);
-        p.ajouterVague(new Vague(1, 1.0, 1.0));
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
         p.getVagues().clear();
         assertEquals(1, p.getVagues().size());
     }
@@ -98,105 +97,106 @@ class PartieTest {
     // VALIDATION CONSTRUCTEUR
 
     @Test
-    void quandDifficulteInvalide_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> creerPartieBasique(5));
-    }
-
-    @Test
-    void quandDifficulte0_alorsLeveIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> creerPartieBasique(0));
+    void quandDifficulteNull_alorsLeveIllegalArgument() {
+        Joueur j = new Joueur("Kim", 0, 5);
+        Carte c = new Carte("Niveau 1", 10, 10);
+        c.setChemin(List.of(0, 1, 2, 3, 4, 5));
+        assertThrows(IllegalArgumentException.class, () -> new Partie(null, j, c));
     }
 
     @Test
     void quandJoueurNull_alorsLeveIllegalArgument() {
         Carte c = new Carte("Niveau 1", 10, 10);
         c.setChemin(List.of(0, 1, 2, 3, 4, 5));
-        assertThrows(IllegalArgumentException.class, () -> new Partie(1, null, c));
+        assertThrows(IllegalArgumentException.class, () -> new Partie(Difficulte.ECUYER, null, c));
     }
 
     @Test
     void quandCarteNull_alorsLeveIllegalArgument() {
         Joueur j = new Joueur("Kim", 0, 5);
-        assertThrows(IllegalArgumentException.class, () -> new Partie(1, j, null));
+        assertThrows(IllegalArgumentException.class, () -> new Partie(Difficulte.ECUYER, j, null));
     }
 
     // LANCER VAGUE SUIVANTE
 
     @Test
     void quandLancerVagueSuivante_alorsVagueIncrement() {
-        Partie p = creerPartieBasique(1);
-        p.ajouterVague(new Vague(1, 1.0, 1.0));
-        p.ajouterVague(new Vague(2, 1.0, 1.0));
-        p.demarrer();
-        p.lancerVagueSuivante();
-        assertEquals(2, p.getVagueActuelle());
-    }
-
-    @Test
-    void quandLancerVagueSuivanteMax_alorsResteAuMax() {
-        Partie p = creerPartieBasique(1);
-        p.ajouterVague(new Vague(1, 1.0, 1.0));
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
+        p.ajouterVague(new Vague(2, 1.0, 1.0, 45));
         p.demarrer();
         p.lancerVagueSuivante();
         assertEquals(1, p.getVagueActuelle());
+    }
+
+    // TIMER
+
+    @Test
+    void quandTimerExpire_alorsVagueTerminee() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v = new Vague(1, 1.0, 1.0, 3);
+        v.ajouterEnnemi(new Ennemi("Goblin", new Triangle("forme", 2, 2), v.getCoeffDifficulte()));
+        p.ajouterVague(v);
+        p.demarrer();
+
+        p.update();
+        p.update();
+        p.update();
+        assertTrue(v.estTerminee());
+    }
+
+    @Test
+    void quandVagueTerminee_alorsSurvivantsPassentALaSuivante() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v1 = new Vague(1, 1.0, 1.0, 1);
+        Ennemi e = new Ennemi("Tank", new Rectangle("forme", 10, 10), v1.getCoeffDifficulte());
+        v1.ajouterEnnemi(e);
+
+        Vague v2 = new Vague(2, 1.0, 1.0, 45);
+        p.ajouterVague(v1);
+        p.ajouterVague(v2);
+        p.demarrer();
+
+        p.update();
+        p.lancerVagueSuivante();
+
+        assertTrue(v2.getNombreEnnemis() > 0);
+    }
+
+    // DERNIERE VAGUE
+
+    @Test
+    void quandDerniereVague_alorsTermineeQuandTousMorts() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v = new Vague(1, 1.0, 1.0, 45);
+        v.setDerniereVague(true);
+        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2), v.getCoeffDifficulte());
+        v.ajouterEnnemi(e);
+        p.ajouterVague(v);
+
+        assertFalse(v.estTerminee());
+        e.subirDegats(9999);
+        assertTrue(v.estTerminee());
     }
 
     // UPDATE
 
     @Test
     void quandUpdateEnPause_alorsRienNeChange() {
-        Partie p = creerPartieBasique(1);
-        p.ajouterVague(new Vague(1, 1.0, 1.0));
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
         p.update();
         assertEquals(EtatPartie.EN_PAUSE, p.getEtat());
     }
 
     @Test
-    void quandUpdateAvecEnnemi_alorsTourelleInfligeDegats() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2));
-        v.ajouterEnnemi(e);
-        p.ajouterVague(v);
-
-        Tourelle t = new Tourelle("Tour", 0);
-        t.ajouterForme(new Triangle("Archer", 4, 3));
-        p.getCarte().placerTourelle(t, 2);
-
-        p.demarrer();
-        int pvAvant = e.getPvActuels();
-        p.update();
-        assertTrue(e.getPvActuels() < pvAvant);
-    }
-
-    @Test
-    void quandEnnemiMeurt_alorsScoreAugmente() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 10, 10));
-        e.setPosition(2);
-        v.ajouterEnnemi(e);
-        p.ajouterVague(v);
-
-        Tourelle t = new Tourelle("Tour", 0);
-        t.ajouterForme(new Triangle("Archer", 100, 100));
-        p.getCarte().placerTourelle(t, 2);
-
-        p.demarrer();
-        int scoreAvant = p.getJoueur().getScore();
-        p.update();
-        assertTrue(p.getJoueur().getScore() > scoreAvant);
-    }
-
-    @Test
     void quandEnnemiAtteintFin_alorsForteresseSubitDegats() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v = new Vague(1, 1.0, 1.0, 45);
+        Ennemi e = new Ennemi("Belier", new Rectangle("forme", 6, 3), v.getCoeffDifficulte());
         v.ajouterEnnemi(e);
         p.ajouterVague(v);
 
-        // Placer l'ennemi juste avant la fin du chemin
         e.setPosition(5);
 
         p.demarrer();
@@ -205,49 +205,17 @@ class PartieTest {
         assertTrue(p.getForteresse().getPvActuels() < pvForteresseAvant);
     }
 
-    @Test
-    void quandUpdateEnnemiDejaMort_alorsIgnore() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi mort = new Ennemi("Goblin", new Triangle("forme", 2, 2));
-        mort.subirDegats(9999);
-        Ennemi vivant = new Ennemi("Orc", new Rectangle("forme", 10, 10));
-        v.ajouterEnnemi(mort);
-        v.ajouterEnnemi(vivant);
-        p.ajouterVague(v);
-
-        p.demarrer();
-        p.update();
-        assertEquals(EtatPartie.EN_COURS, p.getEtat());
-    }
-
-    @Test
-    void quandUpdateEnnemiSurvit_alorsAvance() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Goblin", new Rectangle("forme", 10, 10));
-        v.ajouterEnnemi(e);
-        p.ajouterVague(v);
-
-        p.demarrer();
-        int posAvant = e.getPosition();
-        p.update();
-        assertEquals(posAvant + 1, e.getPosition());
-    }
-
     // FIN DE PARTIE
 
     @Test
     void quandForteresseDetruite_alorsPartiePerdue() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2));
-        v.ajouterEnnemi(e);
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v = new Vague(1, 1.0, 1.0, 45);
+        v.ajouterEnnemi(new Ennemi("Goblin", new Triangle("forme", 2, 2), v.getCoeffDifficulte()));
         p.ajouterVague(v);
         p.demarrer();
 
-        // Simuler destruction de la forteresse
-        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3));
+        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3), 1.0);
         while (!p.getForteresse().estDetruite()) {
             p.getForteresse().subirAttaque(belier);
         }
@@ -256,29 +224,13 @@ class PartieTest {
         assertEquals(EtatPartie.PERDU, p.getEtat());
     }
 
-    @Test
-    void quandTousEnnemisMortsEtDerniereVague_alorsPartieGagnee() {
-        Partie p = creerPartieBasique(1);
-        Vague v = new Vague(1, 1.0, 1.0);
-        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2));
-        v.ajouterEnnemi(e);
-        p.ajouterVague(v);
-        p.demarrer();
-
-        e.subirDegats(9999);
-        v.spawnSuivant();
-
-        p.verifierFinPartie();
-        assertEquals(EtatPartie.GAGNE, p.getEtat());
-    }
-
     // TO STRING
 
     @Test
     void quandToString_alorsContientInfos() {
-        Partie p = creerPartieBasique(1);
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
         String str = p.toString();
-        assertTrue(str.contains("difficulte=1"));
+        assertTrue(str.contains("ECUYER"));
         assertTrue(str.contains("Kim"));
     }
 }

@@ -10,13 +10,19 @@ public class Vague {
     private double delaiSpawn;
     private double coeffDifficulte;
     private int indexSpawn;
+    private int dureeSecondes;
+    private int tempsEcoule;
+    private boolean derniereVague;
 
-    public Vague(int numero, double delaiSpawn, double coeffDifficulte) {
+    public Vague(int numero, double delaiSpawn, double coeffDifficulte, int dureeSecondes) {
         setNumero(numero);
         this.ennemis = new ArrayList<>();
         setDelaiSpawn(delaiSpawn);
         setCoeffDifficulte(coeffDifficulte);
+        setDureeSecondes(dureeSecondes);
         this.indexSpawn = 0;
+        this.tempsEcoule = 0;
+        this.derniereVague = false;
     }
 
     // GESTION DES ENNEMIS
@@ -28,6 +34,13 @@ public class Vague {
         ennemis.add(ennemi);
     }
 
+    public void ajouterEnnemis(List<Ennemi> survivants) {
+        if (survivants == null) {
+            throw new IllegalArgumentException("La liste ne peut pas être null.");
+        }
+        ennemis.addAll(survivants);
+    }
+
     public Ennemi spawnSuivant() {
         if (indexSpawn >= ennemis.size()) {
             return null;
@@ -35,9 +48,20 @@ public class Vague {
         return ennemis.get(indexSpawn++);
     }
 
-    public boolean estTerminee() {
-        return indexSpawn >= ennemis.size() && getNombreVivants() == 0;
+    // TIMER
+
+    public void tick() {
+        tempsEcoule++;
     }
+
+    public boolean estTerminee() {
+        if (derniereVague) {
+            return getNombreVivants() == 0;
+        }
+        return tempsEcoule >= dureeSecondes;
+    }
+
+    // STATISTIQUES
 
     public int getNombreEnnemis() {
         return ennemis.size();
@@ -53,6 +77,19 @@ public class Vague {
         return count;
     }
 
+    public List<Ennemi> getEnnemisSurvivants() {
+        return ennemis.stream()
+                .filter(Ennemi::estVivant)
+                .toList();
+    }
+
+    public int calculerRecompense() {
+        return ennemis.stream()
+                .filter(e -> !e.estVivant())
+                .mapToInt(Ennemi::getRecompense)
+                .sum();
+    }
+
     // GETTERS
 
     public int getNumero() {
@@ -63,9 +100,6 @@ public class Vague {
         return new ArrayList<>(ennemis);
     }
 
-    /**
-     * Retourne uniquement les ennemis déjà spawn (actifs sur le terrain).
-     */
     public List<Ennemi> getEnnemisActifs() {
         List<Ennemi> actifs = new ArrayList<>();
         for (int i = 0; i < indexSpawn; i++) {
@@ -80,6 +114,18 @@ public class Vague {
 
     public double getCoeffDifficulte() {
         return coeffDifficulte;
+    }
+
+    public int getDureeSecondes() {
+        return dureeSecondes;
+    }
+
+    public int getTempsEcoule() {
+        return tempsEcoule;
+    }
+
+    public boolean isDerniereVague() {
+        return derniereVague;
     }
 
     // SETTERS
@@ -105,10 +151,23 @@ public class Vague {
         this.coeffDifficulte = coeffDifficulte;
     }
 
+    public void setDureeSecondes(int dureeSecondes) {
+        if (dureeSecondes <= 0) {
+            throw new IllegalArgumentException("La durée doit être positive.");
+        }
+        this.dureeSecondes = dureeSecondes;
+    }
+
+    public void setDerniereVague(boolean derniereVague) {
+        this.derniereVague = derniereVague;
+    }
+
     @Override
     public String toString() {
+        String timerInfo = derniereVague ? "FINALE" : "temps=" + tempsEcoule + "/" + dureeSecondes;
         return "Vague " + numero + " [ennemis=" + ennemis.size()
                 + ", vivants=" + getNombreVivants()
+                + ", " + timerInfo
                 + ", coeff=" + coeffDifficulte + "]";
     }
 }

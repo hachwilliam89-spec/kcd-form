@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Partie {
 
-    private int difficulte;
+    private Difficulte difficulte;
     private int vagueActuelle;
     private EtatPartie etat;
     private Joueur joueur;
@@ -13,14 +13,17 @@ public class Partie {
     private Forteresse forteresse;
     private List<Vague> vagues;
 
-    public Partie(int difficulte, Joueur joueur, Carte carte) {
-        setDifficulte(difficulte);
+    public Partie(Difficulte difficulte, Joueur joueur, Carte carte) {
+        if (difficulte == null) {
+            throw new IllegalArgumentException("La difficulté ne peut pas être null.");
+        }
         if (joueur == null) {
             throw new IllegalArgumentException("Le joueur ne peut pas être null.");
         }
         if (carte == null) {
             throw new IllegalArgumentException("La carte ne peut pas être null.");
         }
+        this.difficulte = difficulte;
         this.vagueActuelle = 0;
         this.etat = EtatPartie.EN_PAUSE;
         this.joueur = joueur;
@@ -29,40 +32,31 @@ public class Partie {
         appliquerBudgetInitial();
     }
 
+    public void demarrer() {
+        this.etat = EtatPartie.EN_COURS;
+    }
+
     private void appliquerBudgetInitial() {
-        switch (difficulte) {
-            case 1 -> {
-                joueur.setBudget(500);
-                this.forteresse = new Forteresse("Citadelle", 960, 15, 25, 2);  // defense 15 → facile
-            }
-            case 2 -> {
-                joueur.setBudget(400);
-                this.forteresse = new Forteresse("Citadelle", 960, 10, 20, 2);  // defense 10 → moyen
-            }
-            case 3 -> {
-                joueur.setBudget(300);
-                this.forteresse = new Forteresse("Citadelle", 960, 5, 15, 1);   // defense 5 → difficile
-            }
-        }
+        joueur.setBudget(difficulte.getBudgetInitial());
+        this.forteresse = new Forteresse("Citadelle",
+                difficulte.getPvForteresse(), difficulte.getDefenseForteresse(),
+                difficulte.getDegatsForteresse(), difficulte.getPorteeForteresse());
     }
 
     public int getNombreAssauts() {
-        return switch (difficulte) {
-            case 1 -> 5;
-            case 2 -> 8;
-            case 3 -> 12;
-            default -> 5;
-        };
-    }
-
-    public void demarrer() {
-        this.etat = EtatPartie.EN_COURS;
-        this.vagueActuelle = 1;
+        return difficulte.getNombreVagues();
     }
 
     public void lancerVagueSuivante() {
-        if (vagueActuelle < vagues.size()) {
-            vagueActuelle++;
+        Vague vagueCourante = vagues.get(this.vagueActuelle);
+
+        List<Ennemi> survivants = vagueCourante.getEnnemisSurvivants();
+
+        this.vagueActuelle++;
+
+        if (this.vagueActuelle < vagues.size()) {
+            Vague prochaine = vagues.get(this.vagueActuelle);
+            prochaine.ajouterEnnemis(survivants);
         }
     }
 
@@ -78,13 +72,13 @@ public class Partie {
             return;
         }
 
-        Vague vague = vagues.get(vagueActuelle - 1);
+        Vague vague = vagues.get(vagueActuelle);
         vague.spawnSuivant();
 
         int tailleChemin = carte.getChemin().size();
         List<Ennemi> ennemisActifs = vague.getEnnemisActifs();
 
-        //PHASE 1 : TIRS DES TOURELLES
+        // PHASE 1 : TIRS DES TOURELLES
         for (Tourelle t : carte.getTourelles()) {
             List<Ennemi> enPortee = new ArrayList<>();
             for (Ennemi e : ennemisActifs) {
@@ -96,12 +90,10 @@ public class Partie {
             if (enPortee.isEmpty()) continue;
 
             if (t.hasAoE()) {
-                // Catapulte : tape tous les ennemis en portée
                 for (Ennemi e : enPortee) {
                     e.subirDegats(t.degatsContre(e));
                 }
             } else {
-                // Archer : tape uniquement le plus avancé
                 Ennemi cible = enPortee.get(0);
                 for (Ennemi e : enPortee) {
                     if (e.getPosition() > cible.getPosition()) {
@@ -111,14 +103,15 @@ public class Partie {
                 cible.subirDegats(t.degatsContre(cible));
             }
         }
-            //PHASE 2 : TIR DE LA FORTERESSE
-                 for (Ennemi e : ennemisActifs) {
-                   if (e.estVivant() && forteresse.estEnPortee(e.getPosition(), tailleChemin)) {
-                       e.subirDegats(forteresse.tirerSur(e));
-                   }
+
+        // PHASE 2 : TIR DE LA FORTERESSE
+        for (Ennemi e : ennemisActifs) {
+            if (e.estVivant() && forteresse.estEnPortee(e.getPosition(), tailleChemin)) {
+                e.subirDegats(forteresse.tirerSur(e));
+            }
         }
 
-            //PHASE  : SCORE DES MORTS
+        // PHASE 3 : SCORE DES MORTS (score uniquement, pas d'or)
         for (Ennemi e : ennemisActifs) {
             if (!e.estVivant() && !e.isRecompenseRecuperee()) {
                 joueur.ajouterScore(e.getRecompense());
@@ -126,9 +119,7 @@ public class Partie {
             }
         }
 
-
-
-        //PHASE 3 : AVANCER LES VIVANTS
+        // PHASE 4 : AVANCER LES VIVANTS
         for (Ennemi e : ennemisActifs) {
             if (!e.estVivant()) continue;
 
@@ -140,15 +131,17 @@ public class Partie {
             }
         }
 
+        // PHASE 5 : TIMER
+        vague.tick();
 
-        // PHASE 4 : VÉRIFIER FIN
+        // PHASE 6 : VÉRIFIER FIN
         verifierFinPartie();
     }
 
     public void verifierFinPartie() {
         if (forteresse.estDetruite()) {
             etat = EtatPartie.PERDU;
-        } else if (vagueActuelle >= vagues.size()
+        } else if (vagueActuelle >= vagues.size() - 1
                 && vagues.get(vagues.size() - 1).estTerminee()) {
             etat = EtatPartie.GAGNE;
         }
@@ -156,7 +149,7 @@ public class Partie {
 
     // GETTERS
 
-    public int getDifficulte() {
+    public Difficulte getDifficulte() {
         return difficulte;
     }
 
@@ -184,16 +177,9 @@ public class Partie {
         return new ArrayList<>(vagues);
     }
 
-    public void setDifficulte(int difficulte) {
-        if (difficulte < 1 || difficulte > 3) {
-            throw new IllegalArgumentException("La difficulté doit être entre 1 et 3.");
-        }
-        this.difficulte = difficulte;
-    }
-
     @Override
     public String toString() {
-        return "Partie [difficulte=" + difficulte
+        return "Partie [difficulte=" + difficulte.name()
                 + ", vague=" + vagueActuelle + "/" + vagues.size()
                 + ", etat=" + etat
                 + ", joueur=" + joueur.getNom()
