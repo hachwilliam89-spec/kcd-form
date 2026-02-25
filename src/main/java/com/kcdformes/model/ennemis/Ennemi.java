@@ -1,4 +1,9 @@
-package com.kcdformes.model;
+package com.kcdformes.model.ennemis;
+
+import com.kcdformes.model.formes.Cercle;
+import com.kcdformes.model.formes.Forme;
+import com.kcdformes.model.formes.Rectangle;
+import com.kcdformes.model.formes.Triangle;
 
 public class Ennemi {
 
@@ -58,7 +63,7 @@ public class Ennemi {
     }
 
     /**
-     * Dégâts fixes infligés à la forteresse.
+     * Dégâts fixes infligés à la forteresse.un pa
      * Indépendant des PV et du coeff de difficulté.
      */
     public int calculerDegatsForteresse() {

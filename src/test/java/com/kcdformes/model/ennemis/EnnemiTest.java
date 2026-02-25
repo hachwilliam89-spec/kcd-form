@@ -1,5 +1,8 @@
-package com.kcdformes.model;
+package com.kcdformes.model.ennemis;
 
+import com.kcdformes.model.formes.Cercle;
+import com.kcdformes.model.formes.Rectangle;
+import com.kcdformes.model.formes.Triangle;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

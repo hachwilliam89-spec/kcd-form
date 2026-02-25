@@ -1,4 +1,9 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
+
+import com.kcdformes.model.defense.Forteresse;
+import com.kcdformes.model.defense.Tourelle;
+import com.kcdformes.model.ennemis.Ennemi;
+import com.kcdformes.model.joueur.Joueur;
 
 import java.util.ArrayList;
 import java.util.List;

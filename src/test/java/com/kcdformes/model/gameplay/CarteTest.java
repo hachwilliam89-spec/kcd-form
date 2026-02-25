@@ -1,5 +1,7 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
 
+import com.kcdformes.model.defense.Tourelle;
+import com.kcdformes.model.formes.Rectangle;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;

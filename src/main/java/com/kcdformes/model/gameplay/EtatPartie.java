@@ -1,4 +1,4 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
 
 public enum EtatPartie {
     EN_COURS,

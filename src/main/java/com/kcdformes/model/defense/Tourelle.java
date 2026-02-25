@@ -1,4 +1,10 @@
-package com.kcdformes.model;
+package com.kcdformes.model.defense;
+
+import com.kcdformes.model.ennemis.Ennemi;
+import com.kcdformes.model.formes.Cercle;
+import com.kcdformes.model.formes.Forme;
+import com.kcdformes.model.formes.Rectangle;
+import com.kcdformes.model.formes.Triangle;
 
 import java.util.ArrayList;
 import java.util.List;

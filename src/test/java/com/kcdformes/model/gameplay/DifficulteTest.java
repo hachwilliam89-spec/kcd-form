@@ -1,4 +1,4 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

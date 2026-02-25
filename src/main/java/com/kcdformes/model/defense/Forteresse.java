@@ -1,4 +1,6 @@
-package com.kcdformes.model;
+package com.kcdformes.model.defense;
+
+import com.kcdformes.model.ennemis.Ennemi;
 
 public class Forteresse {
 

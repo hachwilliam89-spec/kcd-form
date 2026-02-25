@@ -1,5 +1,9 @@
-package com.kcdformes.model;
+package com.kcdformes.model.defense;
 
+import com.kcdformes.model.ennemis.Ennemi;
+import com.kcdformes.model.formes.Cercle;
+import com.kcdformes.model.formes.Rectangle;
+import com.kcdformes.model.formes.Triangle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

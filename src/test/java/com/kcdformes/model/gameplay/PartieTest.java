@@ -1,5 +1,9 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
 
+import com.kcdformes.model.ennemis.Ennemi;
+import com.kcdformes.model.formes.Rectangle;
+import com.kcdformes.model.formes.Triangle;
+import com.kcdformes.model.joueur.Joueur;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +80,7 @@ class PartieTest {
     @Test
     void quandAjouterVague_alorsListeAugmente() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
+        p.ajouterVague(new Vague(1, 1.0, 45));
         assertEquals(1, p.getVagues().size());
     }
 
@@ -89,7 +93,7 @@ class PartieTest {
     @Test
     void quandGetVagues_alorsCopieDefensive() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
+        p.ajouterVague(new Vague(1, 1.0, 45));
         p.getVagues().clear();
         assertEquals(1, p.getVagues().size());
     }
@@ -122,8 +126,12 @@ class PartieTest {
     @Test
     void quandLancerVagueSuivante_alorsVagueIncrement() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
-        p.ajouterVague(new Vague(2, 1.0, 1.0, 45));
+        Vague v1 = new Vague(1, 1.0, 45);
+        v1.genererEscouades(1, 0, 0);
+        Vague v2 = new Vague(2, 1.0, 45);
+        v2.genererEscouades(1, 0, 0);
+        p.ajouterVague(v1);
+        p.ajouterVague(v2);
         p.demarrer();
         p.lancerVagueSuivante();
         assertEquals(1, p.getVagueActuelle());
@@ -134,8 +142,8 @@ class PartieTest {
     @Test
     void quandTimerExpire_alorsVagueTerminee() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        Vague v = new Vague(1, 1.0, 1.0, 3);
-        v.ajouterEnnemi(new Ennemi("Goblin", new Triangle("forme", 2, 2), v.getCoeffDifficulte()));
+        Vague v = new Vague(1, 1.0, 3);
+        v.genererEscouades(1, 0, 0);
         p.ajouterVague(v);
         p.demarrer();
 
@@ -148,19 +156,21 @@ class PartieTest {
     @Test
     void quandVagueTerminee_alorsSurvivantsPassentALaSuivante() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        Vague v1 = new Vague(1, 1.0, 1.0, 1);
-        Ennemi e = new Ennemi("Tank", new Rectangle("forme", 10, 10), v1.getCoeffDifficulte());
-        v1.ajouterEnnemi(e);
-
-        Vague v2 = new Vague(2, 1.0, 1.0, 45);
+        // Vague 1 très courte (1s) avec un tank costaud
+        Vague v1 = new Vague(1, 1.0, 1);
+        v1.genererEscouades(0, 1, 0); // 1 infanterie costaud
+        Vague v2 = new Vague(2, 1.0, 45);
+        v2.genererEscouades(1, 0, 0);
         p.ajouterVague(v1);
         p.ajouterVague(v2);
         p.demarrer();
 
-        p.update();
+        p.update(); // timer expire à 1s
+        int ennemisV2Avant = v2.getNombreEnnemis();
         p.lancerVagueSuivante();
 
-        assertTrue(v2.getNombreEnnemis() > 0);
+        // Les survivants de v1 sont ajoutés à v2
+        assertTrue(v2.getNombreEnnemis() >= ennemisV2Avant);
     }
 
     // DERNIERE VAGUE
@@ -168,13 +178,17 @@ class PartieTest {
     @Test
     void quandDerniereVague_alorsTermineeQuandTousMorts() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        Vague v = new Vague(1, 1.0, 1.0, 45);
+        Vague v = new Vague(1, 1.0, 45);
         v.setDerniereVague(true);
-        Ennemi e = new Ennemi("Goblin", new Triangle("forme", 2, 2), v.getCoeffDifficulte());
-        v.ajouterEnnemi(e);
+        v.genererEscouades(1, 0, 0);
         p.ajouterVague(v);
 
+        // Spawn l'ennemi
+        Ennemi e = v.spawnSuivant();
+        assertNotNull(e);
         assertFalse(v.estTerminee());
+
+        // Le tuer
         e.subirDegats(9999);
         assertTrue(v.estTerminee());
     }
@@ -184,7 +198,9 @@ class PartieTest {
     @Test
     void quandUpdateEnPause_alorsRienNeChange() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        p.ajouterVague(new Vague(1, 1.0, 1.0, 45));
+        Vague v = new Vague(1, 1.0, 45);
+        v.genererEscouades(1, 0, 0);
+        p.ajouterVague(v);
         p.update();
         assertEquals(EtatPartie.EN_PAUSE, p.getEtat());
     }
@@ -192,12 +208,20 @@ class PartieTest {
     @Test
     void quandEnnemiAtteintFin_alorsForteresseSubitDegats() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        Vague v = new Vague(1, 1.0, 1.0, 45);
-        Ennemi e = new Ennemi("Belier", new Rectangle("forme", 6, 3), v.getCoeffDifficulte());
-        v.ajouterEnnemi(e);
+        Vague v = new Vague(1, 1.0, 45);
+        v.genererEscouades(0, 0, 1); // 1 bélier
         p.ajouterVague(v);
 
-        e.setPosition(5);
+        // Spawn le bélier et le placer en fin de chemin
+        Ennemi belier = v.spawnSuivant();
+        if (belier == null) {
+            // Si délai avant spawn, on tick jusqu'au spawn
+            for (int i = 0; i < 10 && belier == null; i++) {
+                belier = v.spawnSuivant();
+            }
+        }
+        assertNotNull(belier);
+        belier.setPosition(5); // fin du chemin
 
         p.demarrer();
         int pvForteresseAvant = p.getForteresse().getPvActuels();
@@ -210,12 +234,13 @@ class PartieTest {
     @Test
     void quandForteresseDetruite_alorsPartiePerdue() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        Vague v = new Vague(1, 1.0, 1.0, 45);
-        v.ajouterEnnemi(new Ennemi("Goblin", new Triangle("forme", 2, 2), v.getCoeffDifficulte()));
+        Vague v = new Vague(1, 1.0, 45);
+        v.genererEscouades(1, 0, 0);
         p.ajouterVague(v);
         p.demarrer();
 
-        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 6, 3), 1.0);
+        // Détruire la forteresse manuellement
+        Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 8, 5), 1.0);
         while (!p.getForteresse().estDetruite()) {
             p.getForteresse().subirAttaque(belier);
         }

@@ -1,4 +1,7 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
+
+import com.kcdformes.model.defense.Tourelle;
+import com.kcdformes.model.formes.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;

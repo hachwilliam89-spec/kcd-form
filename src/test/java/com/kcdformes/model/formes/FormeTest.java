@@ -1,4 +1,4 @@
-package com.kcdformes.model;
+package com.kcdformes.model.formes;
 
 import org.junit.jupiter.api.Test;
 

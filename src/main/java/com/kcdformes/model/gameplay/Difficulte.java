@@ -1,10 +1,10 @@
-package com.kcdformes.model;
+package com.kcdformes.model.gameplay;
 
 public enum Difficulte {
 
-    ECUYER(1, 500, 5, 60, 960, 25, 30, 2),
-    CHEVALIER(2, 400, 5, 60, 960, 20, 25, 2),
-    SEIGNEUR(3, 300, 5, 45, 640, 15, 20, 1);
+    ECUYER(1, 500, 5, 45, 800, 25, 30, 2),
+    CHEVALIER(2, 400, 5, 45, 640, 20, 20, 2),
+    SEIGNEUR(3, 300, 5, 30, 480, 15, 20, 1);
 
     private final int niveau;
     private final int budgetInitial;
