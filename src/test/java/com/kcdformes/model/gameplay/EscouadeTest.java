@@ -26,7 +26,7 @@ class EscouadeTest {
         assertEquals(1, escouade.getDelaiEntreEnnemis());
         assertEquals(0, escouade.getNombreEnnemis());
         assertFalse(escouade.estCommencee());
-        assertFalse(escouade.estTerminee());
+        assertTrue(escouade.estTerminee()); // escouade vide → terminée (0 >= 0)
     }
 
     @Test

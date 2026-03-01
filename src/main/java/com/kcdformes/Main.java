@@ -40,7 +40,7 @@ public class Main {
                 + " | PV: " + muraille.getPv()
                 + " | Cout: " + muraille.cout() + " or");
 
-        // === TOURELLE ===
+        // TOURELLE
         System.out.println("TOURELLE (COMPOSITION + POLYMORPHISME)");
 
         Tourelle tour1 = new Tourelle("Tour A", 3);
@@ -63,7 +63,7 @@ public class Main {
         System.out.println("  PV: " + String.format("%.0f", tour1.getPV()));
         System.out.println("  Cout total: " + tour1.coutTotal() + " or");
 
-        // === VALIDATION ===
+        // VALIDATION
         System.out.println("TEST VALIDATION");
 
         try {
@@ -90,8 +90,8 @@ public class Main {
             System.out.println("Position negative : " + e.getMessage());
         }
 
-        // === SIMULATION COMPLETE ===
-        Difficulte diff = Difficulte.SEIGNEUR;
+        // SIMULATION PARTIE
+        Difficulte diff = Difficulte.CHEVALIER;
         System.out.println("\nSIMULATION - " + diff.name() + " (" + diff.getNombreVagues() + " vagues)");
 
         Joueur joueur = new Joueur("Kim", 0, 5);
@@ -103,56 +103,55 @@ public class Main {
         System.out.println("Budget : " + joueur.getBudget() + " or");
 
         // Placement des tourelles
-        // Tourelles nerfées (dimensions réduites → DPS plus bas)
-        Tourelle t1 = new Tourelle("Archer Alpha", 0);
+
+        Tourelle t1 = new Tourelle("Archer A", 0);
         t1.ajouterForme(new Triangle("Arc", 3, 2));
         t1.ajouterForme(new Triangle("Arc2", 3, 2));
         carte.placerTourelle(t1, 2);
 
-        Tourelle t2 = new Tourelle("Catapulte Beta", 0);
+        Tourelle t2 = new Tourelle("Catapulte B", 0);
         t2.ajouterForme(new Cercle("Boulet", 2));
         t2.ajouterForme(new Cercle("Boulet2", 2));
         carte.placerTourelle(t2, 5);
 
-        Tourelle t3 = new Tourelle("Mixte Gamma", 0);
+        Tourelle t3 = new Tourelle("Mixte C", 0);
         t3.ajouterForme(new Triangle("Arc", 3, 2));
         t3.ajouterForme(new Cercle("Boulet", 2));
         t3.ajouterForme(new Rectangle("Mur", 3, 3));
         carte.placerTourelle(t3, 8);
 
-        System.out.println("Tourelles placees :");
+        System.out.println("Tourelles positionnés :");
         System.out.println("  " + t1);
         System.out.println("  " + t2);
         System.out.println("  " + t3);
 
         int dureeVague = diff.getDureeVagueSecondes();
 
-        // =============================================
-        // VAGUES AVEC ESCOUADES (70 ennemis au total)
-        // Coefficients montés + tourelles nerfées = challenge !
-        // =============================================
 
-        // Vague 1 : 8 ennemis (échauffement, pas de bélier)
+        // VAGUES AVEC ESCOUADES
+
+
+        // Vague 1 :
         Vague v1 = new Vague(1, 1.0, dureeVague);
         v1.genererEscouades(5, 3, 0);
         partie.ajouterVague(v1);
 
-        // Vague 2 : 12 ennemis (introduction du bélier)
+        // Vague 2 :
         Vague v2 = new Vague(2, 1.5, dureeVague);
         v2.genererEscouades(6, 4, 2);
         partie.ajouterVague(v2);
 
-        // Vague 3 : 16 ennemis (montée en pression)
+        // Vague 3 :
         Vague v3 = new Vague(3, 2.0, dureeVague);
         v3.genererEscouades(7, 6, 3);
         partie.ajouterVague(v3);
 
-        // Vague 4 : 22 ennemis (grosse vague)
+        // Vague 4 :
         Vague v4 = new Vague(4, 2.8, dureeVague);
         v4.genererEscouades(9, 8, 5);
         partie.ajouterVague(v4);
 
-        // Vague 5 : 28 ennemis (VAGUE FINALE — éliminer tout le monde)
+        // Vague 5 :
         Vague v5 = new Vague(5, 3.5, dureeVague);
         v5.setDerniereVague(true);
         v5.genererEscouades(12, 10, 6);
@@ -218,7 +217,7 @@ public class Main {
             if (partie.getEtat() != EtatPartie.EN_COURS) break;
         }
 
-        System.out.println("\nRESULTAT FINAL");
+        System.out.println("RESULTAT FINAL");
         System.out.println("  Etat : " + partie.getEtat());
         System.out.println("  Score : " + joueur.getScore());
         System.out.println("  " + partie.getForteresse());
