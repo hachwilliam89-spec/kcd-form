@@ -18,7 +18,7 @@ class TourelleTest {
 
     @BeforeEach
     void setUp() {
-        tourelle = new Tourelle("Alpha", 1);
+        tourelle = new Tourelle("A", 1);
         triangle = new Triangle("Archer", 4, 3);
         cercle = new Cercle("Catapulte", 3);
         rectangle = new Rectangle("Muraille", 4, 4);
@@ -28,7 +28,7 @@ class TourelleTest {
 
     @Test
     void quandConstructeurValide_alorsAttributsCorrects() {
-        assertEquals("Alpha", tourelle.getNom());
+        assertEquals("A", tourelle.getNom());
         assertEquals(1, tourelle.getPosition());
         assertEquals(3, tourelle.getPortee());
         assertEquals(0, tourelle.getNombreFormes());

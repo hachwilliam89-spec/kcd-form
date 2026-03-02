@@ -13,10 +13,8 @@ public class Ennemi {
     private int pvActuels;
     private double vitesse;
     private int position;
-    private int recompense;
     private double degatsRempart;
     private int degatsForteresse;
-    private boolean recompenseRecuperee = false;
 
     // Constructeur avec coefficient de difficulté
     public Ennemi(String nom, Forme forme, double coeffDifficulte) {
@@ -32,7 +30,6 @@ public class Ennemi {
         this.pvActuels = pvMax;
         this.vitesse = calculerVitesse();
         this.position = 0;
-        this.recompense = (int)(calculerRecompense() * coeffDifficulte);
         this.degatsRempart = calculerDegatsRempart();
         this.degatsForteresse = calculerDegatsForteresse();
     }
@@ -63,21 +60,14 @@ public class Ennemi {
     }
 
     /**
-     * Dégâts fixes infligés à la forteresse.un pa
+     * Dégâts fixes infligés à la forteresse.
      * Indépendant des PV et du coeff de difficulté.
      */
     public int calculerDegatsForteresse() {
-        if (forme instanceof Triangle) return 10;    // Cavalier : rapide mais tape peu
-        if (forme instanceof Cercle) return 15;      // Infanterie : moyen
-        if (forme instanceof Rectangle) return 40;   // Bélier : spécialiste siège
+        if (forme instanceof Triangle) return 10;
+        if (forme instanceof Cercle) return 15;
+        if (forme instanceof Rectangle) return 40;
         return 10;
-    }
-
-    public int calculerRecompense() {
-        if (forme instanceof Triangle) return (int)(forme.aire() / 2);
-        if (forme instanceof Cercle) return (int)(forme.aire() / 1.5);
-        if (forme instanceof Rectangle) return (int)(forme.aire() * 1.5);
-        return (int) forme.aire();
     }
 
     // GAMEPLAY
@@ -108,14 +98,6 @@ public class Ennemi {
         return degatsRempart * getForceAttaque();
     }
 
-    public boolean isRecompenseRecuperee() {
-        return recompenseRecuperee;
-    }
-
-    public void setRecompenseRecuperee(boolean recompenseRecuperee) {
-        this.recompenseRecuperee = recompenseRecuperee;
-    }
-
     // GETTERS
 
     public String getNom() {
@@ -140,10 +122,6 @@ public class Ennemi {
 
     public int getPosition() {
         return position;
-    }
-
-    public int getRecompense() {
-        return recompense;
     }
 
     public double getDegatsRempart() {

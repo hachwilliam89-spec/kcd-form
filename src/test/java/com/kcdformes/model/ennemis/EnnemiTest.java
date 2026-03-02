@@ -34,20 +34,7 @@ class EnnemiTest {
         assertEquals(1.0, new Ennemi("Belier", new Rectangle("R", 4, 4)).getVitesse());
     }
 
-    @Test
-    void quandCavalerie_alorsRecompense3() {
-        assertEquals(3, new Ennemi("Cavalerie", new Triangle("T", 4, 3)).getRecompense());
-    }
 
-    @Test
-    void quandInfanterie_alorsRecompense18() {
-        assertEquals(18, new Ennemi("Infanterie", new Cercle("C", 3)).getRecompense());
-    }
-
-    @Test
-    void quandBelier_alorsRecompense24() {
-        assertEquals(24, new Ennemi("Belier", new Rectangle("R", 4, 4)).getRecompense());
-    }
 
     @Test
     void quandSubirDegats20_alorsPvDiminue() {
