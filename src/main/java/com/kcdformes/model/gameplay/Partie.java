@@ -116,11 +116,11 @@ public class Partie {
             }
         }
 
-        // PHASE 3 : SCORE DES MORTS (score uniquement, pas d'or)
+        // PHASE 3 : SCORE DES MORTS
         for (Ennemi e : ennemisActifs) {
-            if (!e.estVivant() && !e.isRecompenseRecuperee()) {
-                joueur.ajouterScore(e.getRecompense());
-                e.setRecompenseRecuperee(true);
+            if (!e.estVivant() && !e.isScoreComptabilise()) {
+                joueur.ajouterScore(e.getPointsScore());
+                e.setScoreComptabilise(true);
             }
         }
 

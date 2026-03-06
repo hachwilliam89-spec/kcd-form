@@ -15,6 +15,8 @@ public class Ennemi {
     private int position;
     private double degatsRempart;
     private int degatsForteresse;
+    private int pointsScore;
+    private boolean scoreComptabilise = false;
 
     // Constructeur avec coefficient de difficulté
     public Ennemi(String nom, Forme forme, double coeffDifficulte) {
@@ -32,6 +34,7 @@ public class Ennemi {
         this.position = 0;
         this.degatsRempart = calculerDegatsRempart();
         this.degatsForteresse = calculerDegatsForteresse();
+        this.pointsScore = (int)(calculerPoints() * coeffDifficulte);
     }
 
     // Constructeur par défaut (coeff = 1.0)
@@ -68,6 +71,17 @@ public class Ennemi {
         if (forme instanceof Cercle) return 15;
         if (forme instanceof Rectangle) return 40;
         return 10;
+    }
+
+    /**
+     * Points de score attribués quand l'ennemi est éliminé.
+     * Plus l'ennemi est dur à tuer, plus il rapporte.
+     */
+    public int calculerPoints() {
+        if (forme instanceof Triangle) return (int)(forme.aire() / 2);
+        if (forme instanceof Cercle) return (int)(forme.aire() / 1.5);
+        if (forme instanceof Rectangle) return (int)(forme.aire() * 1.5);
+        return (int) forme.aire();
     }
 
     // GAMEPLAY
@@ -130,6 +144,18 @@ public class Ennemi {
 
     public int getDegatsForteresse() {
         return degatsForteresse;
+    }
+
+    public int getPointsScore() {
+        return pointsScore;
+    }
+
+    public boolean isScoreComptabilise() {
+        return scoreComptabilise;
+    }
+
+    public void setScoreComptabilise(boolean scoreComptabilise) {
+        this.scoreComptabilise = scoreComptabilise;
     }
 
     // SETTERS

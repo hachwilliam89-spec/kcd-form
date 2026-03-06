@@ -71,7 +71,6 @@ class VagueTest {
 
     @Test
     void quandGenererEscouades6Cavaliers_alorsDeuxEscouades() {
-        // 6 cavaliers → escouade de 5 + escouade de 1 (TAILLE_MAX = 5)
         Vague v = new Vague(1, 1.0, 45);
         v.genererEscouades(6, 0, 0);
         assertEquals(2, v.getEscouades().size());
@@ -82,7 +81,6 @@ class VagueTest {
     void quandGenererEscouades_alorsPremiereEscouadeSpawnImmediat() {
         Vague v = new Vague(1, 1.0, 45);
         v.genererEscouades(3, 0, 0);
-        // Première escouade : delaiAvant = 0
         assertEquals(0, v.getEscouades().get(0).getDelaiAvantSpawn());
     }
 
@@ -91,7 +89,6 @@ class VagueTest {
         Vague v = new Vague(1, 2.0, 45);
         v.genererEscouades(1, 0, 0);
 
-        // Le cavalier a des PV scalés par le coeff 2.0
         Ennemi cavalier = v.getEscouades().get(0).getEnnemis().get(0);
         Ennemi cavalierNormal = new Ennemi("test", new Triangle("forme", 4, 3), 1.0);
         assertTrue(cavalier.getPvMax() > cavalierNormal.getPvMax());
@@ -114,8 +111,6 @@ class VagueTest {
         Vague v = new Vague(1, 1.0, 45);
         v.genererEscouades(2, 0, 0);
 
-        // Première escouade a delaiAvant = 0, delaiEntre = 1
-        // Donc premier spawn immédiat
         Ennemi premier = v.spawnSuivant();
         assertNotNull(premier);
         assertEquals(1, v.getNombreSpawnes());
@@ -126,8 +121,7 @@ class VagueTest {
         Vague v = new Vague(1, 1.0, 45);
         v.genererEscouades(1, 0, 0);
 
-        v.spawnSuivant(); // spawn le cavalier
-        // Plusieurs appels après
+        v.spawnSuivant();
         assertNull(v.spawnSuivant());
         assertNull(v.spawnSuivant());
     }
@@ -181,9 +175,9 @@ class VagueTest {
     @Test
     void quandTimerExpire_alorsVagueTerminee() {
         Vague v = new Vague(1, 1.0, 3);
-        v.tick(); // 1
-        v.tick(); // 2
-        v.tick(); // 3
+        v.tick();
+        v.tick();
+        v.tick();
         assertTrue(v.estTerminee());
     }
 
@@ -195,11 +189,10 @@ class VagueTest {
         v.setDerniereVague(true);
         v.genererEscouades(1, 0, 0);
 
-        // Spawn et timer expire, mais ennemi vivant
         v.spawnSuivant();
-        v.tick(); v.tick(); v.tick(); // timer expiré
+        v.tick(); v.tick(); v.tick();
 
-        assertFalse(v.estTerminee()); // dernière vague → doit tuer tout le monde
+        assertFalse(v.estTerminee());
     }
 
     @Test
@@ -221,12 +214,10 @@ class VagueTest {
         v.setDerniereVague(true);
         v.genererEscouades(3, 0, 0);
 
-        // Spawn seulement le premier, le tue
         Ennemi e = v.spawnSuivant();
         assertNotNull(e);
         e.subirDegats(9999);
 
-        // Encore des ennemis à spawn → pas terminée
         assertFalse(v.estTerminee());
     }
 
@@ -238,7 +229,6 @@ class VagueTest {
         v.genererEscouades(2, 0, 0);
         assertEquals(2, v.getNombreVivants());
 
-        // Tuer un ennemi directement via l'escouade
         v.getEscouades().get(0).getEnnemis().get(0).subirDegats(9999);
         assertEquals(1, v.getNombreVivants());
     }
@@ -268,7 +258,6 @@ class VagueTest {
         v.ajouterEnnemis(List.of(survivant));
 
         assertEquals(escouadesAvant + 1, v.getEscouades().size());
-        // L'escouade des survivants est en première position
         assertTrue(v.getEscouades().get(0).getEnnemis().contains(survivant));
     }
 
@@ -292,26 +281,25 @@ class VagueTest {
         assertEquals(avant, v.getNombreEnnemis());
     }
 
-    // RECOMPENSE
+    // POINTS SCORE
 
     @Test
-    void quandCalculerRecompense_alorsSommeDesMorts() {
+    void quandCalculerPointsScore_alorsSommeDesMorts() {
         Vague v = new Vague(1, 1.0, 45);
         v.genererEscouades(2, 0, 0);
 
-        // Tuer le premier ennemi
         Ennemi premier = v.getEscouades().get(0).getEnnemis().get(0);
         premier.subirDegats(9999);
 
-        int recompense = v.calculerRecompense();
-        assertTrue(recompense > 0);
+        int points = v.calculerPointsScore();
+        assertTrue(points > 0);
     }
 
     @Test
-    void quandAucunMort_alorsRecompenseZero() {
+    void quandAucunMort_alorsPointsScoreZero() {
         Vague v = new Vague(1, 1.0, 45);
         v.genererEscouades(2, 0, 0);
-        assertEquals(0, v.calculerRecompense());
+        assertEquals(0, v.calculerPointsScore());
     }
 
     // GETTERS DEFENSIFS

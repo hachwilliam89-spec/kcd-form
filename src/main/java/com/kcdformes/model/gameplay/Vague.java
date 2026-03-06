@@ -41,32 +41,23 @@ public class Vague {
     // GÉNÉRATION AUTOMATIQUE DES ESCOUADES
     // =============================================
 
-    /**
-     * Génère automatiquement les escouades à partir du nombre de chaque type.
-     * Ordre : cavaliers → infanteries → béliers
-     * Découpage en groupes de TAILLE_MAX_ESCOUADE max.
-     */
     public void genererEscouades(int nbCavaliers, int nbInfanteries, int nbBeliers) {
         escouades.clear();
         ennemisSpawnes.clear();
         indexEscouade = 0;
 
-        // Cavaliers : spawn rapide, premiers arrivés
         genererEscouadesParType(nbCavaliers, "Cavalier",
                 () -> new Triangle("forme", 8, 6),
                 DELAI_ENTRE_ENNEMIS);
 
-        // Infanteries : milieu de vague
         genererEscouadesParType(nbInfanteries, "Infanterie",
                 () -> new Cercle("forme", 4),
                 DELAI_ENTRE_ENNEMIS);
 
-        // Béliers : fin de vague, plus espacés
         genererEscouadesParType(nbBeliers, "Bélier",
                 () -> new Rectangle("forme", 10, 6),
                 DELAI_ENTRE_BELIERS);
 
-        // Première escouade spawn immédiatement
         if (!escouades.isEmpty()) {
             escouades.get(0).setDelaiAvantSpawn(0);
         }
@@ -80,7 +71,6 @@ public class Vague {
         while (restant > 0) {
             int taille = Math.min(restant, TAILLE_MAX_ESCOUADE);
 
-            // Délai plus long avant les béliers
             int delaiAvant = nomBase.equals("Bélier") ? DELAI_AVANT_BELIERS : DELAI_ENTRE_ESCOUADES;
 
             Escouade escouade = new Escouade(delaiAvant, delaiEntre);
@@ -97,9 +87,6 @@ public class Vague {
         }
     }
 
-    /**
-     * Interface fonctionnelle pour créer les formes des ennemis.
-     */
     @FunctionalInterface
     private interface FormeFactory {
         com.kcdformes.model.formes.Forme creer();
@@ -112,13 +99,11 @@ public class Vague {
     public void ajouterEnnemis(List<Ennemi> survivants) {
         if (survivants == null || survivants.isEmpty()) return;
 
-        // Les survivants forment une escouade en tête de vague (spawn immédiat)
         Escouade escouadeSurvivants = new Escouade(0, 1);
         for (Ennemi e : survivants) {
             escouadeSurvivants.ajouterEnnemi(e);
         }
 
-        // Insérer en première position
         escouades.add(0, escouadeSurvivants);
     }
 
@@ -126,10 +111,6 @@ public class Vague {
     // SPAWN
     // =============================================
 
-    /**
-     * Tente de spawn le prochain ennemi de l'escouade en cours.
-     * Passe automatiquement à l'escouade suivante quand la courante est terminée.
-     */
     public Ennemi spawnSuivant() {
         if (indexEscouade >= escouades.size()) {
             return null;
@@ -138,12 +119,10 @@ public class Vague {
         Escouade escouadeCourante = escouades.get(indexEscouade);
         Ennemi ennemi = escouadeCourante.spawnSuivant();
 
-        // Ennemi spawné → l'ajouter aux actifs
         if (ennemi != null) {
             ennemisSpawnes.add(ennemi);
         }
 
-        // Escouade terminée → passer à la suivante
         if (escouadeCourante.estTerminee()) {
             indexEscouade++;
         }
@@ -200,9 +179,6 @@ public class Vague {
         return survivants;
     }
 
-    /**
-     * Retourne tous les ennemis déjà spawnés (pour les tirs des tourelles).
-     */
     public List<Ennemi> getEnnemisActifs() {
         return new ArrayList<>(ennemisSpawnes);
     }
@@ -211,11 +187,11 @@ public class Vague {
         return ennemisSpawnes.size();
     }
 
-    public int calculerRecompense() {
+    public int calculerPointsScore() {
         int total = 0;
         for (Escouade esc : escouades) {
             for (Ennemi e : esc.getEnnemis()) {
-                if (!e.estVivant()) total += e.getRecompense();
+                if (!e.estVivant()) total += e.getPointsScore();
             }
         }
         return total;

@@ -34,7 +34,24 @@ class EnnemiTest {
         assertEquals(1.0, new Ennemi("Belier", new Rectangle("R", 4, 4)).getVitesse());
     }
 
+    // POINTS DE SCORE
 
+    @Test
+    void quandCavalerie_alorsPoints3() {
+        assertEquals(3, new Ennemi("Cavalerie", new Triangle("T", 4, 3)).getPointsScore());
+    }
+
+    @Test
+    void quandInfanterie_alorsPoints18() {
+        assertEquals(18, new Ennemi("Infanterie", new Cercle("C", 3)).getPointsScore());
+    }
+
+    @Test
+    void quandBelier_alorsPoints24() {
+        assertEquals(24, new Ennemi("Belier", new Rectangle("R", 4, 4)).getPointsScore());
+    }
+
+    // DEGATS ET PV
 
     @Test
     void quandSubirDegats20_alorsPvDiminue() {
@@ -63,9 +80,10 @@ class EnnemiTest {
         assertFalse(e.estVivant());
     }
 
+    // DEPLACEMENT
+
     @Test
     void quandAvancer_alorsPositionAugmenteDeVitesse() {
-        // Cavalier vitesse 3.0 → avance de 3
         Ennemi e = new Ennemi("Cavalerie", new Triangle("Tri", 4, 3));
         assertEquals(0, e.getPosition());
         e.avancer();
@@ -74,12 +92,13 @@ class EnnemiTest {
 
     @Test
     void quandBelierAvance_alorsPositionAugmenteDe1() {
-        // Bélier vitesse 1.0 → avance de 1
         Ennemi e = new Ennemi("Belier", new Rectangle("R", 4, 4));
         assertEquals(0, e.getPosition());
         e.avancer();
         assertEquals(1, e.getPosition());
     }
+
+    // COMPARAISONS ENTRE TYPES
 
     @Test
     void quandBelier_alorsPlusPvQueCavalerie() {
@@ -94,6 +113,8 @@ class EnnemiTest {
         Ennemi cavalerie = new Ennemi("Cavalerie", new Triangle("Tri", 4, 3));
         assertTrue(belier.getVitesse() < cavalerie.getVitesse());
     }
+
+    // FORCE D'ATTAQUE (INFANTERIE)
 
     @Test
     void quandInfanteriePleinePv_alorsForceEgale1() {
@@ -114,6 +135,8 @@ class EnnemiTest {
         cav.subirDegats(30);
         assertEquals(1.0, cav.getForceAttaque());
     }
+
+    // DEGATS REMPART
 
     @Test
     void quandBelier_alorsDegatsRempartEgale2() {
@@ -175,6 +198,15 @@ class EnnemiTest {
     }
 
     @Test
+    void quandCoeff2_alorsPointsScoreDoubles() {
+        Ennemi e1 = new Ennemi("Cavalerie", new Triangle("T", 4, 3), 1.0);
+        Ennemi e2 = new Ennemi("Cavalerie", new Triangle("T", 4, 3), 2.0);
+        assertEquals(e1.getPointsScore() * 2, e2.getPointsScore());
+    }
+
+    // GETTERS
+
+    @Test
     void quandGetForme_alorsRetourneFormeCorrecte() {
         Triangle tri = new Triangle("Tri", 4, 3);
         Ennemi e = new Ennemi("Cavalerie", tri);
@@ -187,6 +219,8 @@ class EnnemiTest {
         e.setPosition(5);
         assertEquals(5, e.getPosition());
     }
+
+    // VALIDATION
 
     @Test
     void quandNomVide_alorsLeveIllegalArgument() {
@@ -202,6 +236,8 @@ class EnnemiTest {
             e.setPosition(-1);
         });
     }
+
+    // TO STRING
 
     @Test
     void quandToString_alorsContientInfos() {

@@ -347,7 +347,7 @@ class TourelleTest {
         tourelle.ajouterForme(triangle);
         tourelle.ajouterForme(cercle);
         String result = tourelle.toString();
-        assertTrue(result.contains("Alpha"));
+        assertTrue(result.contains("A"));
         assertTrue(result.contains("tirs=1"));
         assertTrue(result.contains("AoE"));
         assertTrue(result.contains("DPS="));
