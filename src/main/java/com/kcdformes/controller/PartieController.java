@@ -5,6 +5,7 @@ import com.kcdformes.dto.PartieResponseDTO;
 import com.kcdformes.service.PartieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.kcdformes.model.gameplay.EtatPartie;
 
 import java.util.List;
 
@@ -34,4 +35,18 @@ public class PartieController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/etat")
+    public ResponseEntity<PartieResponseDTO> changerEtat(
+            @PathVariable Long id,
+            @RequestParam EtatPartie etat) {
+        return ResponseEntity.ok(partieService.changerEtat(id, etat));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> supprimerPartie(@PathVariable Long id) {
+        partieService.supprimerPartie(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

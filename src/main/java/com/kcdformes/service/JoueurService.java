@@ -5,6 +5,8 @@ import com.kcdformes.dto.JoueurResponseDTO;
 import com.kcdformes.entity.JoueurEntity;
 import com.kcdformes.repository.JoueurRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,4 +39,21 @@ public class JoueurService {
     private JoueurResponseDTO toDTO(JoueurEntity e) {
         return new JoueurResponseDTO(e.getId(), e.getNom(), e.getBudget(), e.getScore(), e.getVies());
     }
+
+    public JoueurResponseDTO modifierJoueur(Long id, JoueurRequestDTO dto) {
+        var joueur = joueurRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable"));
+        joueur.setNom(dto.getNom());
+        joueur.setBudget(dto.getBudget());
+        joueur.setVies(dto.getVies());
+        return toDTO(joueurRepository.save(joueur));
+    }
+
+    public void supprimerJoueur(Long id) {
+        if (!joueurRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable");
+        }
+        joueurRepository.deleteById(id);
+    }
+
 }

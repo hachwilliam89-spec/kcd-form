@@ -34,4 +34,16 @@ public class JoueurController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<JoueurResponseDTO> modifierJoueur(@PathVariable Long id, @RequestBody JoueurRequestDTO dto) {
+        return ResponseEntity.ok(joueurService.modifierJoueur(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> supprimerJoueur(@PathVariable Long id) {
+        joueurService.supprimerJoueur(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

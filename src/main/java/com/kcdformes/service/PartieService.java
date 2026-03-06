@@ -8,6 +8,9 @@ import com.kcdformes.repository.PartieRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import com.kcdformes.model.gameplay.EtatPartie;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,4 +47,19 @@ public class PartieService {
                 e.getVagueActuelle(), e.getJoueur().getId(), e.getJoueur().getNom()
         );
     }
+
+    public PartieResponseDTO changerEtat(Long id, EtatPartie nouvelEtat) {
+        var partie = partieRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partie introuvable"));
+        partie.setEtat(nouvelEtat);
+        return toDTO(partieRepository.save(partie));
+    }
+
+    public void supprimerPartie(Long id) {
+        if (!partieRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Partie introuvable");
+        }
+        partieRepository.deleteById(id);
+    }
+
 }
