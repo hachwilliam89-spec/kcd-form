@@ -138,7 +138,12 @@ public class Vague {
 
     public boolean estTerminee() {
         if (derniereVague) {
+            // Dernière vague : finie quand tous morts et tous spawnés
             return getNombreVivants() == 0 && toutSpawne();
+        }
+        // Vagues intermédiaires : finie par timer OU tous les ennemis spawnés sont morts
+        if (getNombreVivants() == 0 && toutSpawne()) {
+            return true;
         }
         return tempsEcoule >= dureeSecondes;
     }

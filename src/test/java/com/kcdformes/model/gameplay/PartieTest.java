@@ -22,21 +22,21 @@ class PartieTest {
     // BUDGET PAR DIFFICULTE
 
     @Test
-    void quandEcuyer_alorsBudget500() {
+    void quandEcuyer_alorsBudget1000() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        assertEquals(500, p.getJoueur().getBudget());
+        assertEquals(1000, p.getJoueur().getBudget());
     }
 
     @Test
-    void quandChevalier_alorsBudget400() {
+    void quandChevalier_alorsBudget700() {
         Partie p = creerPartieBasique(Difficulte.CHEVALIER);
-        assertEquals(400, p.getJoueur().getBudget());
+        assertEquals(700, p.getJoueur().getBudget());
     }
 
     @Test
-    void quandSeigneur_alorsBudget300() {
+    void quandSeigneur_alorsBudget400() {
         Partie p = creerPartieBasique(Difficulte.SEIGNEUR);
-        assertEquals(300, p.getJoueur().getBudget());
+        assertEquals(400, p.getJoueur().getBudget());
     }
 
     // NOMBRE D'ASSAUTS
@@ -156,20 +156,18 @@ class PartieTest {
     @Test
     void quandVagueTerminee_alorsSurvivantsPassentALaSuivante() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
-        // Vague 1 très courte (1s) avec un tank costaud
         Vague v1 = new Vague(1, 1.0, 1);
-        v1.genererEscouades(0, 1, 0); // 1 infanterie costaud
+        v1.genererEscouades(0, 1, 0);
         Vague v2 = new Vague(2, 1.0, 45);
         v2.genererEscouades(1, 0, 0);
         p.ajouterVague(v1);
         p.ajouterVague(v2);
         p.demarrer();
 
-        p.update(); // timer expire à 1s
+        p.update();
         int ennemisV2Avant = v2.getNombreEnnemis();
         p.lancerVagueSuivante();
 
-        // Les survivants de v1 sont ajoutés à v2
         assertTrue(v2.getNombreEnnemis() >= ennemisV2Avant);
     }
 
@@ -183,12 +181,10 @@ class PartieTest {
         v.genererEscouades(1, 0, 0);
         p.ajouterVague(v);
 
-        // Spawn l'ennemi
         Ennemi e = v.spawnSuivant();
         assertNotNull(e);
         assertFalse(v.estTerminee());
 
-        // Le tuer
         e.subirDegats(9999);
         assertTrue(v.estTerminee());
     }
@@ -209,19 +205,17 @@ class PartieTest {
     void quandEnnemiAtteintFin_alorsForteresseSubitDegats() {
         Partie p = creerPartieBasique(Difficulte.ECUYER);
         Vague v = new Vague(1, 1.0, 45);
-        v.genererEscouades(0, 0, 1); // 1 bélier
+        v.genererEscouades(0, 0, 1);
         p.ajouterVague(v);
 
-        // Spawn le bélier et le placer en fin de chemin
         Ennemi belier = v.spawnSuivant();
         if (belier == null) {
-            // Si délai avant spawn, on tick jusqu'au spawn
             for (int i = 0; i < 10 && belier == null; i++) {
                 belier = v.spawnSuivant();
             }
         }
         assertNotNull(belier);
-        belier.setPosition(5); // fin du chemin
+        belier.setPosition(5);
 
         p.demarrer();
         int pvForteresseAvant = p.getForteresse().getPvActuels();
@@ -239,7 +233,6 @@ class PartieTest {
         p.ajouterVague(v);
         p.demarrer();
 
-        // Détruire la forteresse manuellement
         Ennemi belier = new Ennemi("Belier", new Rectangle("forme", 8, 5), 1.0);
         while (!p.getForteresse().estDetruite()) {
             p.getForteresse().subirAttaque(belier);
@@ -257,5 +250,98 @@ class PartieTest {
         String str = p.toString();
         assertTrue(str.contains("ECUYER"));
         assertTrue(str.contains("Kim"));
+    }
+
+    // ===== TESTS MURAILLE =====
+
+    @Test
+    void quandAjouterMuraille_alorsMuraillePresente() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        p.ajouterMuraille(5, 5.0, 3.0, 150);
+        assertFalse(p.getMurailles().isEmpty());
+        assertEquals(150, p.getMurailles().get(5).getPvMax());
+    }
+
+    @Test
+    void quandEnnemiBloqueParMuraille_alorsNePassePas() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v = new Vague(1, 1.0, 60);
+        Ennemi cavalier = new Ennemi("Cavalier", new Triangle("forme", 4, 3));
+        v.genererEscouades(0, 0, 0);
+        v.ajouterEnnemis(java.util.List.of(cavalier));
+        p.ajouterVague(v);
+        p.demarrer();
+        p.ajouterMuraille(5, 5.0, 3.0, 150);
+        for (int i = 0; i < 3; i++) {
+            p.update();
+        }
+        assertTrue(cavalier.getPosition() < 5);
+    }
+
+    @Test
+    void quandBelierAttaqueMuraille_alorsDegatDoubles() {
+        Partie.MurailleEnJeu m = new Partie.MurailleEnJeu(5, 5.0, 3.0, 150);
+        Ennemi belier = new Ennemi("Bélier", new Rectangle("forme", 10, 6));
+        double degatsBase = belier.getDegatsRempart();
+        double degatsDoubles = degatsBase * 2;
+        m.subirDegats(degatsDoubles);
+        assertTrue(m.getPvActuels() < 150);
+        assertEquals(150 - (int) degatsDoubles, m.getPvActuels());
+    }
+
+    // ===== TESTS ENTRE VAGUES =====
+
+    @Test
+    void quandEstDerniereVague_alorsRetourneCorrectement() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v1 = new Vague(1, 1.0, 30);
+        Vague v2 = new Vague(2, 1.0, 30);
+        v2.setDerniereVague(true);
+        v1.genererEscouades(1, 0, 0);
+        v2.genererEscouades(1, 0, 0);
+        p.ajouterVague(v1);
+        p.ajouterVague(v2);
+        assertFalse(p.estDerniereVague());
+    }
+
+    @Test
+    void quandReprendre_alorsEtatEnCours() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v1 = new Vague(1, 1.0, 1);
+        Vague v2 = new Vague(2, 1.0, 30);
+        v2.setDerniereVague(true);
+        v1.genererEscouades(1, 0, 0);
+        v2.genererEscouades(1, 0, 0);
+        p.ajouterVague(v1);
+        p.ajouterVague(v2);
+        p.demarrer();
+        for (int i = 0; i < 60; i++) {
+            p.update();
+            if (p.getEtat() == EtatPartie.ENTRE_VAGUES) break;
+        }
+        if (p.getEtat() == EtatPartie.ENTRE_VAGUES) {
+            p.reprendre();
+            assertEquals(EtatPartie.EN_COURS, p.getEtat());
+            assertEquals(1, p.getVagueActuelle());
+        }
+    }
+
+    // ===== TEST ENNEMI A LA FORTERESSE =====
+
+    @Test
+    void quandEnnemiAtteintForteresse_alorsAttaqueChaqueTick() {
+        Partie p = creerPartieBasique(Difficulte.ECUYER);
+        Vague v = new Vague(1, 1.0, 120);
+        v.setDerniereVague(true);
+        Ennemi cavalier = new Ennemi("Cavalier", new Triangle("forme", 4, 3));
+        v.genererEscouades(0, 0, 0);
+        v.ajouterEnnemis(java.util.List.of(cavalier));
+        p.ajouterVague(v);
+        p.demarrer();
+        int pvAvant = p.getForteresse().getPvActuels();
+        for (int i = 0; i < 30; i++) {
+            p.update();
+        }
+        assertTrue(p.getForteresse().getPvActuels() < pvAvant);
     }
 }

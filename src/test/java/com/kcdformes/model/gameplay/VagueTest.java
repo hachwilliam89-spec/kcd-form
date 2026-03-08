@@ -168,6 +168,7 @@ class VagueTest {
     @Test
     void quandTimerPasExpire_alorsVaguePasTerminee() {
         Vague v = new Vague(1, 1.0, 10);
+        v.genererEscouades(3, 0, 0); // ajouter des ennemis vivants
         v.tick();
         assertFalse(v.estTerminee());
     }

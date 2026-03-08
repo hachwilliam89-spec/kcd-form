@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import com.kcdformes.model.gameplay.EtatPartie;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +42,11 @@ public class PartieService {
     private PartieResponseDTO toDTO(PartieEntity e) {
         return new PartieResponseDTO(
                 e.getId(), e.getDifficulte(), e.getEtat(),
-                e.getVagueActuelle(), e.getJoueur().getId(), e.getJoueur().getNom()
+                e.getVagueActuelle(), e.getJoueur().getId(), e.getJoueur().getNom(),
+                e.getScoreFinal(), e.getEtoiles(),
+                e.getEnnemisElimines(), e.getEnnemisTotal(),
+                e.getForteressePvRestants(), e.getForteressePvMax(),
+                e.getOrDepense()
         );
     }
 
@@ -61,5 +63,4 @@ public class PartieService {
         }
         partieRepository.deleteById(id);
     }
-
 }

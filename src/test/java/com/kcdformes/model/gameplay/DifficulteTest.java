@@ -8,8 +8,8 @@ class DifficulteTest {
     // ECUYER
 
     @Test
-    void quandEcuyer_alorsBudget500() {
-        assertEquals(500, Difficulte.ECUYER.getBudgetInitial());
+    void quandEcuyer_alorsBudget1000() {
+        assertEquals(1000, Difficulte.ECUYER.getBudgetInitial());
     }
 
     @Test
@@ -25,8 +25,8 @@ class DifficulteTest {
     // CHEVALIER
 
     @Test
-    void quandChevalier_alorsBudget400() {
-        assertEquals(400, Difficulte.CHEVALIER.getBudgetInitial());
+    void quandChevalier_alorsBudget700() {
+        assertEquals(700, Difficulte.CHEVALIER.getBudgetInitial());
     }
 
     @Test
@@ -42,8 +42,8 @@ class DifficulteTest {
     // SEIGNEUR
 
     @Test
-    void quandSeigneur_alorsBudget300() {
-        assertEquals(300, Difficulte.SEIGNEUR.getBudgetInitial());
+    void quandSeigneur_alorsBudget400() {
+        assertEquals(400, Difficulte.SEIGNEUR.getBudgetInitial());
     }
 
     @Test

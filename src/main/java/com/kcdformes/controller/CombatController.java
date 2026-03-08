@@ -19,4 +19,10 @@ public class CombatController {
         combatService.demarrerCombat(partieId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/reprendre")
+    public ResponseEntity<Void> reprendre(@PathVariable Long partieId) {
+        combatService.demarrerCombat(partieId);
+        return ResponseEntity.ok().build();
+    }
 }
