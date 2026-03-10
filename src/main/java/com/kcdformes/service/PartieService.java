@@ -25,8 +25,10 @@ public class PartieService {
     }
 
     public PartieResponseDTO creerPartie(PartieRequestDTO dto) {
+        validerPartieDTO(dto);
         var joueur = joueurRepository.findById(dto.getJoueurId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Joueur avec l'id " + dto.getJoueurId() + " introuvable."));
         PartieEntity partie = new PartieEntity(dto.getDifficulte(), joueur);
         return toDTO(partieRepository.save(partie));
     }
@@ -36,7 +38,55 @@ public class PartieService {
     }
 
     public Optional<PartieResponseDTO> getPartie(Long id) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id doit être un nombre positif.");
+        }
         return partieRepository.findById(id).map(this::toDTO);
+    }
+
+    public PartieResponseDTO changerEtat(Long id, EtatPartie nouvelEtat) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id doit être un nombre positif.");
+        }
+        if (nouvelEtat == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'état est requis (EN_COURS, EN_PAUSE, ENTRE_VAGUES, GAGNE, PERDU).");
+        }
+        var partie = partieRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Partie avec l'id " + id + " introuvable."));
+
+        // Vérifier les transitions d'état valides
+        EtatPartie etatActuel = partie.getEtat();
+        if (etatActuel == EtatPartie.GAGNE || etatActuel == EtatPartie.PERDU) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "La partie est terminée (" + etatActuel + "). Impossible de changer l'état.");
+        }
+
+        partie.setEtat(nouvelEtat);
+        return toDTO(partieRepository.save(partie));
+    }
+
+    public void supprimerPartie(Long id) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id doit être un nombre positif.");
+        }
+        if (!partieRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Partie avec l'id " + id + " introuvable.");
+        }
+        partieRepository.deleteById(id);
+    }
+
+    private void validerPartieDTO(PartieRequestDTO dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les données de la partie sont requises.");
+        }
+        if (dto.getJoueurId() == null || dto.getJoueurId() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id du joueur est requis et doit être positif.");
+        }
+        if (dto.getDifficulte() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La difficulté est requise (ECUYER, CHEVALIER, SEIGNEUR).");
+        }
     }
 
     private PartieResponseDTO toDTO(PartieEntity e) {
@@ -48,19 +98,5 @@ public class PartieService {
                 e.getForteressePvRestants(), e.getForteressePvMax(),
                 e.getOrDepense()
         );
-    }
-
-    public PartieResponseDTO changerEtat(Long id, EtatPartie nouvelEtat) {
-        var partie = partieRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partie introuvable"));
-        partie.setEtat(nouvelEtat);
-        return toDTO(partieRepository.save(partie));
-    }
-
-    public void supprimerPartie(Long id) {
-        if (!partieRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Partie introuvable");
-        }
-        partieRepository.deleteById(id);
     }
 }

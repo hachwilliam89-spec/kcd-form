@@ -1,5 +1,6 @@
 package com.kcdformes.controller;
 
+import com.kcdformes.dto.ApiResponseDTO;
 import com.kcdformes.dto.JoueurRequestDTO;
 import com.kcdformes.dto.JoueurResponseDTO;
 import com.kcdformes.service.JoueurService;
@@ -19,31 +20,36 @@ public class JoueurController {
     }
 
     @PostMapping
-    public ResponseEntity<JoueurResponseDTO> creerJoueur(@RequestBody JoueurRequestDTO dto) {
-        return ResponseEntity.ok(joueurService.creerJoueur(dto));
+    public ResponseEntity<ApiResponseDTO<JoueurResponseDTO>> creerJoueur(@RequestBody JoueurRequestDTO dto) {
+        JoueurResponseDTO joueur = joueurService.creerJoueur(dto);
+        return ResponseEntity.status(201)
+                .body(ApiResponseDTO.created("Joueur '" + joueur.getNom() + "' créé avec succès.", joueur));
     }
 
     @GetMapping
-    public ResponseEntity<List<JoueurResponseDTO>> listerJoueurs() {
-        return ResponseEntity.ok(joueurService.listerJoueurs());
+    public ResponseEntity<ApiResponseDTO<List<JoueurResponseDTO>>> listerJoueurs() {
+        List<JoueurResponseDTO> joueurs = joueurService.listerJoueurs();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Liste des joueurs récupérée.", joueurs));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JoueurResponseDTO> getJoueur(@PathVariable Long id) {
-        return joueurService.getJoueur(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponseDTO<JoueurResponseDTO>> getJoueur(@PathVariable Long id) {
+        JoueurResponseDTO joueur = joueurService.getJoueur(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Joueur avec l'id " + id + " introuvable."));
+        return ResponseEntity.ok(ApiResponseDTO.ok("Joueur récupéré.", joueur));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JoueurResponseDTO> modifierJoueur(@PathVariable Long id, @RequestBody JoueurRequestDTO dto) {
-        return ResponseEntity.ok(joueurService.modifierJoueur(id, dto));
+    public ResponseEntity<ApiResponseDTO<JoueurResponseDTO>> modifierJoueur(
+            @PathVariable Long id, @RequestBody JoueurRequestDTO dto) {
+        JoueurResponseDTO joueur = joueurService.modifierJoueur(id, dto);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Joueur modifié avec succès.", joueur));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> supprimerJoueur(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseDTO<Void>> supprimerJoueur(@PathVariable Long id) {
         joueurService.supprimerJoueur(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.noContent("Joueur supprimé avec succès."));
     }
-
 }

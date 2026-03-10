@@ -57,7 +57,7 @@ class TourelleServiceTest {
         return dto;
     }
 
-    // AJOUTER
+    // AJOUTER — SUCCES
 
     @Test
     void quandAjouterTourelle_alorsRetourneAvecId() {
@@ -74,18 +74,43 @@ class TourelleServiceTest {
         assertTrue(result.isAoe());
     }
 
+    // AJOUTER — ERREURS VALIDATION
+
     @Test
-    void quandAjouterTourelleSansFormes_alorsLeveBadRequest() {
+    void quandNomVide_alorsLeveBadRequest() {
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, creerTourelleDTO("", 1, "TRIANGLE")));
+        assertEquals(400, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandNomBlanc_alorsLeveBadRequest() {
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, creerTourelleDTO("   ", 1, "TRIANGLE")));
+        assertEquals(400, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandNomTropCourt_alorsLeveUnprocessable() {
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, creerTourelleDTO("A", 1, "TRIANGLE")));
+        assertEquals(422, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandSansFormes_alorsLeveBadRequest() {
         TourelleRequestDTO dto = new TourelleRequestDTO();
         dto.setNom("Vide");
         dto.setPosition(1);
         dto.setPortee(3);
         dto.setFormes(List.of());
-        assertThrows(ResponseStatusException.class, () -> tourelleService.ajouterTourelle(partieId, dto));
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, dto));
+        assertEquals(400, ex.getStatusCode().value());
     }
 
     @Test
-    void quandAjouterTourelleAvec4Formes_alorsLeveBadRequest() {
+    void quandTropDeFormes_alorsLeveUnprocessable() {
         TourelleRequestDTO dto = new TourelleRequestDTO();
         dto.setNom("Trop");
         dto.setPosition(1);
@@ -98,13 +123,42 @@ class TourelleServiceTest {
         f.setValeur2(3.0);
         dto.setFormes(List.of(f, f, f, f));
 
-        assertThrows(ResponseStatusException.class, () -> tourelleService.ajouterTourelle(partieId, dto));
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, dto));
+        assertEquals(422, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandTypeFormeInconnu_alorsLeveBadRequest() {
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, creerTourelleDTO("Test", 1, "LOSANGE")));
+        assertEquals(400, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandDimensionNegative_alorsLeveUnprocessable() {
+        TourelleRequestDTO dto = new TourelleRequestDTO();
+        dto.setNom("Test");
+        dto.setPosition(1);
+        dto.setPortee(3);
+
+        FormeDTO f = new FormeDTO();
+        f.setType("TRIANGLE");
+        f.setCouleur("rouge");
+        f.setValeur1(-4.0);
+        f.setValeur2(3.0);
+        dto.setFormes(List.of(f));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.ajouterTourelle(partieId, dto));
+        assertEquals(422, ex.getStatusCode().value());
     }
 
     @Test
     void quandPartieInexistante_alorsLeveNotFound() {
-        assertThrows(ResponseStatusException.class,
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> tourelleService.ajouterTourelle(99999L, creerTourelleDTO("Tour", 1, "TRIANGLE")));
+        assertEquals(404, ex.getStatusCode().value());
     }
 
     // LISTER
@@ -117,27 +171,42 @@ class TourelleServiceTest {
         assertTrue(tourelles.size() >= 2);
     }
 
-    // SUPPRIMER
+    // SUPPRIMER — SUCCES
 
     @Test
     void quandSupprimerTourelle_alorsNExistePlus() {
         TourelleResponseDTO creee = tourelleService.ajouterTourelle(partieId, creerTourelleDTO("A supprimer", 3, "TRIANGLE"));
         tourelleService.supprimerTourelle(partieId, creee.getId());
-        // Vérifier qu'elle n'est plus dans la liste
         List<TourelleResponseDTO> tourelles = tourelleService.getTourelles(partieId);
         assertTrue(tourelles.stream().noneMatch(t -> t.getId().equals(creee.getId())));
     }
 
+    // SUPPRIMER — ERREURS
+
     @Test
     void quandSupprimerTourelleInexistante_alorsLeveNotFound() {
-        assertThrows(ResponseStatusException.class,
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> tourelleService.supprimerTourelle(partieId, 99999L));
+        assertEquals(404, ex.getStatusCode().value());
     }
 
     @Test
-    void quandSupprimerTourelleMauvaisPartie_alorsLeveBadRequest() {
+    void quandSupprimerTourelleMauvaisePartie_alorsLeveConflict() {
         TourelleResponseDTO creee = tourelleService.ajouterTourelle(partieId, creerTourelleDTO("Autre", 4, "TRIANGLE"));
-        assertThrows(ResponseStatusException.class,
-                () -> tourelleService.supprimerTourelle(99999L, creee.getId()));
+
+        // Créer une autre partie
+        JoueurRequestDTO j2 = new JoueurRequestDTO();
+        j2.setNom("Autre");
+        j2.setBudget(500);
+        j2.setVies(3);
+        JoueurResponseDTO joueur2 = joueurService.creerJoueur(j2);
+        PartieRequestDTO p2 = new PartieRequestDTO();
+        p2.setJoueurId(joueur2.getId());
+        p2.setDifficulte(Difficulte.ECUYER);
+        PartieResponseDTO autrePartie = partieService.creerPartie(p2);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> tourelleService.supprimerTourelle(autrePartie.getId(), creee.getId()));
+        assertEquals(409, ex.getStatusCode().value());
     }
 }

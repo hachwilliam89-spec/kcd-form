@@ -1,5 +1,6 @@
 package com.kcdformes.controller;
 
+import com.kcdformes.dto.ApiResponseDTO;
 import com.kcdformes.dto.FormeDTO;
 import com.kcdformes.dto.FormeResponseDTO;
 import com.kcdformes.service.FormeService;
@@ -19,28 +20,34 @@ public class FormeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FormeResponseDTO>> listerFormes() {
-        return ResponseEntity.ok(formeService.listerFormes());
+    public ResponseEntity<ApiResponseDTO<List<FormeResponseDTO>>> listerFormes() {
+        List<FormeResponseDTO> formes = formeService.listerFormes();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Liste des formes récupérée.", formes));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FormeResponseDTO> getForme(@PathVariable Long id) {
-        return ResponseEntity.ok(formeService.getForme(id));
+    public ResponseEntity<ApiResponseDTO<FormeResponseDTO>> getForme(@PathVariable Long id) {
+        FormeResponseDTO forme = formeService.getForme(id);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Forme récupérée.", forme));
     }
 
     @PostMapping
-    public ResponseEntity<FormeResponseDTO> creerForme(@RequestBody FormeDTO dto) {
-        return ResponseEntity.ok(formeService.creerForme(dto));
+    public ResponseEntity<ApiResponseDTO<FormeResponseDTO>> creerForme(@RequestBody FormeDTO dto) {
+        FormeResponseDTO forme = formeService.creerForme(dto);
+        return ResponseEntity.status(201)
+                .body(ApiResponseDTO.created("Forme " + forme.getType() + " créée avec succès.", forme));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FormeResponseDTO> modifierForme(@PathVariable Long id, @RequestBody FormeDTO dto) {
-        return ResponseEntity.ok(formeService.modifierForme(id, dto));
+    public ResponseEntity<ApiResponseDTO<FormeResponseDTO>> modifierForme(
+            @PathVariable Long id, @RequestBody FormeDTO dto) {
+        FormeResponseDTO forme = formeService.modifierForme(id, dto);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Forme modifiée avec succès.", forme));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> supprimerForme(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseDTO<Void>> supprimerForme(@PathVariable Long id) {
         formeService.supprimerForme(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.noContent("Forme supprimée avec succès."));
     }
 }

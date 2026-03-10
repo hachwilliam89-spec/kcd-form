@@ -37,18 +37,18 @@ class EnnemiTest {
     // POINTS DE SCORE
 
     @Test
-    void quandCavalerie_alorsPoints3() {
-        assertEquals(3, new Ennemi("Cavalerie", new Triangle("T", 4, 3)).getPointsScore());
+    void quandCavalerie_alorsPoints6() {
+        assertEquals(6, new Ennemi("Cavalerie", new Triangle("T", 4, 3)).getPointsScore());
     }
 
     @Test
-    void quandInfanterie_alorsPoints18() {
-        assertEquals(18, new Ennemi("Infanterie", new Cercle("C", 3)).getPointsScore());
+    void quandInfanterie_alorsPoints28() {
+        assertEquals(28, new Ennemi("Infanterie", new Cercle("C", 3)).getPointsScore());
     }
 
     @Test
-    void quandBelier_alorsPoints24() {
-        assertEquals(24, new Ennemi("Belier", new Rectangle("R", 4, 4)).getPointsScore());
+    void quandBelier_alorsPoints32() {
+        assertEquals(32, new Ennemi("Belier", new Rectangle("R", 4, 4)).getPointsScore());
     }
 
     // DEGATS ET PV
@@ -114,73 +114,73 @@ class EnnemiTest {
         assertTrue(belier.getVitesse() < cavalerie.getVitesse());
     }
 
-    // FORCE D'ATTAQUE (INFANTERIE)
+    // FORCE D'ATTAQUE — TOUS LES TYPES
 
     @Test
-    void quandInfanteriePleinePv_alorsForceEgale1() {
-        Ennemi inf = new Ennemi("Infanterie", new Cercle("C", 3));
-        assertEquals(1.0, inf.getForceAttaque());
+    void quandPleinePv_alorsForceEgale1() {
+        Ennemi e = new Ennemi("Cavalerie", new Triangle("T", 4, 3));
+        assertEquals(1.0, e.getForceAttaque());
     }
 
     @Test
-    void quandInfanterieMoitiePv_alorsForceEgale0_5() {
-        Ennemi inf = new Ennemi("Infanterie", new Cercle("C", 3));
-        inf.subirDegats(inf.getPvMax() / 2);
-        assertEquals(0.5, inf.getForceAttaque(), 0.05);
+    void quandMoitiePv_alorsForceEgale0_5() {
+        Ennemi e = new Ennemi("Infanterie", new Cercle("C", 3));
+        e.subirDegats(e.getPvMax() / 2);
+        assertEquals(0.5, e.getForceAttaque(), 0.05);
     }
 
     @Test
-    void quandCavalerie_alorsForceAttaqueToujoursEgale1() {
+    void quandCavalerieMoitiePv_alorsForceReduite() {
         Ennemi cav = new Ennemi("Cavalerie", new Triangle("T", 4, 3));
-        cav.subirDegats(30);
-        assertEquals(1.0, cav.getForceAttaque());
+        cav.subirDegats(cav.getPvMax() / 2);
+        assertEquals(0.5, cav.getForceAttaque(), 0.05);
     }
 
     // DEGATS REMPART
 
     @Test
-    void quandBelier_alorsDegatsRempartEgale2() {
+    void quandBelier_alorsDegatsRempart8() {
         Ennemi belier = new Ennemi("Belier", new Rectangle("R", 4, 4));
-        assertEquals(2.0, belier.getDegatsRempart());
+        assertEquals(8.0, belier.getDegatsRempart());
     }
 
     @Test
-    void quandCavalerie_alorsDegatsRempartEgale1() {
+    void quandCavalerie_alorsDegatsRempart5() {
         Ennemi cav = new Ennemi("Cavalerie", new Triangle("T", 4, 3));
-        assertEquals(1.0, cav.getDegatsRempart());
+        assertEquals(5.0, cav.getDegatsRempart());
     }
 
     @Test
-    void quandBelierPleinsVie_alorsDegatsReelsEgale2() {
+    void quandBelierPleinsVie_alorsDegatsReelsEgale8() {
         Ennemi belier = new Ennemi("Belier", new Rectangle("R", 4, 4));
-        assertEquals(2.0, belier.degatsReels());
+        assertEquals(8.0, belier.degatsReels());
     }
 
     @Test
     void quandInfanterieMoitiePv_alorsDegatsReelsReduits() {
         Ennemi inf = new Ennemi("Infanterie", new Cercle("C", 3));
         inf.subirDegats(inf.getPvMax() / 2);
-        assertEquals(0.5, inf.degatsReels(), 0.05);
+        assertEquals(1.5, inf.degatsReels(), 0.1);
     }
 
     // DEGATS FORTERESSE
 
     @Test
-    void quandCavalerie_alorsDegatsForteresse10() {
+    void quandCavalerie_alorsDegatsForteresse12() {
         Ennemi cav = new Ennemi("Cavalerie", new Triangle("T", 4, 3));
-        assertEquals(10, cav.getDegatsForteresse());
+        assertEquals(12, cav.getDegatsForteresse());
     }
 
     @Test
-    void quandInfanterie_alorsDegatsForteresse15() {
+    void quandInfanterie_alorsDegatsForteresse56() {
         Ennemi inf = new Ennemi("Infanterie", new Cercle("C", 3));
-        assertEquals(15, inf.getDegatsForteresse());
+        assertEquals(56, inf.getDegatsForteresse());
     }
 
     @Test
-    void quandBelier_alorsDegatsForteresse40() {
+    void quandBelier_alorsDegatsForteresse64() {
         Ennemi belier = new Ennemi("Belier", new Rectangle("R", 4, 4));
-        assertEquals(40, belier.getDegatsForteresse());
+        assertEquals(64, belier.getDegatsForteresse());
     }
 
     // COEFF DIFFICULTE
@@ -194,7 +194,7 @@ class EnnemiTest {
     @Test
     void quandCoeff2_alorsDegatsForteresseInchanges() {
         Ennemi e = new Ennemi("Cavalerie", new Triangle("T", 4, 3), 2.0);
-        assertEquals(10, e.getDegatsForteresse());
+        assertEquals(12, e.getDegatsForteresse());
     }
 
     @Test
@@ -246,6 +246,6 @@ class EnnemiTest {
         assertTrue(str.contains("Cavalerie"));
         assertTrue(str.contains("PV=150/150"));
         assertTrue(str.contains("vitesse=3.0"));
-        assertTrue(str.contains("degatsForteresse=10"));
+        assertTrue(str.contains("degatsForteresse=12"));
     }
 }

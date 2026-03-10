@@ -18,6 +18,39 @@ public abstract class Forme {
     public abstract double dps();
     public abstract int cout();
 
+    /** Multiplicateur de dégâts quand cette forme (tourelle) attaque un ennemi */
+    public abstract double getMultiplicateurContre(Forme formeEnnemi);
+
+    /** Réponse au double dispatch — dégâts reçus d'un Triangle (archer) */
+    public abstract double getMultiplicateurRecuParTriangle();
+
+    /** Réponse au double dispatch — dégâts reçus d'un Cercle (catapulte) */
+    public abstract double getMultiplicateurRecuParCercle();
+
+    /** Réponse au double dispatch — dégâts reçus d'un Rectangle (muraille) */
+    public abstract double getMultiplicateurRecuParRectangle();
+
+    /** Nombre de tirs que cette forme apporte à une tourelle */
+    public abstract int getTirs();
+
+    /** Est-ce que cette forme donne des dégâts de zone */
+    public abstract boolean isAoE();
+
+    /** Rayon de zone (0 si pas AoE) */
+    public abstract double getRayonAoE();
+
+    /** PV que cette forme apporte à une tourelle */
+    public abstract double getPvDefense();
+
+    /** Vitesse quand cette forme est un ennemi */
+    public abstract double getVitesseBase();
+
+    /** Dégâts contre les murailles quand cette forme est un ennemi */
+    public abstract double getDegatsRempartBase();
+
+    /** Multiplicateur de dégâts contre les murailles (bélier = 2.0, autres = 1.0) */
+    public abstract double getMultiplicateurMuraille();
+
     // Getters
     public String getNom() {
         return nom;

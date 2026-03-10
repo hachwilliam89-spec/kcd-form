@@ -37,6 +37,41 @@ public class Rectangle extends Forme {
         return (int)(aire() * 2.2);
     }
 
+    @Override
+    public double getMultiplicateurContre(Forme formeEnnemi) {
+        return formeEnnemi.getMultiplicateurRecuParRectangle();
+    }
+
+    @Override
+    public double getMultiplicateurRecuParTriangle() { return 0.75; }
+
+    @Override
+    public double getMultiplicateurRecuParCercle() { return 1.0; }
+
+    @Override
+    public double getMultiplicateurRecuParRectangle() { return 1.0; }
+
+    @Override
+    public int getTirs() { return 0; }
+
+    @Override
+    public boolean isAoE() { return false; }
+
+    @Override
+    public double getRayonAoE() { return 0; }
+
+    @Override
+    public double getPvDefense() { return aire() * 10; }
+
+    @Override
+    public double getVitesseBase() { return 1.0; }
+
+    @Override
+    public double getDegatsRempartBase() { return 8.0; }
+
+    @Override
+    public double getMultiplicateurMuraille() { return 2.0; }
+
     // Getters
     public double getLargeur() { return largeur; }
     public double getLongueur() { return longueur; }

@@ -105,34 +105,44 @@ class TourelleTest {
 
     // COMPTEURS PAR TYPE
 
+// ANCIEN — compterRectangles / compterCercles / compterTriangles
+// NOUVEAU — on teste via les méthodes polymorphiques
+
     @Test
-    void quandDeuxTriangles_alorsCompterTrianglesEgal2() {
+    void quandDeuxRectangles_alorsPVPositif() {
+        tourelle.ajouterForme(rectangle);
+        tourelle.ajouterForme(rectangle);
+        assertTrue(tourelle.getPV() > 0);
+    }
+
+    @Test
+    void quandAucuneForme_alorsPVZero() {
+        assertEquals(0, tourelle.getPV());
+    }
+
+    @Test
+    void quandUnCercle_alorsAoEActif() {
+        tourelle.ajouterForme(cercle);
+        assertTrue(tourelle.hasAoE());
+    }
+
+    @Test
+    void quandAucunCercle_alorsAoEInactif() {
         tourelle.ajouterForme(triangle);
+        assertFalse(tourelle.hasAoE());
+    }
+
+    @Test
+    void quandUnTriangle_alorsUnTir() {
+        tourelle.ajouterForme(triangle);
+        assertEquals(1, tourelle.getNombreTirs());
+    }
+
+    @Test
+    void quandAucunTriangle_alorsZeroTirs() {
         tourelle.ajouterForme(cercle);
-        tourelle.ajouterForme(new Triangle("Archer2", 2, 3));
-        assertEquals(2, tourelle.compterTriangles());
+        assertEquals(0, tourelle.getNombreTirs());
     }
-
-    @Test
-    void quandDeuxRectangles_alorsCompterRectanglesEgal2() {
-        tourelle.ajouterForme(rectangle);
-        tourelle.ajouterForme(rectangle);
-        assertEquals(2, tourelle.compterRectangles());
-    }
-
-    @Test
-    void quandUnCercle_alorsCompterCerclesEgal1() {
-        tourelle.ajouterForme(cercle);
-        assertEquals(1, tourelle.compterCercles());
-    }
-
-    @Test
-    void quandAucuneForme_alorsCompteursAZero() {
-        assertEquals(0, tourelle.compterTriangles());
-        assertEquals(0, tourelle.compterRectangles());
-        assertEquals(0, tourelle.compterCercles());
-    }
-
     // STATS DE GAMEPLAY
 
     @Test

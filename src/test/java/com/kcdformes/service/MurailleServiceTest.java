@@ -49,7 +49,7 @@ class MurailleServiceTest {
         return dto;
     }
 
-    // PLACER
+    // PLACER — SUCCES
 
     @Test
     void quandPlacerMuraille_alorsRetourneAvecId() {
@@ -61,31 +61,57 @@ class MurailleServiceTest {
     }
 
     @Test
-    void quandPlacerMuraille_alorsPvCalculesDepuisRectangle() {
+    void quandPlacerMuraille_alorsPvCalcules() {
         MurailleResponseDTO result = murailleService.placerMuraille(partieId, creerMurailleDTO(5));
-        // PV = aire * 10 = (5.0 * 3.0) * 10 = 150
         assertEquals(150, result.getPvMax());
         assertEquals(150, result.getPvActuels());
     }
 
     @Test
-    void quandPlacerMuraille_alorsCoutCalculeDepuisRectangle() {
+    void quandPlacerMuraille_alorsCoutCalcule() {
         MurailleResponseDTO result = murailleService.placerMuraille(partieId, creerMurailleDTO(5));
-        // Cout = aire * 2.2 = (5.0 * 3.0) * 2.2 = 33
         assertEquals(33, result.getCout());
     }
 
+    // PLACER — ERREURS VALIDATION
+
     @Test
-    void quandPlacerMuraillePositionOccupee_alorsLeveBadRequest() {
+    void quandLargeurNegative_alorsLeveUnprocessable() {
+        MurailleRequestDTO dto = new MurailleRequestDTO();
+        dto.setPosition(3);
+        dto.setLargeur(-5.0);
+        dto.setLongueur(3.0);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> murailleService.placerMuraille(partieId, dto));
+        assertEquals(422, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandLongueurZero_alorsLeveUnprocessable() {
+        MurailleRequestDTO dto = new MurailleRequestDTO();
+        dto.setPosition(3);
+        dto.setLargeur(5.0);
+        dto.setLongueur(0);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> murailleService.placerMuraille(partieId, dto));
+        assertEquals(422, ex.getStatusCode().value());
+    }
+
+    @Test
+    void quandPositionOccupee_alorsLeveConflict() {
         murailleService.placerMuraille(partieId, creerMurailleDTO(3));
-        assertThrows(ResponseStatusException.class,
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> murailleService.placerMuraille(partieId, creerMurailleDTO(3)));
+        assertEquals(409, ex.getStatusCode().value());
     }
 
     @Test
     void quandPartieInexistante_alorsLeveNotFound() {
-        assertThrows(ResponseStatusException.class,
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> murailleService.placerMuraille(99999L, creerMurailleDTO(3)));
+        assertEquals(404, ex.getStatusCode().value());
     }
 
     // LISTER
@@ -104,7 +130,7 @@ class MurailleServiceTest {
         assertTrue(murailles.isEmpty());
     }
 
-    // SUPPRIMER
+    // SUPPRIMER — SUCCES
 
     @Test
     void quandSupprimerMuraille_alorsNExistePlus() {
@@ -114,16 +140,31 @@ class MurailleServiceTest {
         assertTrue(murailles.stream().noneMatch(m -> m.getId().equals(creee.getId())));
     }
 
+    // SUPPRIMER — ERREURS
+
     @Test
     void quandSupprimerMurailleInexistante_alorsLeveNotFound() {
-        assertThrows(ResponseStatusException.class,
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> murailleService.supprimerMuraille(partieId, 99999L));
+        assertEquals(404, ex.getStatusCode().value());
     }
 
     @Test
-    void quandSupprimerMurailleMauvaisePartie_alorsLeveBadRequest() {
+    void quandSupprimerMurailleMauvaisePartie_alorsLeveConflict() {
         MurailleResponseDTO creee = murailleService.placerMuraille(partieId, creerMurailleDTO(3));
-        assertThrows(ResponseStatusException.class,
-                () -> murailleService.supprimerMuraille(99999L, creee.getId()));
+
+        JoueurRequestDTO j2 = new JoueurRequestDTO();
+        j2.setNom("Autre");
+        j2.setBudget(500);
+        j2.setVies(3);
+        JoueurResponseDTO joueur2 = joueurService.creerJoueur(j2);
+        PartieRequestDTO p2 = new PartieRequestDTO();
+        p2.setJoueurId(joueur2.getId());
+        p2.setDifficulte(Difficulte.ECUYER);
+        PartieResponseDTO autrePartie = partieService.creerPartie(p2);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> murailleService.supprimerMuraille(autrePartie.getId(), creee.getId()));
+        assertEquals(409, ex.getStatusCode().value());
     }
 }

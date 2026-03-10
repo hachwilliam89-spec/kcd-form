@@ -21,9 +21,9 @@ public class JoueurService {
     }
 
     public JoueurResponseDTO creerJoueur(JoueurRequestDTO dto) {
-        JoueurEntity joueur = new JoueurEntity(dto.getNom(), dto.getBudget(), dto.getVies());
-        JoueurEntity sauvegarde = joueurRepository.save(joueur);
-        return toDTO(sauvegarde);
+        validerJoueurDTO(dto);
+        JoueurEntity joueur = new JoueurEntity(dto.getNom().trim(), dto.getBudget(), dto.getVies());
+        return toDTO(joueurRepository.save(joueur));
     }
 
     public List<JoueurResponseDTO> listerJoueurs() {
@@ -33,27 +33,68 @@ public class JoueurService {
     }
 
     public Optional<JoueurResponseDTO> getJoueur(Long id) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id doit être un nombre positif.");
+        }
         return joueurRepository.findById(id).map(this::toDTO);
     }
 
-    private JoueurResponseDTO toDTO(JoueurEntity e) {
-        return new JoueurResponseDTO(e.getId(), e.getNom(), e.getBudget(), e.getScore(), e.getVies());
-    }
-
     public JoueurResponseDTO modifierJoueur(Long id, JoueurRequestDTO dto) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id doit être un nombre positif.");
+        }
         var joueur = joueurRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable"));
-        joueur.setNom(dto.getNom());
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Joueur avec l'id " + id + " introuvable."));
+
+        validerJoueurDTO(dto);
+        joueur.setNom(dto.getNom().trim());
         joueur.setBudget(dto.getBudget());
         joueur.setVies(dto.getVies());
         return toDTO(joueurRepository.save(joueur));
     }
 
     public void supprimerJoueur(Long id) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id doit être un nombre positif.");
+        }
         if (!joueurRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Joueur introuvable");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Joueur avec l'id " + id + " introuvable.");
         }
         joueurRepository.deleteById(id);
     }
 
+    private void validerJoueurDTO(JoueurRequestDTO dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les données du joueur sont requises.");
+        }
+        if (dto.getNom() == null || dto.getNom().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le nom du joueur est requis.");
+        }
+        if (dto.getNom().trim().length() < 2) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Le nom doit contenir au moins 2 caractères.");
+        }
+        if (dto.getBudget() < 0) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Le budget ne peut pas être négatif. Reçu : " + dto.getBudget());
+        }
+        if (dto.getBudget() > 10000) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Le budget ne peut pas dépasser 10000. Reçu : " + dto.getBudget());
+        }
+        if (dto.getVies() <= 0) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Le nombre de vies doit être positif. Reçu : " + dto.getVies());
+        }
+        if (dto.getVies() > 10) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Le nombre de vies ne peut pas dépasser 10. Reçu : " + dto.getVies());
+        }
+    }
+
+    private JoueurResponseDTO toDTO(JoueurEntity e) {
+        return new JoueurResponseDTO(e.getId(), e.getNom(), e.getBudget(), e.getScore(), e.getVies());
+    }
 }

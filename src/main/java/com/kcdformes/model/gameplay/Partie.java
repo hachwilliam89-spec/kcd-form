@@ -170,10 +170,7 @@ public class Partie {
 
             if (murailleBloquante != null) {
                 e.setPosition(murailleBloquante.getPosition() - 1);
-                double degats = e.getDegatsRempart();
-                if (e.getForme() instanceof Rectangle) {
-                    degats *= 2;
-                }
+                double degats = e.getDegatsRempart() * e.getForme().getMultiplicateurMuraille();
                 murailleBloquante.subirDegats(degats);
             } else {
                 e.avancer();

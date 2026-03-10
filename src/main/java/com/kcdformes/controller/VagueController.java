@@ -1,5 +1,6 @@
 package com.kcdformes.controller;
 
+import com.kcdformes.dto.ApiResponseDTO;
 import com.kcdformes.dto.VagueResponseDTO;
 import com.kcdformes.service.VagueService;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,14 @@ public class VagueController {
     }
 
     @PostMapping("/suivante")
-    public ResponseEntity<VagueResponseDTO> vagueSuivante(@PathVariable Long partieId) {
-        return ResponseEntity.ok(vagueService.vaguesuivante(partieId));
+    public ResponseEntity<ApiResponseDTO<VagueResponseDTO>> vagueSuivante(@PathVariable Long partieId) {
+        VagueResponseDTO vague = vagueService.vaguesuivante(partieId);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Vague " + vague.getVagueActuelle() + " lancée.", vague));
     }
 
     @GetMapping
-    public ResponseEntity<VagueResponseDTO> getVagueActuelle(@PathVariable Long partieId) {
-        return ResponseEntity.ok(vagueService.getVagueActuelle(partieId));
+    public ResponseEntity<ApiResponseDTO<VagueResponseDTO>> getVagueActuelle(@PathVariable Long partieId) {
+        VagueResponseDTO vague = vagueService.getVagueActuelle(partieId);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Vague actuelle récupérée.", vague));
     }
-
 }

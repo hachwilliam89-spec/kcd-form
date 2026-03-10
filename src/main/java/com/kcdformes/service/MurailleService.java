@@ -24,17 +24,22 @@ public class MurailleService {
     }
 
     public MurailleResponseDTO placerMuraille(Long partieId, MurailleRequestDTO dto) {
+        if (partieId == null || partieId <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id de la partie doit être un nombre positif.");
+        }
         var partie = partieRepository.findById(partieId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partie introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Partie avec l'id " + partieId + " introuvable."));
 
-        // Vérifier qu'il n'y a pas déjà une muraille à cette position
+        validerMurailleDTO(dto);
+
         boolean positionOccupee = murailleRepository.findByPartieId(partieId)
                 .stream().anyMatch(m -> m.getPosition() == dto.getPosition());
         if (positionOccupee) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Position déjà occupée par une muraille");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Position " + dto.getPosition() + " déjà occupée par une muraille.");
         }
 
-        // Calculer les stats via le modèle métier
         Rectangle rectangle = new Rectangle("muraille", dto.getLargeur(), dto.getLongueur());
         int pvMax = rectangle.getPv();
         int cout = rectangle.cout();
@@ -48,17 +53,46 @@ public class MurailleService {
     }
 
     public List<MurailleResponseDTO> getMurailles(Long partieId) {
+        if (partieId == null || partieId <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id de la partie doit être un nombre positif.");
+        }
         return murailleRepository.findByPartieId(partieId)
                 .stream().map(this::toDTO).toList();
     }
 
     public void supprimerMuraille(Long partieId, Long murailleId) {
+        if (partieId == null || partieId <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id de la partie doit être un nombre positif.");
+        }
+        if (murailleId == null || murailleId <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id de la muraille doit être un nombre positif.");
+        }
         var muraille = murailleRepository.findById(murailleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Muraille introuvable"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Muraille avec l'id " + murailleId + " introuvable."));
         if (!muraille.getPartie().getId().equals(partieId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cette muraille n'appartient pas à cette partie");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "La muraille " + murailleId + " n'appartient pas à la partie " + partieId + ".");
         }
         murailleRepository.deleteById(murailleId);
+    }
+
+    private void validerMurailleDTO(MurailleRequestDTO dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les données de la muraille sont requises.");
+        }
+        if (dto.getPosition() < 0) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "La position doit être positive. Reçu : " + dto.getPosition());
+        }
+        if (dto.getLargeur() <= 0) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "La largeur doit être strictement positive. Reçu : " + dto.getLargeur());
+        }
+        if (dto.getLongueur() <= 0) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "La longueur doit être strictement positive. Reçu : " + dto.getLongueur());
+        }
     }
 
     private MurailleResponseDTO toDTO(MurailleEntity e) {

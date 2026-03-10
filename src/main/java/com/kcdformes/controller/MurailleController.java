@@ -1,5 +1,6 @@
 package com.kcdformes.controller;
 
+import com.kcdformes.dto.ApiResponseDTO;
 import com.kcdformes.dto.MurailleRequestDTO;
 import com.kcdformes.dto.MurailleResponseDTO;
 import com.kcdformes.service.MurailleService;
@@ -19,22 +20,25 @@ public class MurailleController {
     }
 
     @PostMapping
-    public ResponseEntity<MurailleResponseDTO> placerMuraille(
+    public ResponseEntity<ApiResponseDTO<MurailleResponseDTO>> placerMuraille(
             @PathVariable Long partieId,
             @RequestBody MurailleRequestDTO dto) {
-        return ResponseEntity.ok(murailleService.placerMuraille(partieId, dto));
+        MurailleResponseDTO muraille = murailleService.placerMuraille(partieId, dto);
+        return ResponseEntity.status(201)
+                .body(ApiResponseDTO.created("Muraille placée en position " + muraille.getPosition() + ".", muraille));
     }
 
     @GetMapping
-    public ResponseEntity<List<MurailleResponseDTO>> getMurailles(@PathVariable Long partieId) {
-        return ResponseEntity.ok(murailleService.getMurailles(partieId));
+    public ResponseEntity<ApiResponseDTO<List<MurailleResponseDTO>>> getMurailles(@PathVariable Long partieId) {
+        List<MurailleResponseDTO> murailles = murailleService.getMurailles(partieId);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Murailles de la partie " + partieId + " récupérées.", murailles));
     }
 
     @DeleteMapping("/{murailleId}")
-    public ResponseEntity<Void> supprimerMuraille(
+    public ResponseEntity<ApiResponseDTO<Void>> supprimerMuraille(
             @PathVariable Long partieId,
             @PathVariable Long murailleId) {
         murailleService.supprimerMuraille(partieId, murailleId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.noContent("Muraille supprimée avec succès."));
     }
 }

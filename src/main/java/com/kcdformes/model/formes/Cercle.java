@@ -23,7 +23,7 @@ public class Cercle extends Forme {
 
     @Override
     public double perimetre() {
-        return 2 * Math.PI * rayon;
+        return 2* Math.PI * rayon;
     }
 
     @Override
@@ -35,6 +35,41 @@ public class Cercle extends Forme {
     public int cout() {
         return (int)(aire() * 2.65);
     }
+
+    @Override
+    public double getMultiplicateurContre(Forme formeEnnemi) {
+        return formeEnnemi.getMultiplicateurRecuParCercle();
+    }
+
+    @Override
+    public double getMultiplicateurRecuParTriangle() { return 1.0; }
+
+    @Override
+    public double getMultiplicateurRecuParCercle() { return 1.0; }
+
+    @Override
+    public double getMultiplicateurRecuParRectangle() { return 1.75; }
+
+    @Override
+    public int getTirs() { return 0; }
+
+    @Override
+    public boolean isAoE() { return true; }
+
+    @Override
+    public double getRayonAoE() { return rayon; }
+
+    @Override
+    public double getPvDefense() { return 0; }
+
+    @Override
+    public double getVitesseBase() { return 1.0; }
+
+    @Override
+    public double getDegatsRempartBase() { return 3.0; }
+
+    @Override
+    public double getMultiplicateurMuraille() { return 1.0; }
 
     // Getters
     public double getRayon() { return rayon; }

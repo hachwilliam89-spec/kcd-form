@@ -1,9 +1,6 @@
 package com.kcdformes.model.ennemis;
 
-import com.kcdformes.model.formes.Cercle;
 import com.kcdformes.model.formes.Forme;
-import com.kcdformes.model.formes.Rectangle;
-import com.kcdformes.model.formes.Triangle;
 
 public class Ennemi {
 
@@ -30,9 +27,9 @@ public class Ennemi {
         this.forme = forme;
         this.pvMax = (int)(calculerPV() * coeffDifficulte);
         this.pvActuels = pvMax;
-        this.vitesse = calculerVitesse();
+        this.vitesse = forme.getVitesseBase();
         this.position = 0;
-        this.degatsRempart = calculerDegatsRempart();
+        this.degatsRempart = forme.getDegatsRempartBase();
         this.degatsForteresse = calculerDegatsForteresse();
         this.pointsScore = (int)(calculerPoints() * coeffDifficulte);
     }
@@ -48,40 +45,12 @@ public class Ennemi {
         return (int)(forme.aire() * 25);
     }
 
-    public double calculerVitesse() {
-        if (forme instanceof Triangle) return 3.0;
-        if (forme instanceof Cercle) return 1.0;
-        if (forme instanceof Rectangle) return 1.0;
-        return 1.0;
-    }
-
-    public double calculerDegatsRempart() {
-        if (forme instanceof Triangle) return 1.0;
-        if (forme instanceof Rectangle) return 2.0;
-        if (forme instanceof Cercle) return 1.0;
-        return 1.0;
-    }
-
-    /**
-     * Dégâts fixes infligés à la forteresse.
-     * Indépendant des PV et du coeff de difficulté.
-     */
     public int calculerDegatsForteresse() {
-        if (forme instanceof Triangle) return 10;
-        if (forme instanceof Cercle) return 15;
-        if (forme instanceof Rectangle) return 40;
-        return 10;
+        return (int)(forme.aire() * 2 * forme.getMultiplicateurMuraille());
     }
 
-    /**
-     * Points de score attribués quand l'ennemi est éliminé.
-     * Plus l'ennemi est dur à tuer, plus il rapporte.
-     */
     public int calculerPoints() {
-        if (forme instanceof Triangle) return (int)(forme.aire() / 2);
-        if (forme instanceof Cercle) return (int)(forme.aire() / 1.5);
-        if (forme instanceof Rectangle) return (int)(forme.aire() * 1.5);
-        return (int) forme.aire();
+        return (int)(forme.aire() * forme.getMultiplicateurMuraille());
     }
 
     // GAMEPLAY
@@ -102,10 +71,7 @@ public class Ennemi {
     }
 
     public double getForceAttaque() {
-        if (forme instanceof Cercle) {
-            return (double) pvActuels / pvMax;
-        }
-        return 1.0;
+        return (double) pvActuels / pvMax;
     }
 
     public double degatsReels() {
@@ -114,49 +80,17 @@ public class Ennemi {
 
     // GETTERS
 
-    public String getNom() {
-        return nom;
-    }
-
-    public Forme getForme() {
-        return forme;
-    }
-
-    public int getPvMax() {
-        return pvMax;
-    }
-
-    public int getPvActuels() {
-        return pvActuels;
-    }
-
-    public double getVitesse() {
-        return vitesse;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public double getDegatsRempart() {
-        return degatsRempart;
-    }
-
-    public int getDegatsForteresse() {
-        return degatsForteresse;
-    }
-
-    public int getPointsScore() {
-        return pointsScore;
-    }
-
-    public boolean isScoreComptabilise() {
-        return scoreComptabilise;
-    }
-
-    public void setScoreComptabilise(boolean scoreComptabilise) {
-        this.scoreComptabilise = scoreComptabilise;
-    }
+    public String getNom() { return nom; }
+    public Forme getForme() { return forme; }
+    public int getPvMax() { return pvMax; }
+    public int getPvActuels() { return pvActuels; }
+    public double getVitesse() { return vitesse; }
+    public int getPosition() { return position; }
+    public double getDegatsRempart() { return degatsRempart; }
+    public int getDegatsForteresse() { return degatsForteresse; }
+    public int getPointsScore() { return pointsScore; }
+    public boolean isScoreComptabilise() { return scoreComptabilise; }
+    public void setScoreComptabilise(boolean scoreComptabilise) { this.scoreComptabilise = scoreComptabilise; }
 
     // SETTERS
 

@@ -1,5 +1,6 @@
 package com.kcdformes.controller;
 
+import com.kcdformes.dto.ApiResponseDTO;
 import com.kcdformes.dto.TourelleRequestDTO;
 import com.kcdformes.dto.TourelleResponseDTO;
 import com.kcdformes.service.TourelleService;
@@ -19,23 +20,25 @@ public class TourelleController {
     }
 
     @PostMapping
-    public ResponseEntity<TourelleResponseDTO> ajouterTourelle(
+    public ResponseEntity<ApiResponseDTO<TourelleResponseDTO>> ajouterTourelle(
             @PathVariable Long partieId,
             @RequestBody TourelleRequestDTO dto) {
-        return ResponseEntity.ok(tourelleService.ajouterTourelle(partieId, dto));
+        TourelleResponseDTO tourelle = tourelleService.ajouterTourelle(partieId, dto);
+        return ResponseEntity.status(201)
+                .body(ApiResponseDTO.created("Tourelle '" + tourelle.getNom() + "' créée avec succès.", tourelle));
     }
 
     @GetMapping
-    public ResponseEntity<List<TourelleResponseDTO>> getTourelles(@PathVariable Long partieId) {
-        return ResponseEntity.ok(tourelleService.getTourelles(partieId));
+    public ResponseEntity<ApiResponseDTO<List<TourelleResponseDTO>>> getTourelles(@PathVariable Long partieId) {
+        List<TourelleResponseDTO> tourelles = tourelleService.getTourelles(partieId);
+        return ResponseEntity.ok(ApiResponseDTO.ok("Tourelles de la partie " + partieId + " récupérées.", tourelles));
     }
 
     @DeleteMapping("/{tourelleId}")
-    public ResponseEntity<Void> supprimerTourelle(
+    public ResponseEntity<ApiResponseDTO<Void>> supprimerTourelle(
             @PathVariable Long partieId,
             @PathVariable Long tourelleId) {
         tourelleService.supprimerTourelle(partieId, tourelleId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.noContent("Tourelle supprimée avec succès."));
     }
-
 }

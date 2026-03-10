@@ -1,5 +1,6 @@
 package com.kcdformes.controller;
 
+import com.kcdformes.dto.ApiResponseDTO;
 import com.kcdformes.dto.PartieRequestDTO;
 import com.kcdformes.dto.PartieResponseDTO;
 import com.kcdformes.service.PartieService;
@@ -20,33 +21,37 @@ public class PartieController {
     }
 
     @PostMapping
-    public ResponseEntity<PartieResponseDTO> creerPartie(@RequestBody PartieRequestDTO dto) {
-        return ResponseEntity.ok(partieService.creerPartie(dto));
+    public ResponseEntity<ApiResponseDTO<PartieResponseDTO>> creerPartie(@RequestBody PartieRequestDTO dto) {
+        PartieResponseDTO partie = partieService.creerPartie(dto);
+        return ResponseEntity.status(201)
+                .body(ApiResponseDTO.created("Partie créée en difficulté " + partie.getDifficulte() + ".", partie));
     }
 
     @GetMapping
-    public ResponseEntity<List<PartieResponseDTO>> listerParties() {
-        return ResponseEntity.ok(partieService.listerParties());
+    public ResponseEntity<ApiResponseDTO<List<PartieResponseDTO>>> listerParties() {
+        List<PartieResponseDTO> parties = partieService.listerParties();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Liste des parties récupérée.", parties));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PartieResponseDTO> getPartie(@PathVariable Long id) {
-        return partieService.getPartie(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponseDTO<PartieResponseDTO>> getPartie(@PathVariable Long id) {
+        PartieResponseDTO partie = partieService.getPartie(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Partie avec l'id " + id + " introuvable."));
+        return ResponseEntity.ok(ApiResponseDTO.ok("Partie récupérée.", partie));
     }
 
     @PutMapping("/{id}/etat")
-    public ResponseEntity<PartieResponseDTO> changerEtat(
+    public ResponseEntity<ApiResponseDTO<PartieResponseDTO>> changerEtat(
             @PathVariable Long id,
             @RequestParam EtatPartie etat) {
-        return ResponseEntity.ok(partieService.changerEtat(id, etat));
+        PartieResponseDTO partie = partieService.changerEtat(id, etat);
+        return ResponseEntity.ok(ApiResponseDTO.ok("État de la partie changé en " + etat + ".", partie));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> supprimerPartie(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseDTO<Void>> supprimerPartie(@PathVariable Long id) {
         partieService.supprimerPartie(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.noContent("Partie supprimée avec succès."));
     }
-
 }
