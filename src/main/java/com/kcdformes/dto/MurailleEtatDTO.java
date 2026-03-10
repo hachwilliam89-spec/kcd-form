@@ -1,10 +1,10 @@
 package com.kcdformes.dto;
 
 public class MurailleEtatDTO {
-    public int position;
-    public int pvActuels;
-    public int pvMax;
-    public boolean detruite;
+    private int position;
+    private int pvActuels;
+    private int pvMax;
+    private boolean detruite;
 
     public MurailleEtatDTO(int position, int pvActuels, int pvMax, boolean detruite) {
         this.position = position;
@@ -12,4 +12,9 @@ public class MurailleEtatDTO {
         this.pvMax = pvMax;
         this.detruite = detruite;
     }
+
+    public int getPosition() { return position; }
+    public int getPvActuels() { return pvActuels; }
+    public int getPvMax() { return pvMax; }
+    public boolean isDetruite() { return detruite; }
 }
