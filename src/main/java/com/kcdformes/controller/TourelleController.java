@@ -37,7 +37,7 @@ public class TourelleController {
             @RequestBody TourelleRequestDTO dto) {
         TourelleResponseDTO tourelle = tourelleService.ajouterTourelle(partieId, dto);
         return ResponseEntity.status(201)
-                .body(ApiResponseDTO.created("Tourelle '" + tourelle.getNom() + "' créée avec succès.", tourelle));
+                .body(ApiResponseDTO.cree("Tourelle '" + tourelle.getNom() + "' créée avec succès.", tourelle));
     }
 
     @GetMapping
@@ -63,6 +63,6 @@ public class TourelleController {
             @PathVariable Long partieId,
             @PathVariable Long tourelleId) {
         tourelleService.supprimerTourelle(partieId, tourelleId);
-        return ResponseEntity.ok(ApiResponseDTO.noContent("Tourelle supprimée avec succès."));
+        return ResponseEntity.ok(ApiResponseDTO.sansContenu("Tourelle supprimée avec succès."));
     }
 }

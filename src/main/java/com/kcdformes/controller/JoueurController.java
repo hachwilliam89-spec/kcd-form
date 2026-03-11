@@ -34,7 +34,7 @@ public class JoueurController {
     public ResponseEntity<ApiResponseDTO<JoueurResponseDTO>> creerJoueur(@RequestBody JoueurRequestDTO dto) {
         JoueurResponseDTO joueur = joueurService.creerJoueur(dto);
         return ResponseEntity.status(201)
-                .body(ApiResponseDTO.created("Joueur '" + joueur.getNom() + "' créé avec succès.", joueur));
+                .body(ApiResponseDTO.cree("Joueur '" + joueur.getNom() + "' créé avec succès.", joueur));
     }
 
     @GetMapping
@@ -81,6 +81,6 @@ public class JoueurController {
     })
     public ResponseEntity<ApiResponseDTO<Void>> supprimerJoueur(@PathVariable Long id) {
         joueurService.supprimerJoueur(id);
-        return ResponseEntity.ok(ApiResponseDTO.noContent("Joueur supprimé avec succès."));
+        return ResponseEntity.ok(ApiResponseDTO.sansContenu("Joueur supprimé avec succès."));
     }
 }

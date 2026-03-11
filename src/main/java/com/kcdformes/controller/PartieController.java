@@ -35,7 +35,7 @@ public class PartieController {
     public ResponseEntity<ApiResponseDTO<PartieResponseDTO>> creerPartie(@RequestBody PartieRequestDTO dto) {
         PartieResponseDTO partie = partieService.creerPartie(dto);
         return ResponseEntity.status(201)
-                .body(ApiResponseDTO.created("Partie créée en difficulté " + partie.getDifficulte() + ".", partie));
+                .body(ApiResponseDTO.cree("Partie créée en difficulté " + partie.getDifficulte() + ".", partie));
     }
 
     @GetMapping
@@ -83,6 +83,6 @@ public class PartieController {
     })
     public ResponseEntity<ApiResponseDTO<Void>> supprimerPartie(@PathVariable Long id) {
         partieService.supprimerPartie(id);
-        return ResponseEntity.ok(ApiResponseDTO.noContent("Partie supprimée avec succès."));
+        return ResponseEntity.ok(ApiResponseDTO.sansContenu("Partie supprimée avec succès."));
     }
 }

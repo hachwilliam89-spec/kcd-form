@@ -15,11 +15,11 @@ public class GlobalExceptionHandler {
         String message = ex.getReason() != null ? ex.getReason() : "Erreur inconnue";
 
         ApiResponseDTO<Void> response = switch (status) {
-            case 400 -> ApiResponseDTO.badRequest(message);
-            case 404 -> ApiResponseDTO.notFound(message);
-            case 409 -> ApiResponseDTO.conflict(message);
-            case 422 -> ApiResponseDTO.unprocessable(message);
-            default -> ApiResponseDTO.badRequest(message);
+            case 400 -> ApiResponseDTO.mauvaiseRequete(message);
+            case 404 -> ApiResponseDTO.nonTrouve(message);
+            case 409 -> ApiResponseDTO.conflit(message);
+            case 422 -> ApiResponseDTO.nonTraitable(message);
+            default -> ApiResponseDTO.mauvaiseRequete(message);
         };
 
         return ResponseEntity.status(status).body(response);
@@ -28,18 +28,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(400)
-                .body(ApiResponseDTO.badRequest(ex.getMessage()));
+                .body(ApiResponseDTO.mauvaiseRequete(ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleIllegalState(IllegalStateException ex) {
         return ResponseEntity.status(409)
-                .body(ApiResponseDTO.conflict(ex.getMessage()));
+                .body(ApiResponseDTO.conflit(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleGeneric(Exception ex) {
         return ResponseEntity.status(500)
-                .body(ApiResponseDTO.badRequest("Erreur interne du serveur : " + ex.getMessage()));
+                .body(ApiResponseDTO.mauvaiseRequete("Erreur interne du serveur : " + ex.getMessage()));
     }
 }

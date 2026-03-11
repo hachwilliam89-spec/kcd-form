@@ -5,54 +5,54 @@ import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDTO<T> {
-    private int status;
+    private int statut;
     private String message;
-    private T data;
-    private String error;
-    private LocalDateTime timestamp;
+    private T donnees;
+    private String erreur;
+    private LocalDateTime horodatage;
 
-    private ApiResponseDTO(int status, String message, T data, String error) {
-        this.status = status;
+    private ApiResponseDTO(int statut, String message, T donnees, String erreur) {
+        this.statut = statut;
         this.message = message;
-        this.data = data;
-        this.error = error;
-        this.timestamp = LocalDateTime.now();
+        this.donnees = donnees;
+        this.erreur = erreur;
+        this.horodatage = LocalDateTime.now();
     }
 
-    // Factories succès
-    public static <T> ApiResponseDTO<T> created(String message, T data) {
-        return new ApiResponseDTO<>(201, message, data, null);
+    // Méthodes de fabrique pour succès
+    public static <T> ApiResponseDTO<T> cree(String message, T donnees) {
+        return new ApiResponseDTO<>(201, message, donnees, null);
     }
 
-    public static <T> ApiResponseDTO<T> ok(String message, T data) {
-        return new ApiResponseDTO<>(200, message, data, null);
+    public static <T> ApiResponseDTO<T> ok(String message, T donnees) {
+        return new ApiResponseDTO<>(200, message, donnees, null);
     }
 
-    public static ApiResponseDTO<Void> noContent(String message) {
+    public static ApiResponseDTO<Void> sansContenu(String message) {
         return new ApiResponseDTO<>(204, message, null, null);
     }
 
-    // Factories erreurs
-    public static ApiResponseDTO<Void> badRequest(String error) {
-        return new ApiResponseDTO<>(400, null, null, error);
+    // Méthodes de fabrique pour erreurs
+    public static ApiResponseDTO<Void> mauvaiseRequete(String erreur) {
+        return new ApiResponseDTO<>(400, null, null, erreur);
     }
 
-    public static ApiResponseDTO<Void> notFound(String error) {
-        return new ApiResponseDTO<>(404, null, null, error);
+    public static ApiResponseDTO<Void> nonTrouve(String erreur) {
+        return new ApiResponseDTO<>(404, null, null, erreur);
     }
 
-    public static ApiResponseDTO<Void> conflict(String error) {
-        return new ApiResponseDTO<>(409, null, null, error);
+    public static ApiResponseDTO<Void> conflit(String erreur) {
+        return new ApiResponseDTO<>(409, null, null, erreur);
     }
 
-    public static ApiResponseDTO<Void> unprocessable(String error) {
-        return new ApiResponseDTO<>(422, null, null, error);
+    public static ApiResponseDTO<Void> nonTraitable(String erreur) {
+        return new ApiResponseDTO<>(422, null, null, erreur);
     }
 
     // Getters
-    public int getStatus() { return status; }
+    public int getStatut() { return statut; }
     public String getMessage() { return message; }
-    public T getData() { return data; }
-    public String getError() { return error; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public T getDonnees() { return donnees; }
+    public String getErreur() { return erreur; }
+    public LocalDateTime getHorodatage() { return horodatage; }
 }

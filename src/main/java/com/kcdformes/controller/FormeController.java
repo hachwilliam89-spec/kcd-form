@@ -54,7 +54,7 @@ public class FormeController {
     public ResponseEntity<ApiResponseDTO<FormeResponseDTO>> creerForme(@RequestBody FormeDTO dto) {
         FormeResponseDTO forme = formeService.creerForme(dto);
         return ResponseEntity.status(201)
-                .body(ApiResponseDTO.created("Forme " + forme.getType() + " créée avec succès.", forme));
+                .body(ApiResponseDTO.cree("Forme " + forme.getType() + " créée avec succès.", forme));
     }
 
     @PutMapping("/{id}")
@@ -80,6 +80,6 @@ public class FormeController {
     })
     public ResponseEntity<ApiResponseDTO<Void>> supprimerForme(@PathVariable Long id) {
         formeService.supprimerForme(id);
-        return ResponseEntity.ok(ApiResponseDTO.noContent("Forme supprimée avec succès."));
+        return ResponseEntity.ok(ApiResponseDTO.sansContenu("Forme supprimée avec succès."));
     }
 }

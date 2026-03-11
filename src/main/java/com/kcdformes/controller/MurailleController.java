@@ -38,7 +38,7 @@ public class MurailleController {
             @RequestBody MurailleRequestDTO dto) {
         MurailleResponseDTO muraille = murailleService.placerMuraille(partieId, dto);
         return ResponseEntity.status(201)
-                .body(ApiResponseDTO.created("Muraille placée en position " + muraille.getPosition() + ".", muraille));
+                .body(ApiResponseDTO.cree("Muraille placée en position " + muraille.getPosition() + ".", muraille));
     }
 
     @GetMapping
@@ -64,6 +64,6 @@ public class MurailleController {
             @PathVariable Long partieId,
             @PathVariable Long murailleId) {
         murailleService.supprimerMuraille(partieId, murailleId);
-        return ResponseEntity.ok(ApiResponseDTO.noContent("Muraille supprimée avec succès."));
+        return ResponseEntity.ok(ApiResponseDTO.sansContenu("Muraille supprimée avec succès."));
     }
 }
