@@ -23,7 +23,7 @@ services:
   # === API Spring Boot ===
   api:
     container_name: kcdformes-api
-    build: src/main/java/com/kcdformes
+    build: .
     restart: unless-stopped
     depends_on:
       db:
