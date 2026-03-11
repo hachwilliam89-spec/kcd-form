@@ -1,0 +1,40 @@
+# ============================================================
+# KCD Formes — Docker Compose
+# Lance l'API Spring Boot + MariaDB en une commande
+# Usage : docker compose up -d
+# ============================================================
+
+services:
+  # === Base de données MariaDB ===
+  db:
+    image: mariadb:11
+    container_name: kcdformes-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root2026
+      MARIADB_DATABASE: kcdformes
+      MARIADB_USER: kcdformes
+      MARIADB_PASSWORD: kcdformes2026
+    ports:
+      - "3306:3306"
+    volumes:
+      - kcdformes-data:/var/lib/mysql
+
+  # === API Spring Boot ===
+  api:
+    container_name: kcdformes-api
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/kcdformes
+      SPRING_DATASOURCE_USERNAME: kcdformes
+      SPRING_DATASOURCE_PASSWORD: kcdformes2026
+    ports:
+      - "8080:8080"
+
+volumes:
+  kcdformes-data:
