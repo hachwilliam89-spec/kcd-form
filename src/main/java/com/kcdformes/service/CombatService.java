@@ -5,11 +5,9 @@ import com.kcdformes.dto.EnnemiEtatDTO;
 import com.kcdformes.dto.MurailleEtatDTO;
 import com.kcdformes.entity.MurailleEntity;
 import com.kcdformes.entity.TourelleEntity;
+import com.kcdformes.factory.FormeFactoryRegistry;
 import com.kcdformes.model.defense.Tourelle;
 import com.kcdformes.model.ennemis.Ennemi;
-import com.kcdformes.model.formes.Cercle;
-import com.kcdformes.model.formes.Rectangle;
-import com.kcdformes.model.formes.Triangle;
 import com.kcdformes.model.gameplay.*;
 import com.kcdformes.model.joueur.Joueur;
 import com.kcdformes.repository.MurailleRepository;
@@ -30,6 +28,7 @@ public class CombatService {
     private final PartieRepository partieRepository;
     private final TourelleRepository tourelleRepository;
     private final MurailleRepository murailleRepository;
+    private final FormeFactoryRegistry factoryRegistry;
 
     private final Map<Long, Partie> partiesEnCours = new ConcurrentHashMap<>();
     private final Map<Long, ScheduledFuture<?>> schedulers = new ConcurrentHashMap<>();
@@ -38,11 +37,13 @@ public class CombatService {
     public CombatService(SimpMessagingTemplate messagingTemplate,
                          PartieRepository partieRepository,
                          TourelleRepository tourelleRepository,
-                         MurailleRepository murailleRepository) {
+                         MurailleRepository murailleRepository,
+                         FormeFactoryRegistry factoryRegistry) {
         this.messagingTemplate = messagingTemplate;
         this.partieRepository = partieRepository;
         this.tourelleRepository = tourelleRepository;
         this.murailleRepository = murailleRepository;
+        this.factoryRegistry = factoryRegistry;
     }
 
     public void demarrerCombat(Long partieId) {
@@ -137,14 +138,14 @@ public class CombatService {
             Tourelle t = new Tourelle(te.getNom(), te.getPosition());
             t.setPortee(te.getPortee());
             if (te.getNombreTirs() > 0) {
-                t.ajouterForme(new Triangle("rouge", 4.0, 3.0));
+                t.ajouterForme(factoryRegistry.creerParType("TRIANGLE", "rouge", 4.0, 3.0));
             }
             if (te.isAoe()) {
                 double rayon = te.getRayonAoe() > 0 ? te.getRayonAoe() : 3.0;
-                t.ajouterForme(new Cercle("bleu", rayon));
+                t.ajouterForme(factoryRegistry.creerParType("CERCLE", "bleu", rayon, 0.0));
             }
             if (te.getPv() > 0) {
-                t.ajouterForme(new Rectangle("gris", 5.0, 3.0));
+                t.ajouterForme(factoryRegistry.creerParType("RECTANGLE", "gris", 5.0, 3.0));
             }
             carte.placerTourelle(t, t.getPosition());
         }
@@ -163,7 +164,6 @@ public class CombatService {
                 } else if (etat == EtatPartie.ENTRE_VAGUES) {
                     arreterScheduler(partieId);
                     sauvegarderEtat(partieId, etat);
-                    // La partie reste en mémoire pour la reprise
                 }
             } catch (Exception e) {
                 System.err.println("Erreur tick combat: " + e.getMessage());
@@ -184,10 +184,8 @@ public class CombatService {
         partieRepository.findById(partieId).ifPresent(p -> {
             p.setEtat(etat);
 
-            // Calculer et persister le score si la partie est finie
             if (partie != null && (etat == EtatPartie.GAGNE || etat == EtatPartie.PERDU)) {
 
-                // Compter ennemis éliminés et total sur toutes les vagues
                 int totalEnnemis = 0;
                 int totalElimines = 0;
                 for (Vague v : partie.getVagues()) {
@@ -195,22 +193,18 @@ public class CombatService {
                     totalElimines += (v.getNombreEnnemis() - v.getNombreVivants());
                 }
 
-                // Forteresse
                 int pvRestants = partie.getForteresse().getPvActuels();
                 int pvMax = partie.getForteresse().getPvMax();
 
-                // Or dépensé
                 int budgetInitial = partie.getDifficulte().getBudgetInitial();
                 int budgetRestant = partie.getJoueur().getBudget();
                 int orDepense = budgetInitial - budgetRestant;
 
-                // Score sur 100
                 double scoreRemparts = pvMax > 0 ? ((double) pvRestants / pvMax) * 30 : 0;
                 double scoreEnnemis = totalEnnemis > 0 ? ((double) totalElimines / totalEnnemis) * 40 : 0;
                 double scoreBudget = budgetInitial > 0 ? (1.0 - (double) orDepense / budgetInitial) * 30 : 0;
                 int scoreFinal = (int) Math.round(scoreRemparts + scoreEnnemis + scoreBudget);
 
-                // Étoiles
                 int etoiles = 0;
                 if (etat == EtatPartie.GAGNE) {
                     if (scoreFinal >= 80) etoiles = 3;
@@ -230,11 +224,11 @@ public class CombatService {
             partieRepository.save(p);
         });
 
-        // Nettoyer la mémoire seulement si la partie est finie
         if (etat == EtatPartie.GAGNE || etat == EtatPartie.PERDU) {
             partiesEnCours.remove(partieId);
         }
     }
+
     private void envoyerEtat(Long partieId, Partie partie) {
         int vagueIdx = partie.getVagueActuelle();
         List<Vague> vagues = partie.getVagues();

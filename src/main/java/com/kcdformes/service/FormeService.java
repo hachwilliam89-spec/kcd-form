@@ -3,10 +3,8 @@ package com.kcdformes.service;
 import com.kcdformes.dto.FormeDTO;
 import com.kcdformes.dto.FormeResponseDTO;
 import com.kcdformes.entity.FormeEntity;
-import com.kcdformes.model.formes.Cercle;
+import com.kcdformes.factory.FormeFactoryRegistry;
 import com.kcdformes.model.formes.Forme;
-import com.kcdformes.model.formes.Rectangle;
-import com.kcdformes.model.formes.Triangle;
 import com.kcdformes.repository.FormeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,13 +16,15 @@ import java.util.List;
 public class FormeService {
 
     private final FormeRepository formeRepository;
+    private final FormeFactoryRegistry factoryRegistry;
 
-    public FormeService(FormeRepository formeRepository) {
+    public FormeService(FormeRepository formeRepository, FormeFactoryRegistry factoryRegistry) {
         this.formeRepository = formeRepository;
+        this.factoryRegistry = factoryRegistry;
     }
 
     public FormeResponseDTO creerForme(FormeDTO dto) {
-        Forme forme = construireForme(dto);
+        Forme forme = factoryRegistry.creer(dto);
 
         FormeEntity entity = new FormeEntity(
                 dto.getType().toUpperCase(),
@@ -55,7 +55,7 @@ public class FormeService {
         var entity = formeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Forme introuvable"));
 
-        Forme forme = construireForme(dto);
+        Forme forme = factoryRegistry.creer(dto);
 
         entity.setType(dto.getType().toUpperCase());
         entity.setNom(dto.getCouleur());
@@ -75,15 +75,6 @@ public class FormeService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Forme introuvable");
         }
         formeRepository.deleteById(id);
-    }
-
-    private Forme construireForme(FormeDTO dto) {
-        return switch (dto.getType().toUpperCase()) {
-            case "TRIANGLE" -> new Triangle(dto.getCouleur(), dto.getValeur1(), dto.getValeur2());
-            case "CERCLE" -> new Cercle(dto.getCouleur(), dto.getValeur1());
-            case "RECTANGLE" -> new Rectangle(dto.getCouleur(), dto.getValeur1(), dto.getValeur2());
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Type de forme inconnu : " + dto.getType());
-        };
     }
 
     private FormeResponseDTO toDTO(FormeEntity e) {

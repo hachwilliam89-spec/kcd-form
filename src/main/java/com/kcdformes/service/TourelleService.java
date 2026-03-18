@@ -1,18 +1,16 @@
 package com.kcdformes.service;
 
+import com.kcdformes.dto.FormeDTO;
 import com.kcdformes.dto.TourelleRequestDTO;
 import com.kcdformes.dto.TourelleResponseDTO;
 import com.kcdformes.entity.TourelleEntity;
+import com.kcdformes.factory.FormeFactoryRegistry;
 import com.kcdformes.model.defense.Tourelle;
-import com.kcdformes.model.formes.Cercle;
-import com.kcdformes.model.formes.Rectangle;
-import com.kcdformes.model.formes.Triangle;
 import com.kcdformes.repository.PartieRepository;
 import com.kcdformes.repository.TourelleRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import com.kcdformes.dto.FormeDTO;
 
 import java.util.List;
 
@@ -21,10 +19,14 @@ public class TourelleService {
 
     private final TourelleRepository tourelleRepository;
     private final PartieRepository partieRepository;
+    private final FormeFactoryRegistry factoryRegistry;
 
-    public TourelleService(TourelleRepository tourelleRepository, PartieRepository partieRepository) {
+    public TourelleService(TourelleRepository tourelleRepository,
+                           PartieRepository partieRepository,
+                           FormeFactoryRegistry factoryRegistry) {
         this.tourelleRepository = tourelleRepository;
         this.partieRepository = partieRepository;
+        this.factoryRegistry = factoryRegistry;
     }
 
     public TourelleResponseDTO ajouterTourelle(Long partieId, TourelleRequestDTO dto) {
@@ -42,13 +44,8 @@ public class TourelleService {
 
         for (FormeDTO f : dto.getFormes()) {
             validerFormeDTO(f);
-            switch (f.getType().toUpperCase()) {
-                case "TRIANGLE" -> tourelle.ajouterForme(new Triangle(f.getCouleur(), f.getValeur1(), f.getValeur2()));
-                case "CERCLE" -> tourelle.ajouterForme(new Cercle(f.getCouleur(), f.getValeur1()));
-                case "RECTANGLE" -> tourelle.ajouterForme(new Rectangle(f.getCouleur(), f.getValeur1(), f.getValeur2()));
-                default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Type de forme inconnu : '" + f.getType() + "'. Types valides : TRIANGLE, CERCLE, RECTANGLE.");
-            }
+            tourelle.ajouterForme(factoryRegistry.creerParType(
+                    f.getType(), f.getCouleur(), f.getValeur1(), f.getValeur2()));
         }
 
         TourelleEntity entity = new TourelleEntity(

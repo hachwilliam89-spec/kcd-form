@@ -16,7 +16,7 @@ services:
       MARIADB_USER: kcdformes
       MARIADB_PASSWORD: kcdformes2026
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - kcdformes-data:/var/lib/mysql
 
@@ -34,7 +34,7 @@ services:
       SPRING_DATASOURCE_USERNAME: kcdformes
       SPRING_DATASOURCE_PASSWORD: kcdformes2026
     ports:
-      - "8080:8080"
+      - "8888:8080"
 
 volumes:
   kcdformes-data:
