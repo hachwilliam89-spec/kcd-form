@@ -27,8 +27,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponseDTO<Void>> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.status(400)
-                .body(ApiResponseDTO.mauvaiseRequete(ex.getMessage()));
+        return ResponseEntity.status(422)
+                .body(ApiResponseDTO.nonTraitable(ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
