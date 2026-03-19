@@ -1,4 +1,3 @@
-cat > ~/IdeaProjects/kcd-form/deploykcd.sh << 'SCRIPT'
 #!/bin/bash
 
 # ============================================================
