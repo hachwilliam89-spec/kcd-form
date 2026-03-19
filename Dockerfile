@@ -1,19 +1,5 @@
-# ============================================================
-# KCD Formes — Dockerfile
-# Build multi-stage : Maven build + Java runtime
-# ============================================================
-
-# Stage 1 : Build
-FROM maven:3.9-eclipse-temurin-21 AS build
-WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline -q
-COPY src ./src
-RUN mvn clean package -DskipTests -q
-
-# Stage 2 : Runtimedoc
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY app.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
