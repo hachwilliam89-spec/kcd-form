@@ -5,7 +5,6 @@ import { useRouter, useParams } from 'next/navigation';
 import { api, Tourelle, Muraille, Partie } from '@/lib/api';
 import CarteConstruction from './CarteConstruction';
 import PanneauFormes from './PanneauFormes';
-import PanneauNom from './PanneauNom';
 import PanneauMuraille from './PanneauMuraille';
 import ListeDefenses from './ListeDefenses';
 
@@ -40,7 +39,7 @@ const coutFormes = (formes: FormeSelectionnee[]) =>
         return acc + (fd?.cout ?? 0);
     }, 0);
 
-type Etape = 'carte' | 'formes' | 'nom' | 'muraille';
+type Etape = 'carte' | 'formes' | 'muraille';
 
 export default function ConstructionPage() {
     const router = useRouter();
@@ -53,7 +52,6 @@ export default function ConstructionPage() {
     const [caseSelectionnee, setCaseSelectionnee] = useState<number | null>(null);
     const [murailleSelectionnee, setMurailleSelectionnee] = useState<number | null>(null);
     const [formesSelectionnees, setFormesSelectionnees] = useState<FormeSelectionnee[]>([]);
-    const [nomTourelle, setNomTourelle] = useState('');
     const [budget, setBudget] = useState(400);
     const [loading, setLoading] = useState(false);
     const [etape, setEtape] = useState<Etape>('carte');
@@ -107,10 +105,10 @@ export default function ConstructionPage() {
     const retirerForme = (index: number) => setFormesSelectionnees(prev => prev.filter((_, i) => i !== index));
 
     const placerTourelle = async () => {
-        if (caseSelectionnee === null || formesSelectionnees.length === 0 || !nomTourelle.trim()) return;
+        if (caseSelectionnee === null || formesSelectionnees.length === 0) return;
         setLoading(true);
-        await api.ajouterTourelle(partieId, { nom: nomTourelle, position: caseSelectionnee, portee: 3, formes: formesSelectionnees });
-        setNomTourelle('');
+        const nom = `Tour-${tourelles.length + 1}`;
+        await api.ajouterTourelle(partieId, { nom, position: caseSelectionnee, portee: 3, formes: formesSelectionnees });
         annuler();
         await charger();
         setLoading(false);
@@ -150,8 +148,6 @@ export default function ConstructionPage() {
 
     return (
         <main className="h-screen bg-[#0a0a0f] text-white flex flex-col overflow-hidden p-4 gap-4">
-
-            {/* Header */}
             <div className="flex justify-between items-center border-b border-[#c9a84c]/20 pb-3 flex-shrink-0">
                 <div>
                     <h1 className="text-xl font-black text-[#c9a84c] tracking-widest uppercase"
@@ -179,11 +175,7 @@ export default function ConstructionPage() {
                     </button>
                 </div>
             </div>
-
-            {/* Contenu */}
             <div className="flex gap-4 flex-1 min-h-0">
-
-                {/* Carte */}
                 <div className="flex flex-col gap-2 flex-1 min-w-0">
                     <div className="flex items-center justify-between flex-shrink-0">
                         <h2 className="text-[#c9a84c] text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-cinzel)' }}>
@@ -195,7 +187,6 @@ export default function ConstructionPage() {
                                     `Case ${caseSelectionnee} sélectionnée`}
                         </p>
                     </div>
-
                     <CarteConstruction
                         tourelles={tourelles}
                         murailles={murailles}
@@ -206,8 +197,6 @@ export default function ConstructionPage() {
                         onSelectCase={selectCase}
                         onSelectMuraille={selectMuraille}
                     />
-
-                    {/* Légende */}
                     <div className="flex gap-4 text-xs text-gray-500 flex-shrink-0 flex-wrap">
                         <span className="flex items-center gap-1"><span className="w-3 h-3 rounded border border-[#3a3a48] bg-[#1a1a22] inline-block" /> Case tourelle</span>
                         <span className="flex items-center gap-1"><span className="w-3 h-3 rounded border border-[#4a3a1a] bg-[#2a1f0f] inline-block" /> Emplacement muraille</span>
@@ -215,10 +204,7 @@ export default function ConstructionPage() {
                         <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-[#2a1f0f] inline-block" /> Chemin</span>
                     </div>
                 </div>
-
-                {/* Panneau latéral */}
                 <div className="w-96 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
-
                     {etape === 'carte' && (
                         <div className="bg-[#2a2a35]/50 border border-[#3a3a48] rounded-lg p-4 text-center">
                             <p className="text-2xl mb-2">{estReprise ? '🔨' : '🗺️'}</p>
@@ -232,7 +218,6 @@ export default function ConstructionPage() {
                             </p>
                         </div>
                     )}
-
                     {etape === 'muraille' && murailleSelectionnee !== null && (
                         <PanneauMuraille
                             position={murailleSelectionnee}
@@ -243,7 +228,6 @@ export default function ConstructionPage() {
                             onAnnuler={annuler}
                         />
                     )}
-
                     {etape === 'formes' && caseSelectionnee !== null && (
                         <PanneauFormes
                             caseSelectionnee={caseSelectionnee}
@@ -253,24 +237,10 @@ export default function ConstructionPage() {
                             coutActuel={coutActuel}
                             onAjouterForme={ajouterForme}
                             onRetirerForme={retirerForme}
-                            onContinuer={() => setEtape('nom')}
+                            onContinuer={placerTourelle}
                             onAnnuler={annuler}
                         />
                     )}
-
-                    {etape === 'nom' && (
-                        <PanneauNom
-                            formesSelectionnees={formesSelectionnees}
-                            formesDisponibles={FORMES_DISPONIBLES}
-                            coutActuel={coutActuel}
-                            nomTourelle={nomTourelle}
-                            loading={loading}
-                            onNomChange={setNomTourelle}
-                            onPlacer={placerTourelle}
-                            onRetour={() => setEtape('formes')}
-                        />
-                    )}
-
                     <ListeDefenses
                         tourelles={tourelles}
                         murailles={murailles}

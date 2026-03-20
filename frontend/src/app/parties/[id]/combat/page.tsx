@@ -1,28 +1,18 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter, useParams } from 'next/navigation';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { api, Partie, Tourelle } from '@/lib/api';
-import CarteCombat from './CarteCombat';
+import CarteCombatPixi from './CarteCombatPixi';
 import BarresEtat from './BarresEtat';
 import PanneauTourelles from './PanneauTourelles';
 import { CombatEtat } from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const CHEMIN_POSITIONS: { col: number; row: number }[] = [
-    { col: 1, row: 2 }, { col: 2, row: 2 }, { col: 3, row: 2 },
-    { col: 4, row: 2 }, { col: 5, row: 2 },
-    { col: 5, row: 3 }, { col: 5, row: 4 },
-    { col: 4, row: 4 }, { col: 3, row: 4 }, { col: 2, row: 4 }, { col: 1, row: 4 },
-    { col: 1, row: 5 }, { col: 1, row: 6 },
-    { col: 2, row: 6 }, { col: 3, row: 6 }, { col: 4, row: 6 },
-    { col: 5, row: 6 }, { col: 6, row: 6 }, { col: 7, row: 6 },
-    { col: 8, row: 6 }, { col: 9, row: 6 },
-];
 
 export default function CombatPage() {
     const router = useRouter();
@@ -36,7 +26,7 @@ export default function CombatPage() {
     const [connecte, setConnecte] = useState(false);
     const [entreVagues, setEntreVagues] = useState(false);
     const clientRef = useRef<Client | null>(null);
-    const grilleRef = useRef<HTMLDivElement>(null);
+
 
     useEffect(() => {
         charger();
@@ -50,21 +40,7 @@ export default function CombatPage() {
         setTourelles(t);
     };
 
-    const getPixelForPos = useCallback((pos: number) => {
-        const idx = Math.max(0, Math.min(pos, CHEMIN_POSITIONS.length - 1));
-        const cell = CHEMIN_POSITIONS[idx];
-        if (!grilleRef.current) return { x: 0, y: 0 };
-        const cellEl = grilleRef.current.querySelector(
-            `[data-col="${cell.col}"][data-row="${cell.row}"]`
-        ) as HTMLElement;
-        if (!cellEl) return { x: 0, y: 0 };
-        const grilleRect = grilleRef.current.getBoundingClientRect();
-        const cellRect = cellEl.getBoundingClientRect();
-        return {
-            x: cellRect.left - grilleRect.left + cellRect.width / 2 - 16,
-            y: cellRect.top - grilleRect.top + cellRect.height / 2 - 20,
-        };
-    }, []);
+
 
     const connecterWebSocket = () => {
         const client = new Client({
@@ -177,14 +153,12 @@ export default function CombatPage() {
                         />
                     )}
 
-                    <CarteCombat
-                        ref={grilleRef}
+                    <CarteCombatPixi
                         tourelles={tourelles}
                         ennemis={combatEtat?.ennemis ?? []}
                         murailles={combatEtat?.murailles ?? []}
                         forteressePvActuels={combatEtat?.forteressePvActuels ?? 0}
                         forteressePvMax={combatEtat?.forteressePvMax ?? 1}
-                        getPixelForPos={getPixelForPos}
                     />
 
                     {/* Entre vagues */}

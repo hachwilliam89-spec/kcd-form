@@ -40,4 +40,4 @@ build/
 .idea/
 *.tar
 
-.env
+.envapp.jar
