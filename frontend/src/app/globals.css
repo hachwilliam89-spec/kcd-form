@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --font-cinzel: 'Cinzel', serif;
+  --font-crimson: 'Crimson Text', serif;
+  --gold: #c9a84c;
+  --gold-light: #e8c96d;
+  --blood: #8b1a1a;
+  --stone: #2a2a35;
+  --stone-light: #3a3a48;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0a0a0f;
+  font-family: var(--font-crimson);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-cinzel);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 3px;
+}
