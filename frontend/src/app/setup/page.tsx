@@ -89,7 +89,7 @@ export default function SetupPage() {
                     </label>
                     <input
                         className="bg-[#2a2a35] border border-[#c9a84c]/30 focus:border-[#c9a84c] rounded-lg px-4 py-3 text-white outline-none transition-colors text-lg"
-                        placeholder="Ex: Arthur, Lancelot..."
+                        placeholder="Ex: KIM, CHU..."
                         value={nom}
                         onChange={e => { setNom(e.target.value); setErreur(''); }}
                     />

@@ -32,6 +32,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
+        // Garde-fou : on n'initialise qu'au premier lancement
+        if (joueurRepository.existsByNom("Démo")) {
+            System.out.println("DataInitializer : données déjà présentes, initialisation ignorée.");
+            return;
+        }
+
         // Joueur de démonstration
         JoueurEntity joueur = new JoueurEntity("Démo", 400, 3);
         joueurRepository.save(joueur);

@@ -202,3 +202,31 @@ kim-kcd-formes/
 **Kim** — Licence Professionnelle Full Stack · UHA 4.0 · 2024-2026
 
 ---
+
+### Frontend (développement local)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Le front est accessible sur `http://localhost:3000`.
+
+> L'URL de l'API est configurée via la variable d'environnement `NEXT_PUBLIC_API_URL`.  
+> Crée un fichier `.env.local` à la racine de `frontend/` :
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+Pour pointer vers un serveur déployé, remplace par l'IP du serveur :
+```env
+NEXT_PUBLIC_API_URL=http://<IP_SERVEUR>:8888
+```
+```
+
+Et dans la section **Structure du projet**, remplace la ligne `frontend/` :
+```
+├── frontend/                    # Application Next.js (src/app/)
+│   ├── src/app/                 # Pages et composants
+│   ├── .env.local               # Variables d'environnement (non versionné)
+│   └── .env.local.example       # Modèle
