@@ -20,24 +20,33 @@ done
 find_free_port() {
   local port=$1
   while ss -tlnp | grep -q ":$port "; do
-    echo "Port $port occupé, essai $((port+1))..."
+    echo "Port $port occupé, essai $((port+1))..." >&2
     port=$((port+1))
   done
   echo $port
 }
 
+# Détecte l'IP de la machine
+SERVER_IP=$(hostname -I | awk '{print $1}')
+
 # Cherche des ports libres
 API_PORT=$(find_free_port 8888)
 DB_PORT=$(find_free_port 3307)
+FRONT_PORT=$(find_free_port 3000)
 
 # Met à jour le .env
 sed -i "s/API_PORT=.*/API_PORT=$API_PORT/" .env
 sed -i "s/DB_PORT=.*/DB_PORT=$DB_PORT/" .env
+sed -i "s/FRONT_PORT=.*/FRONT_PORT=$FRONT_PORT/" .env
+sed -i "s/SERVER_IP=.*/SERVER_IP=$SERVER_IP/" .env
 
 echo "==============================="
 echo " KCD Formes — Déploiement"
-echo " API : http://localhost:$API_PORT"
-echo " DB  : port $DB_PORT"
+echo " Serveur : $SERVER_IP"
+echo " Front   : http://$SERVER_IP:$FRONT_PORT"
+echo " API     : http://$SERVER_IP:$API_PORT"
+echo " Swagger : http://$SERVER_IP:$API_PORT/swagger-ui/index.html"
+echo " DB      : port $DB_PORT"
 echo "==============================="
 
 # Arrête les anciens containers si présents
@@ -49,5 +58,3 @@ docker compose up -d --build
 # Affiche l'état
 echo ""
 docker compose ps
-SCRIPT
-chmod +x ~/IdeaProjects/kcd-form/deploykcd.sh
