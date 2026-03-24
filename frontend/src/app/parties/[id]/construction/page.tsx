@@ -5,7 +5,6 @@ import { useRouter, useParams } from 'next/navigation';
 import { api, Tourelle, Muraille, Partie } from '@/lib/api';
 import CarteConstruction from './CarteConstruction';
 import PanneauFormes from './PanneauFormes';
-import PanneauNom from './PanneauNom';
 import PanneauMuraille from './PanneauMuraille';
 import ListeDefenses from './ListeDefenses';
 
@@ -40,7 +39,7 @@ const coutFormes = (formes: FormeSelectionnee[]) =>
         return acc + (fd?.cout ?? 0);
     }, 0);
 
-type Etape = 'carte' | 'formes' | 'nom' | 'muraille';
+type Etape = 'carte' | 'formes' | 'muraille';
 
 export default function ConstructionPage() {
     const router = useRouter();
@@ -53,7 +52,6 @@ export default function ConstructionPage() {
     const [caseSelectionnee, setCaseSelectionnee] = useState<number | null>(null);
     const [murailleSelectionnee, setMurailleSelectionnee] = useState<number | null>(null);
     const [formesSelectionnees, setFormesSelectionnees] = useState<FormeSelectionnee[]>([]);
-    const [nomTourelle, setNomTourelle] = useState('');
     const [budget, setBudget] = useState(400);
     const [loading, setLoading] = useState(false);
     const [etape, setEtape] = useState<Etape>('carte');
@@ -107,10 +105,10 @@ export default function ConstructionPage() {
     const retirerForme = (index: number) => setFormesSelectionnees(prev => prev.filter((_, i) => i !== index));
 
     const placerTourelle = async () => {
-        if (caseSelectionnee === null || formesSelectionnees.length === 0 || !nomTourelle.trim()) return;
+        if (caseSelectionnee === null || formesSelectionnees.length === 0) return;
         setLoading(true);
-        await api.ajouterTourelle(partieId, { nom: nomTourelle, position: caseSelectionnee, portee: 3, formes: formesSelectionnees });
-        setNomTourelle('');
+        const nom = `Tourelle ${caseSelectionnee}`;
+        await api.ajouterTourelle(partieId, { nom, position: caseSelectionnee, portee: 3, formes: formesSelectionnees });
         annuler();
         await charger();
         setLoading(false);
@@ -253,21 +251,8 @@ export default function ConstructionPage() {
                             coutActuel={coutActuel}
                             onAjouterForme={ajouterForme}
                             onRetirerForme={retirerForme}
-                            onContinuer={() => setEtape('nom')}
+                            onContinuer={placerTourelle}
                             onAnnuler={annuler}
-                        />
-                    )}
-
-                    {etape === 'nom' && (
-                        <PanneauNom
-                            formesSelectionnees={formesSelectionnees}
-                            formesDisponibles={FORMES_DISPONIBLES}
-                            coutActuel={coutActuel}
-                            nomTourelle={nomTourelle}
-                            loading={loading}
-                            onNomChange={setNomTourelle}
-                            onPlacer={placerTourelle}
-                            onRetour={() => setEtape('formes')}
                         />
                     )}
 

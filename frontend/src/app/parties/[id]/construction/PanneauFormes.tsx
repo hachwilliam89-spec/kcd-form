@@ -101,7 +101,7 @@ export default function PanneauFormes({
                 {formesSelectionnees.length > 0 && (
                     <button onClick={onContinuer}
                             className="bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-bold py-2 rounded uppercase tracking-widest transition-all text-sm">
-                        Continuer →
+                        Placer la tourelle  →
                     </button>
                 )}
             </motion.div>
