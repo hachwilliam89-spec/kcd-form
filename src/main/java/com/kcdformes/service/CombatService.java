@@ -3,8 +3,11 @@ package com.kcdformes.service;
 import com.kcdformes.dto.CombatEtatDTO;
 import com.kcdformes.dto.EnnemiEtatDTO;
 import com.kcdformes.dto.MurailleEtatDTO;
+import com.kcdformes.dto.VagueConfigDTO;
 import com.kcdformes.entity.MurailleEntity;
 import com.kcdformes.entity.TourelleEntity;
+import com.kcdformes.factory.EnnemiFactory;
+import com.kcdformes.factory.EnnemiFactoryRegistry;
 import com.kcdformes.factory.FormeFactoryRegistry;
 import com.kcdformes.model.defense.Tourelle;
 import com.kcdformes.model.ennemis.Ennemi;
@@ -29,6 +32,7 @@ public class CombatService {
     private final TourelleRepository tourelleRepository;
     private final MurailleRepository murailleRepository;
     private final FormeFactoryRegistry factoryRegistry;
+    private final EnnemiFactoryRegistry ennemiFactoryRegistry;
 
     private final Map<Long, Partie> partiesEnCours = new ConcurrentHashMap<>();
     private final Map<Long, ScheduledFuture<?>> schedulers = new ConcurrentHashMap<>();
@@ -38,16 +42,21 @@ public class CombatService {
                          PartieRepository partieRepository,
                          TourelleRepository tourelleRepository,
                          MurailleRepository murailleRepository,
-                         FormeFactoryRegistry factoryRegistry) {
+                         FormeFactoryRegistry factoryRegistry,
+                         EnnemiFactoryRegistry ennemiFactoryRegistry) {
         this.messagingTemplate = messagingTemplate;
         this.partieRepository = partieRepository;
         this.tourelleRepository = tourelleRepository;
         this.murailleRepository = murailleRepository;
         this.factoryRegistry = factoryRegistry;
+        this.ennemiFactoryRegistry = ennemiFactoryRegistry;
     }
 
+
+    // MODE SOLO
+
+
     public void demarrerCombat(Long partieId) {
-        // Si la partie existe déjà en mémoire (reprise après ENTRE_VAGUES)
         Partie partieExistante = partiesEnCours.get(partieId);
         if (partieExistante != null) {
             if (partieExistante.getEtat() == EtatPartie.ENTRE_VAGUES) {
@@ -56,7 +65,6 @@ public class CombatService {
             return;
         }
 
-        // Première fois : créer la partie
         var partieEntity = partieRepository.findById(partieId)
                 .orElseThrow(() -> new RuntimeException("Partie introuvable"));
         var tourelles = tourelleRepository.findByPartieId(partieId);
@@ -69,25 +77,15 @@ public class CombatService {
                 3
         );
 
-        Carte carte = new Carte("Terrain", 10, 6);
-        List<Integer> chemin = new ArrayList<>();
-        for (int i = 0; i < 21; i++) chemin.add(i);
-        carte.setChemin(chemin);
-
-        List<Integer> emplacements = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        carte.setEmplacementsTourelles(emplacements);
-
+        Carte carte = creerCarte();
         Partie partie = new Partie(difficulte, joueur, carte);
 
-        // Charger les tourelles
         chargerTourelles(carte, tourelles);
 
-        // Charger les murailles
         for (MurailleEntity me : muraillesEntity) {
             partie.ajouterMuraille(me.getPosition(), me.getLargeur(), me.getLongueur(), me.getPvMax());
         }
 
-        // Générer les vagues
         int nbVagues = difficulte.getNombreVagues();
         int duree = difficulte.getDureeVagueSecondes();
         double coeffBase = difficulte.getNiveau();
@@ -106,22 +104,85 @@ public class CombatService {
         lancerScheduler(partieId, partie);
     }
 
+    // MODE MULTIJOUEUR
+
+
+    public void demarrerCombatMulti(String lobbyId, LobbyService lobbyService) {
+        LobbyService.Lobby lobby = lobbyService.getLobby(lobbyId);
+        Long partieId = lobby.partieId;
+
+        var partieEntity = partieRepository.findById(partieId)
+                .orElseThrow(() -> new RuntimeException("Partie introuvable"));
+        var tourelles = tourelleRepository.findByPartieId(partieId);
+        var muraillesEntity = murailleRepository.findByPartieId(partieId);
+
+        Difficulte difficulte = partieEntity.getDifficulte();
+        Joueur joueur = new Joueur(
+                partieEntity.getJoueur().getNom(),
+                partieEntity.getJoueur().getBudget(),
+                3
+        );
+
+        Carte carte = creerCarte();
+        Partie partie = new Partie(difficulte, joueur, carte);
+
+        chargerTourelles(carte, tourelles);
+
+        for (MurailleEntity me : muraillesEntity) {
+            partie.ajouterMuraille(me.getPosition(), me.getLargeur(), me.getLongueur(), me.getPvMax());
+        }
+
+        List<VagueConfigDTO> vaguesConfig = lobby.vaguesAttaquant;
+        int duree = difficulte.getDureeVagueSecondes();
+        double coeffBase = difficulte.getNiveau();
+
+        for (int i = 0; i < vaguesConfig.size(); i++) {
+            VagueConfigDTO vc = vaguesConfig.get(i);
+            Vague v = new Vague(i + 1, coeffBase, duree);
+            if (i == vaguesConfig.size() - 1) v.setDerniereVague(true);
+
+            for (VagueConfigDTO.UniteConfig unite : vc.getUnites()) {
+                EnnemiFactory factory = ennemiFactoryRegistry.getFactory(unite.getType());
+                v.ajouterDepuisFactory(factory, unite.getQuantite(), coeffBase);
+            }
+
+            v.initialiserPremiereEscouade();
+            partie.ajouterVague(v);
+        }
+
+        partie.demarrer();
+        partiesEnCours.put(partieId, partie);
+        lancerScheduler(partieId, partie);
+
+        lobby.etat = "EN_COURS";
+    }
+
+
+    // MÉTHODES COMMUNES
+
+
     public boolean peutReprendre(Long partieId) {
         Partie partie = partiesEnCours.get(partieId);
         return partie != null && partie.getEtat() == EtatPartie.ENTRE_VAGUES;
     }
 
+    private Carte creerCarte() {
+        Carte carte = new Carte("Terrain", 10, 6);
+        List<Integer> chemin = new ArrayList<>();
+        for (int i = 0; i < 21; i++) chemin.add(i);
+        carte.setChemin(chemin);
+        carte.setEmplacementsTourelles(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        return carte;
+    }
+
     private void reprendreCombat(Long partieId, Partie partie) {
-        // Recharger les tourelles (le joueur a pu en ajouter)
         var tourellesEntity = tourelleRepository.findByPartieId(partieId);
         Carte carte = partie.getCarte();
-        // Vider les tourelles existantes et recharger
         for (var t : new ArrayList<>(carte.getTourelles())) {
             carte.supprimerTourelle(t.getPosition());
         }
         chargerTourelles(carte, tourellesEntity);
 
-        // Recharger les murailles (le joueur a pu en ajouter)
         var muraillesEntity = murailleRepository.findByPartieId(partieId);
         for (MurailleEntity me : muraillesEntity) {
             if (!partie.getMurailles().containsKey(me.getPosition())) {

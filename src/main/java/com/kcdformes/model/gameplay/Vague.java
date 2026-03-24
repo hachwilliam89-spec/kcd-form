@@ -37,9 +37,9 @@ public class Vague {
         this.derniereVague = false;
     }
 
-    // =============================================
+
     // GÉNÉRATION AUTOMATIQUE DES ESCOUADES
-    // =============================================
+
 
     public void genererEscouades(int nbCavaliers, int nbInfanteries, int nbBeliers) {
         escouades.clear();
@@ -58,9 +58,6 @@ public class Vague {
                 () -> new Rectangle("forme", 10, 6),
                 DELAI_ENTRE_BELIERS);
 
-        if (!escouades.isEmpty()) {
-            escouades.get(0).setDelaiAvantSpawn(0);
-        }
     }
 
     private void genererEscouadesParType(int nombre, String nomBase,
@@ -85,6 +82,35 @@ public class Vague {
             escouades.add(escouade);
             restant -= taille;
         }
+    }
+
+    public void initialiserPremiereEscouade() {
+        if (!escouades.isEmpty()) {
+            escouades.get(0).setDelaiAvantSpawn(0);
+        }
+    }
+
+    public void ajouterDepuisFactory(com.kcdformes.factory.EnnemiFactory factory,
+                                     int nombre, double coeff) {
+        if (nombre <= 0) return;
+
+        int restant = nombre;
+        int compteur = 1;
+        while (restant > 0) {
+            int taille = Math.min(restant, TAILLE_MAX_ESCOUADE);
+            String type = factory.getType();
+            int delaiAvant = "RECTANGLE".equals(type) ? DELAI_AVANT_BELIERS : DELAI_ENTRE_ESCOUADES;
+            int delaiEntre = "RECTANGLE".equals(type) ? DELAI_ENTRE_BELIERS : DELAI_ENTRE_ENNEMIS;
+
+            Escouade escouade = new Escouade(delaiAvant, delaiEntre);
+            for (int i = 0; i < taille; i++) {
+                escouade.ajouterEnnemi(factory.creer(type + " " + compteur, coeff));
+                compteur++;
+            }
+            escouades.add(escouade);
+            restant -= taille;
+        }
+
     }
 
     @FunctionalInterface

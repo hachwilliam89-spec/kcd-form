@@ -4,12 +4,26 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EnnemiEtat } from '@/lib/types';
 
+const FRAME_WIDTH = 64;
+const FRAME_HEIGHT = 64;
+const COLS = 4;
 
-const getEnnemiEmoji = (type: string) => {
-    if (type === 'Triangle') return '⚔️';
-    if (type === 'Cercle') return '🛡️';
-    if (type === 'Rectangle') return '🐏';
-    return '👾';
+const getEnnemiSprite = (type: string) => {
+    if (type === 'Triangle') return '/sprites/sheets/SwordCavalier/SwordCavalier_ShortHair_Red1.png';
+    if (type === 'Cercle') return '/sprites/sheets/SpearFighter/SpearFighter_ShortHair_Blue1.png';
+    return '/sprites/sheets/SwordCavalier/SwordCavalier_ShortHair_Red1.png';
+};
+
+const OFFSETS_PAR_TYPE: Record<string, { dx: number; dy: number }[]> = {
+    Triangle: [
+        { dx: 0, dy: 0 }, { dx: 18, dy: -5 }, { dx: -14, dy: -3 }, { dx: 8, dy: -10 },
+    ],
+    Cercle: [
+        { dx: 0, dy: 0 }, { dx: 10, dy: -3 }, { dx: -8, dy: -2 }, { dx: 5, dy: -7 },
+    ],
+    Rectangle: [
+        { dx: 0, dy: 0 }, { dx: 16, dy: 0 },
+    ],
 };
 
 interface EnnemiSpriteProps {
@@ -22,13 +36,23 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
     const [displayPos, setDisplayPos] = useState(ennemi.position);
     const [flashing, setFlashing] = useState(false);
     const [attaqueForteresse, setAttaqueForteresse] = useState(false);
+    const [frame, setFrame] = useState(0);
     const animatingRef = useRef(false);
     const queueRef = useRef<number[]>([]);
     const prevPvRef = useRef(ennemi.pvActuels);
     const pvPct = (ennemi.pvActuels / ennemi.pvMax) * 100;
     const estALaForteresse = ennemi.position >= tailleChemin - 1;
 
-    // Flash rouge si perte de PV
+    const OFFSETS = OFFSETS_PAR_TYPE[ennemi.type] ?? OFFSETS_PAR_TYPE['Cercle'];
+
+    // Animation spritesheet
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFrame(f => (f + 1) % COLS);
+        }, 150);
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() => {
         if (ennemi.pvActuels < prevPvRef.current) {
             setFlashing(true);
@@ -37,7 +61,6 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
         prevPvRef.current = ennemi.pvActuels;
     }, [ennemi.pvActuels]);
 
-    // Animation attaque forteresse (pulsation continue)
     useEffect(() => {
         if (estALaForteresse && ennemi.vivant) {
             setAttaqueForteresse(true);
@@ -46,7 +69,6 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
         }
     }, [estALaForteresse, ennemi.vivant]);
 
-    // Interpolation case par case
     useEffect(() => {
         const current = displayPos;
         const target = ennemi.position;
@@ -74,34 +96,81 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
     }, [ennemi.position]);
 
     const px = getPixelForPos(displayPos);
+    const bgX = -(frame * FRAME_WIDTH);
+    const bgY = 0;
 
     return (
         <motion.div
             animate={{ left: px.x, top: px.y }}
             transition={{ duration: 0.25, ease: 'linear' }}
             className="absolute flex flex-col items-center"
-            style={{ width: 32 }}>
+            style={{ width: 50 }}>
 
-            {/* Emoji ennemi */}
-            <motion.span
-                animate={
-                    attaqueForteresse
-                        ? { x: [0, 4, -4, 3, -3, 0], scale: [1, 1.15, 1, 1.1, 1] }
-                        : flashing
-                            ? { filter: ['brightness(1)', 'brightness(3)', 'brightness(1)'], scale: [1, 1.3, 1] }
-                            : { scale: 1 }
-                }
-                transition={
-                    attaqueForteresse
-                        ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
-                        : { duration: 0.3 }
-                }
-                className="text-xl leading-none drop-shadow-lg"
-                style={{ filter: flashing ? 'hue-rotate(0deg) saturate(5)' : 'none' }}>
-                {getEnnemiEmoji(ennemi.type)}
-            </motion.span>
+            {ennemi.type === 'Rectangle' ? (
+                // Bélier — emoji
+                <div style={{ position: 'relative', width: 50, height: 40 }}>
+                    {OFFSETS.map((offset, i) => (
+                        <motion.div
+                            key={i}
+                            animate={
+                                attaqueForteresse
+                                    ? { x: [offset.dx, offset.dx + 4, offset.dx - 4, offset.dx + 3, offset.dx - 3, offset.dx], scale: [1, 1.15, 1, 1.1, 1] }
+                                    : flashing
+                                        ? { scale: [1, 1.3, 1] }
+                                        : { scale: 1 }
+                            }
+                            transition={
+                                attaqueForteresse
+                                    ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
+                                    : { duration: 0.3 }
+                            }
+                            style={{
+                                position: 'absolute',
+                                left: offset.dx,
+                                top: offset.dy,
+                                fontSize: 28,
+                                filter: flashing ? 'brightness(3) saturate(5)' : 'none',
+                            }}>
+                            🐏
+                        </motion.div>
+                    ))}
+                </div>
+            ) : (
+                // Cavaliers (Triangle) et infanterie (Cercle) — spritesheet
+                <div style={{ position: 'relative', width: 50, height: 40 }}>
+                    {OFFSETS.map((offset, i) => (
+                        <motion.div
+                            key={i}
+                            animate={
+                                attaqueForteresse
+                                    ? { x: [offset.dx, offset.dx + 4, offset.dx - 4, offset.dx + 3, offset.dx - 3, offset.dx], scale: [1, 1.15, 1, 1.1, 1] }
+                                    : flashing
+                                        ? { scale: [1, 1.3, 1] }
+                                        : { scale: 1 }
+                            }
+                            transition={
+                                attaqueForteresse
+                                    ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
+                                    : { duration: 0.3 }
+                            }
+                            style={{
+                                position: 'absolute',
+                                left: offset.dx,
+                                top: offset.dy,
+                                width: 32,
+                                height: 32,
+                                backgroundImage: `url(${getEnnemiSprite(ennemi.type)})`,
+                                backgroundPosition: `${bgX}px ${bgY}px`,
+                                backgroundSize: `${FRAME_WIDTH * COLS}px auto`,
+                                backgroundRepeat: 'no-repeat',
+                                imageRendering: 'pixelated' as const,
+                                filter: flashing ? 'brightness(3) saturate(5)' : 'none',
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
 
-            {/* Texte dégâts flottant */}
             <AnimatePresence>
                 {flashing && !attaqueForteresse && (
                     <motion.span
@@ -116,7 +185,6 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
                 )}
             </AnimatePresence>
 
-            {/* Indicateur attaque forteresse */}
             <AnimatePresence>
                 {attaqueForteresse && (
                     <motion.span
@@ -130,7 +198,6 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
                 )}
             </AnimatePresence>
 
-            {/* Barre de PV */}
             <div className="w-full h-1 bg-gray-700 rounded mt-0.5">
                 <motion.div
                     animate={{ width: `${pvPct}%` }}
