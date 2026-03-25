@@ -1,8 +1,9 @@
 package com.kcdformes.model.ennemis;
 
 import com.kcdformes.model.formes.Forme;
+import com.kcdformes.model.gameplay.ComposantCombat;
 
-public class Ennemi {
+public class Ennemi implements ComposantCombat {
 
     private String nom;
     private Forme forme;
@@ -15,7 +16,6 @@ public class Ennemi {
     private int pointsScore;
     private boolean scoreComptabilise = false;
 
-    // Constructeur avec coefficient de difficulté
     public Ennemi(String nom, Forme forme, double coeffDifficulte) {
         setNom(nom);
         if (forme == null) {
@@ -34,7 +34,6 @@ public class Ennemi {
         this.pointsScore = (int)(calculerPoints() * coeffDifficulte);
     }
 
-    // Constructeur par défaut (coeff = 1.0)
     public Ennemi(String nom, Forme forme) {
         this(nom, forme, 1.0);
     }
@@ -53,21 +52,33 @@ public class Ennemi {
         return (int)(forme.aire() * forme.getMultiplicateurMuraille());
     }
 
+    // COMPOSITE — Implémentation Leaf
+
+    @Override
+    public int getPvActuels() { return pvActuels; }
+
+    @Override
+    public int getPvMax() { return pvMax; }
+
+    @Override
+    public boolean estVivant() { return pvActuels > 0; }
+
+    @Override
+    public void subirDegats(double degats) {
+        pvActuels -= (int) degats;
+        if (pvActuels < 0) pvActuels = 0;
+    }
+
+    @Override
+    public int getNombreVivants() { return estVivant() ? 1 : 0; }
+
+    @Override
+    public int getNombreUnites() { return 1; }
+
     // GAMEPLAY
 
     public void avancer() {
         position += Math.max(1, (int) vitesse);
-    }
-
-    public void subirDegats(double degats) {
-        pvActuels -= (int) degats;
-        if (pvActuels < 0) {
-            pvActuels = 0;
-        }
-    }
-
-    public boolean estVivant() {
-        return pvActuels > 0;
     }
 
     public double getForceAttaque() {
@@ -82,8 +93,6 @@ public class Ennemi {
 
     public String getNom() { return nom; }
     public Forme getForme() { return forme; }
-    public int getPvMax() { return pvMax; }
-    public int getPvActuels() { return pvActuels; }
     public double getVitesse() { return vitesse; }
     public int getPosition() { return position; }
     public double getDegatsRempart() { return degatsRempart; }

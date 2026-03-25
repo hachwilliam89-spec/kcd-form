@@ -5,7 +5,7 @@ import com.kcdformes.model.ennemis.Ennemi;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Escouade {
+public class Escouade implements ComposantCombat {
 
     private List<Ennemi> ennemis;
     private int delaiAvantSpawn;
@@ -32,12 +32,63 @@ public class Escouade {
         ennemis.add(ennemi);
     }
 
-    /**
-     * Tente de spawn le prochain ennemi.
-     * Retourne l'ennemi spawné, ou null si en attente (délai) ou terminée.
-     */
+    // COMPOSITE — Délégation aux enfants (Ennemi)
+
+    @Override
+    public int getPvActuels() {
+        int total = 0;
+        for (Ennemi e : ennemis) total += e.getPvActuels();
+        return total;
+    }
+
+    @Override
+    public int getPvMax() {
+        int total = 0;
+        for (Ennemi e : ennemis) total += e.getPvMax();
+        return total;
+    }
+
+    @Override
+    public boolean estVivant() {
+        for (Ennemi e : ennemis) {
+            if (e.estVivant()) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void subirDegats(double degats) {
+        List<Ennemi> vivants = getEnnemisVivants();
+        if (vivants.isEmpty()) return;
+        double degatsParEnnemi = degats / vivants.size();
+        for (Ennemi e : vivants) e.subirDegats(degatsParEnnemi);
+    }
+
+    @Override
+    public int getNombreVivants() {
+        int count = 0;
+        for (Ennemi e : ennemis) {
+            if (e.estVivant()) count++;
+        }
+        return count;
+    }
+
+    @Override
+    public int getNombreUnites() {
+        return ennemis.size();
+    }
+
+    public List<Ennemi> getEnnemisVivants() {
+        List<Ennemi> vivants = new ArrayList<>();
+        for (Ennemi e : ennemis) {
+            if (e.estVivant()) vivants.add(e);
+        }
+        return vivants;
+    }
+
+    // SPAWN
+
     public Ennemi spawnSuivant() {
-        // Attente avant le premier spawn de l'escouade
         if (!commenced) {
             ticksAttente++;
             if (ticksAttente >= delaiAvantSpawn) {
@@ -48,12 +99,10 @@ public class Escouade {
             return null;
         }
 
-        // Escouade terminée
         if (estTerminee()) {
             return null;
         }
 
-        // Délai entre chaque ennemi
         ticksAttente++;
         if (ticksAttente >= delaiEntreEnnemis) {
             ticksAttente = 0;
@@ -117,6 +166,8 @@ public class Escouade {
     @Override
     public String toString() {
         return "Escouade [" + ennemis.size() + " ennemis"
+                + ", vivants=" + getNombreVivants()
+                + ", PV=" + getPvActuels() + "/" + getPvMax()
                 + ", delaiAvant=" + delaiAvantSpawn
                 + ", delaiEntre=" + delaiEntreEnnemis
                 + ", spawned=" + indexSpawn + "/" + ennemis.size() + "]";

@@ -8,7 +8,7 @@ import com.kcdformes.model.formes.Triangle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Vague {
+public class Vague implements ComposantCombat {
 
     private int numero;
     private List<Escouade> escouades;
@@ -19,7 +19,6 @@ public class Vague {
     private int tempsEcoule;
     private boolean derniereVague;
 
-    // Constantes de découpage
     private static final int TAILLE_MAX_ESCOUADE = 5;
     private static final int DELAI_ENTRE_ESCOUADES = 4;
     private static final int DELAI_AVANT_BELIERS = 6;
@@ -37,9 +36,55 @@ public class Vague {
         this.derniereVague = false;
     }
 
+    // COMPOSITE — Délégation aux enfants (Escouade)
+
+    @Override
+    public int getPvActuels() {
+        int total = 0;
+        for (Escouade esc : escouades) total += esc.getPvActuels();
+        return total;
+    }
+
+    @Override
+    public int getPvMax() {
+        int total = 0;
+        for (Escouade esc : escouades) total += esc.getPvMax();
+        return total;
+    }
+
+    @Override
+    public boolean estVivant() {
+        for (Escouade esc : escouades) {
+            if (esc.estVivant()) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void subirDegats(double degats) {
+        for (Escouade esc : escouades) {
+            if (esc.estVivant()) {
+                esc.subirDegats(degats);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public int getNombreVivants() {
+        int count = 0;
+        for (Escouade esc : escouades) count += esc.getNombreVivants();
+        return count;
+    }
+
+    @Override
+    public int getNombreUnites() {
+        int total = 0;
+        for (Escouade esc : escouades) total += esc.getNombreUnites();
+        return total;
+    }
 
     // GÉNÉRATION AUTOMATIQUE DES ESCOUADES
-
 
     public void genererEscouades(int nbCavaliers, int nbInfanteries, int nbBeliers) {
         escouades.clear();
@@ -57,7 +102,6 @@ public class Vague {
         genererEscouadesParType(nbBeliers, "Bélier",
                 () -> new Rectangle("forme", 10, 6),
                 DELAI_ENTRE_BELIERS);
-
     }
 
     private void genererEscouadesParType(int nombre, String nomBase,
@@ -67,9 +111,7 @@ public class Vague {
         int restant = nombre;
         while (restant > 0) {
             int taille = Math.min(restant, TAILLE_MAX_ESCOUADE);
-
             int delaiAvant = nomBase.equals("Bélier") ? DELAI_AVANT_BELIERS : DELAI_ENTRE_ESCOUADES;
-
             Escouade escouade = new Escouade(delaiAvant, delaiEntre);
 
             for (int i = 0; i < taille; i++) {
@@ -110,7 +152,6 @@ public class Vague {
             escouades.add(escouade);
             restant -= taille;
         }
-
     }
 
     @FunctionalInterface
@@ -118,9 +159,7 @@ public class Vague {
         com.kcdformes.model.formes.Forme creer();
     }
 
-    // =============================================
-    // AJOUT MANUEL (pour les survivants de la vague précédente)
-    // =============================================
+    // AJOUT MANUEL (survivants de la vague précédente)
 
     public void ajouterEnnemis(List<Ennemi> survivants) {
         if (survivants == null || survivants.isEmpty()) return;
@@ -133,9 +172,7 @@ public class Vague {
         escouades.add(0, escouadeSurvivants);
     }
 
-    // =============================================
     // SPAWN
-    // =============================================
 
     public Ennemi spawnSuivant() {
         if (indexEscouade >= escouades.size()) {
@@ -164,10 +201,8 @@ public class Vague {
 
     public boolean estTerminee() {
         if (derniereVague) {
-            // Dernière vague : finie quand tous morts et tous spawnés
             return getNombreVivants() == 0 && toutSpawne();
         }
-        // Vagues intermédiaires : finie par timer OU tous les ennemis spawnés sont morts
         if (getNombreVivants() == 0 && toutSpawne()) {
             return true;
         }
@@ -178,34 +213,16 @@ public class Vague {
         return indexEscouade >= escouades.size();
     }
 
-    // =============================================
-    // STATISTIQUES
-    // =============================================
+    // STATISTIQUES (utilisent le Composite)
 
     public int getNombreEnnemis() {
-        int total = 0;
-        for (Escouade e : escouades) {
-            total += e.getNombreEnnemis();
-        }
-        return total;
-    }
-
-    public int getNombreVivants() {
-        int count = 0;
-        for (Escouade esc : escouades) {
-            for (Ennemi e : esc.getEnnemis()) {
-                if (e.estVivant()) count++;
-            }
-        }
-        return count;
+        return getNombreUnites();
     }
 
     public List<Ennemi> getEnnemisSurvivants() {
         List<Ennemi> survivants = new ArrayList<>();
         for (Escouade esc : escouades) {
-            for (Ennemi e : esc.getEnnemis()) {
-                if (e.estVivant()) survivants.add(e);
-            }
+            survivants.addAll(esc.getEnnemisVivants());
         }
         return survivants;
     }
@@ -230,29 +247,17 @@ public class Vague {
 
     // GETTERS
 
-    public int getNumero() {
-        return numero;
-    }
+    public int getNumero() { return numero; }
 
-    public List<Escouade> getEscouades() {
-        return new ArrayList<>(escouades);
-    }
+    public List<Escouade> getEscouades() { return new ArrayList<>(escouades); }
 
-    public double getCoeffDifficulte() {
-        return coeffDifficulte;
-    }
+    public double getCoeffDifficulte() { return coeffDifficulte; }
 
-    public int getDureeSecondes() {
-        return dureeSecondes;
-    }
+    public int getDureeSecondes() { return dureeSecondes; }
 
-    public int getTempsEcoule() {
-        return tempsEcoule;
-    }
+    public int getTempsEcoule() { return tempsEcoule; }
 
-    public boolean isDerniereVague() {
-        return derniereVague;
-    }
+    public boolean isDerniereVague() { return derniereVague; }
 
     // SETTERS
 
