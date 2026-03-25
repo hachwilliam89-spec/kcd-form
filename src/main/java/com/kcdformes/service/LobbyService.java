@@ -63,6 +63,12 @@ public class LobbyService {
         return toDTO(lobby);
     }
 
+    public void marquerEnCours(String lobbyId) {
+        Lobby lobby = getLobby(lobbyId);
+        lobby.etat = "EN_COURS";
+        broadcastLobby(lobby);
+    }
+
     public LobbyDTO marquerPret(String lobbyId, String role) {
         Lobby lobby = getLobby(lobbyId);
         if ("DEFENSEUR".equals(role)) {

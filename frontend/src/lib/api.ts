@@ -77,6 +77,30 @@ export interface Vague {
     message: string;
 }
 
+// Types Lobby
+export interface LobbyDTO {
+    lobbyId: string;
+    etat: string;
+    partieId: number;
+    defenseurPret: boolean;
+    attaquantPret: boolean;
+    defenseurConnecte: boolean;
+    attaquantConnecte: boolean;
+    vaguesAttaquant: VagueConfigDTO[] | null;
+    budgetAttaquant: number;
+    budgetRestant: number;
+}
+
+export interface VagueConfigDTO {
+    numero: number;
+    unites: UniteConfig[];
+}
+
+export interface UniteConfig {
+    type: string;
+    quantite: number;
+}
+
 // ============================================================
 // Helper — fetch + extraction de donnees
 // ============================================================
@@ -191,4 +215,22 @@ export const api = {
 
     reprendreCombat: (partieId: number) =>
         post<void>(`${API_URL}/api/parties/${partieId}/combat/reprendre`),
+
+   // Lobby Multi
+
+    creerLobby: (partieId: number, nbVagues: number) =>
+            post<{ lobbyId: string }>(`${API_URL}/api/lobby/creer?partieId=${partieId}&nbVagues=${nbVagues}`),
+
+        rejoindreLobby: (lobbyId: string, role: string) =>
+            post<LobbyDTO>(`${API_URL}/api/lobby/${lobbyId}/rejoindre?role=${role}`),
+
+        configurerVagues: (lobbyId: string, vagues: VagueConfigDTO[]) =>
+           post<LobbyDTO>(`${API_URL}/api/lobby/${lobbyId}/vagues`, vagues),
+
+        marquerPret: (lobbyId: string, role: string) =>
+            post<LobbyDTO>(`${API_URL}/api/lobby/${lobbyId}/pret?role=${role}`),
+
+        getEtatLobby: (lobbyId: string) =>
+            fetchApi<LobbyDTO>(`${API_URL}/api/lobby/${lobbyId}`),
+
 };

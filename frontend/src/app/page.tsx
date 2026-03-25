@@ -64,23 +64,28 @@ export default function Home() {
                     ))}
                 </motion.div>
 
-                {/* Boutons */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, delay: 1 }}
-                    className="flex flex-col items-center gap-4 w-full">
-                    <Link href="/setup"
-                          className="inline-block w-full max-w-md bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black text-2xl px-16 py-5 rounded-lg tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_40px_rgba(201,168,76,0.6)] text-center"
-                          style={{ fontFamily: 'var(--font-cinzel)' }}>
-                        ⚔️ Commencer ⚔️
-                    </Link>
-                    <Link href="/guide"
-                          className="text-[#8a7a5a] hover:text-[#c9a84c] text-sm uppercase tracking-widest transition-colors"
-                          style={{ fontFamily: 'var(--font-cinzel)' }}>
-                        📜 Guide du jeu — Tourelles, Ennemis & Stratégie
-                    </Link>
-                </motion.div>
+           {/* Boutons */}
+                           <motion.div
+                               initial={{ opacity: 0, scale: 0.9 }}
+                               animate={{ opacity: 1, scale: 1 }}
+                               transition={{ duration: 0.6, delay: 1 }}
+                               className="flex flex-col items-center gap-4 w-full">
+                               <Link href="/setup"
+                                     className="inline-block w-full max-w-md bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black text-2xl px-16 py-5 rounded-lg tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_40px_rgba(201,168,76,0.6)] text-center"
+                                     style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                   🛡️ Solo
+                               </Link>
+                               <Link href="/multi"
+                                     className="inline-block w-full max-w-md bg-[#8b1a1a] hover:bg-[#a52020] text-white font-black text-2xl px-16 py-5 rounded-lg tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,26,26,0.6)] text-center"
+                                     style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                   ⚔️ Multijoueur
+                               </Link>
+                               <Link href="/guide"
+                                     className="text-[#8a7a5a] hover:text-[#c9a84c] text-sm uppercase tracking-widest transition-colors"
+                                     style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                   📜 Guide du jeu — Tourelles, Ennemis & Stratégie
+                               </Link>
+                           </motion.div>
             </div>
         </main>
     );

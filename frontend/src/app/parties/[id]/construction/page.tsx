@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
 import { api, Tourelle, Muraille, Partie } from '@/lib/api';
 import CarteConstruction from './CarteConstruction';
 import PanneauFormes from './PanneauFormes';
 import PanneauMuraille from './PanneauMuraille';
 import ListeDefenses from './ListeDefenses';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 
 interface FormeSelectionnee {
     type: 'TRIANGLE' | 'CERCLE';
@@ -55,6 +55,9 @@ export default function ConstructionPage() {
     const [budget, setBudget] = useState(400);
     const [loading, setLoading] = useState(false);
     const [etape, setEtape] = useState<Etape>('carte');
+    const searchParams = useSearchParams();
+    const fromLobby = searchParams.get('from') === 'lobby';
+    const lobbyId = searchParams.get('lobbyId');
 
     const estReprise = partie?.etat === 'ENTRE_VAGUES';
     const vagueAffichee = (partie?.vagueActuelle ?? 0) + 1;
@@ -170,11 +173,19 @@ export default function ConstructionPage() {
                         <p className="text-xs text-gray-400 uppercase tracking-widest">Budget</p>
                         <p className="text-2xl font-black text-[#c9a84c]">{budget} 💰</p>
                     </div>
-                    <button onClick={lancerCombat} disabled={tourelles.length === 0}
-                            className="bg-[#c9a84c] hover:bg-[#e8c96d] disabled:opacity-40 text-black font-black px-5 py-3 rounded-lg uppercase tracking-widest transition-all text-sm"
-                            style={{ fontFamily: 'var(--font-cinzel)' }}>
-                        {estReprise ? `Vague ${vagueAffichee} ⚔️` : "Lancer l'assaut ⚔️"}
-                    </button>
+                    {fromLobby ? (
+                        <button onClick={() => router.push(`/multi/${lobbyId}?role=DEFENSEUR&partieId=${partieId}`)}
+                                className="bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black px-5 py-3 rounded-lg uppercase tracking-widest transition-all text-sm"
+                                style={{ fontFamily: 'var(--font-cinzel)' }}>
+                            🛡️ Retour au lobby
+                        </button>
+                    ) : (
+                        <button onClick={lancerCombat}
+                                className="bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black px-5 py-3 rounded-lg uppercase tracking-widest transition-all text-sm"
+                                style={{ fontFamily: 'var(--font-cinzel)' }}>
+                            {estReprise ? `⚔️ Vague ${vagueAffichee}` : '⚔️ Lancer le combat'}
+                        </button>
+                    )}
                 </div>
             </div>
 
