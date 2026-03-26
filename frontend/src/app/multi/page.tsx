@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
+import { PixelBorder, PixelShield, PixelBanner } from '@/components/PixelSprites';
 
 export default function MultiPage() {
     const router = useRouter();
@@ -40,72 +41,166 @@ export default function MultiPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#0a0a0f] text-white flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-md space-y-6">
-                <div className="text-center">
-                    <h1 className="text-3xl font-black text-[#c9a84c] tracking-widest uppercase mb-2"
-                        style={{ fontFamily: 'var(--font-cinzel)' }}>
-                        ⚔️ Mode Multijoueur
+        <main className="min-h-screen bg-medieval-multi text-white flex flex-col items-center justify-center p-4">
+            <div className="w-full max-w-md flex flex-col gap-6 items-center">
+
+                {/* Header */}
+                <div className="text-center flex flex-col items-center gap-3">
+                    <div className="flex items-center gap-3">
+                        <PixelShield size={36} />
+                        <span className="text-3xl" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>⚔️</span>
+                        <PixelBanner size={36} color="#c44030" />
+                    </div>
+                    <h1 className="text-3xl font-black tracking-widest uppercase"
+                        style={{
+                            fontFamily: 'var(--font-cinzel)',
+                            color: '#dcb464',
+                            textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 0 20px rgba(220,180,100,0.2)',
+                        }}>
+                        Mode Multijoueur
                     </h1>
-                    <p className="text-gray-400 text-sm">Défenseur vs Attaquant</p>
+                    <p style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.6)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                        Défenseur vs Attaquant
+                    </p>
+                    <PixelBorder className="w-56" />
                 </div>
 
+                {/* Choix */}
                 {mode === 'choix' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-4 w-full">
+
+                        {/* Créer — défenseur */}
                         <button onClick={() => setMode('creer')}
-                                className="w-full bg-[#1a1a22] border-2 border-[#c9a84c] rounded-xl p-6 hover:bg-[#2a2a35] transition-all text-left">
-                            <p className="text-xl mb-1">🛡️ Créer un lobby</p>
-                            <p className="text-gray-400 text-sm">Défendez votre forteresse</p>
+                                className="w-full text-left p-5 transition-all hover:translate-y-[-2px]"
+                                style={{
+                                    background: 'rgba(26,20,32,0.85)',
+                                    outline: '3px solid #1a0a00',
+                                    boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.1), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00',
+                                }}>
+                            <div className="flex items-center gap-4">
+                                <PixelShield size={40} />
+                                <div>
+                                    <p className="text-lg font-bold"
+                                       style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
+                                        Créer un lobby
+                                    </p>
+                                    <p className="text-xs mt-0.5"
+                                       style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.5)' }}>
+                                        Défendez votre forteresse
+                                    </p>
+                                </div>
+                            </div>
                         </button>
+
+                        {/* Rejoindre — attaquant */}
                         <button onClick={() => setMode('rejoindre')}
-                                className="w-full bg-[#1a1a22] border-2 border-[#8b1a1a] rounded-xl p-6 hover:bg-[#2a2a35] transition-all text-left">
-                            <p className="text-xl mb-1">⚔️ Rejoindre un lobby</p>
-                            <p className="text-gray-400 text-sm">Attaquez la forteresse adverse</p>
+                                className="w-full text-left p-5 transition-all hover:translate-y-[-2px]"
+                                style={{
+                                    background: 'rgba(60,20,20,0.7)',
+                                    outline: '3px solid #1a0a00',
+                                    boxShadow: 'inset 0 3px 0 rgba(196,64,48,0.15), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00',
+                                }}>
+                            <div className="flex items-center gap-4">
+                                <PixelBanner size={40} color="#c44030" />
+                                <div>
+                                    <p className="text-lg font-bold"
+                                       style={{ fontFamily: 'var(--font-cinzel)', color: '#c44030' }}>
+                                        Rejoindre un lobby
+                                    </p>
+                                    <p className="text-xs mt-0.5"
+                                       style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.5)' }}>
+                                        Attaquez la forteresse adverse
+                                    </p>
+                                </div>
+                            </div>
                         </button>
+
                         <button onClick={() => router.push('/')}
-                                className="w-full text-gray-500 hover:text-gray-300 text-sm transition-colors">
-                            ← Retour à l'accueil
+                                className="btn-stone w-full text-sm py-3 mt-2">
+                            ← Retour à l&apos;accueil
                         </button>
                     </motion.div>
                 )}
 
+                {/* Créer */}
                 {mode === 'creer' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 text-center">
-                        <p className="text-gray-400">Un lobby sera créé avec une partie en difficulté Chevalier.</p>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                className="flex flex-col gap-4 w-full items-center">
+                        <div className="text-center p-5 w-full relative"
+                             style={{
+                                 background: 'rgba(26,20,32,0.85)',
+                                 outline: '3px solid #1a0a00',
+                                 boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.08), inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 0 #1a0a00',
+                             }}>
+                            <PixelBorder className="absolute top-0 left-0 right-0" />
+                            <PixelShield size={32} className="mx-auto mb-3 mt-2" />
+                            <p style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.7)' }}>
+                                Un lobby sera créé avec une partie en difficulté Chevalier.
+                            </p>
+                        </div>
                         <button onClick={creerLobby} disabled={loading}
-                                className="w-full bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all disabled:opacity-50">
-                            {loading ? 'Création...' : '🛡️ Créer le lobby'}
+                                className={`btn-gold w-full text-base py-4 flex items-center justify-center gap-2 ${loading ? 'opacity-50' : ''}`}>
+                            <PixelShield size={18} />
+                            {loading ? 'Création...' : 'Créer le lobby'}
                         </button>
                         <button onClick={() => setMode('choix')}
-                                className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+                                className="btn-stone w-full text-sm py-3">
                             ← Retour
                         </button>
                     </motion.div>
                 )}
 
+                {/* Rejoindre */}
                 {mode === 'rejoindre' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 text-center">
-                        <input
-                            type="text"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value.toUpperCase())}
-                            placeholder="CODE DU LOBBY"
-                            maxLength={6}
-                            className="w-full bg-[#1a1a22] border-2 border-[#3a3a48] rounded-lg px-4 py-3 text-center text-2xl tracking-[0.5em] font-black text-[#c9a84c] placeholder-gray-600 focus:border-[#c9a84c] outline-none"
-                        />
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                className="flex flex-col gap-4 w-full items-center">
+                        <div className="w-full p-5 relative"
+                             style={{
+                                 background: 'rgba(60,20,20,0.6)',
+                                 outline: '3px solid #1a0a00',
+                                 boxShadow: 'inset 0 3px 0 rgba(196,64,48,0.1), inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 0 #1a0a00',
+                             }}>
+                            <PixelBorder className="absolute top-0 left-0 right-0" />
+                            <PixelBanner size={32} color="#c44030" className="mx-auto mb-3 mt-2" />
+                            <input
+                                type="text"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                                placeholder="CODE"
+                                maxLength={6}
+                                className="w-full px-4 py-3 text-center text-2xl tracking-[0.5em] font-black placeholder-gray-700"
+                                style={{
+                                    background: 'rgba(10,10,15,0.6)',
+                                    color: '#dcb464',
+                                    border: 'none',
+                                    outline: '3px solid #1a0a00',
+                                    boxShadow: 'inset 0 3px 0 rgba(0,0,0,0.3), 0 2px 0 #1a0a00',
+                                    fontFamily: 'var(--font-cinzel)',
+                                }}
+                            />
+                        </div>
                         <button onClick={rejoindreLobby} disabled={loading || !code.trim()}
-                                className="w-full bg-[#8b1a1a] hover:bg-[#a52020] text-white font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all disabled:opacity-50">
-                            {loading ? 'Connexion...' : '⚔️ Rejoindre'}
+                                className={`btn-blood w-full text-base py-4 flex items-center justify-center gap-2 ${loading || !code.trim() ? 'opacity-50' : ''}`}>
+                            <PixelBanner size={18} color="#ffe0d0" />
+                            {loading ? 'Connexion...' : 'Rejoindre'}
                         </button>
                         <button onClick={() => setMode('choix')}
-                                className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+                                className="btn-stone w-full text-sm py-3">
                             ← Retour
                         </button>
                     </motion.div>
                 )}
 
+                {/* Erreur */}
                 {erreur && (
-                    <p className="text-red-400 text-sm text-center">{erreur}</p>
+                    <div className="text-center py-2 px-4 w-full"
+                         style={{
+                             background: 'rgba(196,64,48,0.15)',
+                             outline: '2px solid #c44030',
+                             boxShadow: '0 2px 0 #1a0a00',
+                         }}>
+                        <p className="text-sm" style={{ color: '#c44030' }}>{erreur}</p>
+                    </div>
                 )}
             </div>
         </main>

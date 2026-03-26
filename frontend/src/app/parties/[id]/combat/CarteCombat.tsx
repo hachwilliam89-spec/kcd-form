@@ -54,6 +54,42 @@ const cheminCases = [
 
 const estChemin = (col: number, row: number) => cheminCases.some(c => c.col === col && c.row === row);
 
+// Style pixel art pour les cases
+const pixelCase = {
+    tourelle: {
+        background: 'rgba(26,20,32,0.7)',
+        outline: '3px solid #1a0a00',
+        boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.12), inset 0 -3px 0 rgba(0,0,0,0.4), inset 3px 0 0 rgba(220,180,100,0.06), inset -3px 0 0 rgba(0,0,0,0.2), 0 3px 0 #0a0508',
+    },
+    chemin: {
+        background: 'rgba(60,40,20,0.6)',
+        outline: '2px solid #1a0a00',
+        boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.08), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a0508',
+    },
+    citadelle: {
+        background: 'rgba(139,26,26,0.6)',
+        outline: '3px solid #1a0a00',
+        boxShadow: 'inset 0 3px 0 rgba(196,64,48,0.2), inset 0 -3px 0 rgba(0,0,0,0.4), 0 3px 0 #0a0508, 0 0 12px rgba(196,64,48,0.15)',
+    },
+    citadelleFlash: {
+        background: 'rgba(196,64,48,0.8)',
+        outline: '3px solid #c44030',
+        boxShadow: 'inset 0 3px 0 rgba(255,100,80,0.3), inset 0 -3px 0 rgba(0,0,0,0.4), 0 3px 0 #0a0508, 0 0 20px rgba(196,64,48,0.4)',
+    },
+    muraille: (pvPct: number) => {
+        const color = pvPct > 50 ? '#3c8cdc' : pvPct > 25 ? '#dcb464' : '#c44030';
+        return {
+            background: 'rgba(60,40,20,0.65)',
+            outline: `3px solid #1a0a00`,
+            boxShadow: `inset 0 3px 0 ${color}20, inset 0 -3px 0 rgba(0,0,0,0.4), 0 3px 0 #0a0508, 0 0 8px ${color}15`,
+        };
+    },
+    vide: {
+        background: 'rgba(10,10,15,0.2)',
+        border: '1px solid rgba(255,255,255,0.03)',
+    },
+};
+
 const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
     ({ tourelles, ennemis, murailles, forteressePvActuels, forteressePvMax, getPixelForPos }, ref) => {
 
@@ -63,7 +99,6 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
         const prevEnnemisRef = useRef<Map<number, boolean>>(new Map());
         const explosionIdRef = useRef(0);
 
-        // Flash citadelle quand elle perd des PV
         useEffect(() => {
             if (forteressePvActuels < prevForteressePv.current) {
                 setForteresseFlash(true);
@@ -72,7 +107,6 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
             prevForteressePv.current = forteressePvActuels;
         }, [forteressePvActuels]);
 
-        // Explosion quand un ennemi meurt
         useEffect(() => {
             const prevMap = prevEnnemisRef.current;
             const newExplosions: Explosion[] = [];
@@ -112,24 +146,15 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
             return murailles.find(m => m.position === pos);
         };
 
-        const getMurailleEmoji = (pvPct: number, detruite: boolean) => {
-            if (detruite) return '💥';
-            if (pvPct <= 25) return '🧱';
-            if (pvPct <= 50) return '🧱';
-            return '🧱';
-        };
-
-        const getMurailleBorderClass = (pvPct: number) => {
-            if (pvPct <= 25) return 'border-red-700 bg-[#3a1a10]';
-            if (pvPct <= 50) return 'border-yellow-700 bg-[#3a2a10]';
-            return 'border-[#8b6914] bg-[#3a2a10]';
-        };
-
         return (
-            <div className="bg-[#111820] border border-[#2a3a2a] rounded-xl p-3 relative flex-1 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0a150a] via-[#111820] to-[#0a150a] opacity-80" />
+            <div className="relative flex-1 overflow-hidden"
+                 style={{
+                     background: 'rgba(10,10,15,0.25)',
+                     outline: '3px solid #1a0a00',
+                     boxShadow: 'inset 0 0 30px rgba(0,0,0,0.2), 0 4px 0 #0a0508',
+                 }}>
 
-                <div className="relative z-10 h-full">
+                <div className="relative z-10 h-full p-3">
                     <div
                         ref={ref}
                         className="grid gap-1.5 h-full"
@@ -143,41 +168,42 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                 const row = rowIdx + 1;
                                 const key = `${col}-${row}`;
 
-                                // Citadelle avec flash
+                                // === CITADELLE ===
                                 if (col === 10 && row === 6) {
                                     return (
                                         <motion.div
                                             key={key}
                                             data-col={col} data-row={row}
-                                            style={{ gridColumn: col, gridRow: row }}
-                                            animate={forteresseFlash
-                                                ? { borderColor: ['#8b1a1a', '#ff0000', '#8b1a1a'], scale: [1, 1.05, 1] }
-                                                : {}}
+                                            style={{
+                                                gridColumn: col,
+                                                gridRow: row,
+                                                ...(forteresseFlash ? pixelCase.citadelleFlash : pixelCase.citadelle),
+                                            }}
+                                            animate={forteresseFlash ? { scale: [1, 1.05, 1] } : {}}
                                             transition={{ duration: 0.4 }}
-                                            className={`border-2 rounded-lg flex flex-col items-center justify-center transition-colors ${
-                                                forteresseFlash
-                                                    ? 'bg-red-900/80 border-red-500'
-                                                    : 'bg-[#8b1a1a]/50 border-[#8b1a1a]'
-                                            }`}>
+                                            className="flex flex-col items-center justify-center">
                                             <motion.span
                                                 animate={forteresseFlash ? { scale: [1, 1.2, 1] } : {}}
                                                 transition={{ duration: 0.3 }}
                                                 className="text-xl">
                                                 🏰
                                             </motion.span>
-                                            <span className="text-red-400 text-[7px] font-bold uppercase">Citadelle</span>
-                                            {/* Mini barre PV */}
-                                            <div className="w-4/5 h-0.5 bg-gray-700 rounded mt-0.5">
+                                            <span className="text-[7px] font-bold uppercase"
+                                                  style={{ color: '#c44030', fontFamily: 'var(--font-cinzel)' }}>
+                                                Citadelle
+                                            </span>
+                                            <div className="w-4/5 h-1 mt-0.5" style={{ background: 'rgba(0,0,0,0.5)', outline: '1px solid rgba(0,0,0,0.3)' }}>
                                                 <motion.div
                                                     animate={{ width: `${forteressePvMax > 0 ? (forteressePvActuels / forteressePvMax) * 100 : 0}%` }}
-                                                    className="h-0.5 rounded bg-red-500"
+                                                    className="h-1"
+                                                    style={{ background: '#c44030' }}
                                                 />
                                             </div>
                                         </motion.div>
                                     );
                                 }
 
-                                // Emplacement tourelle
+                                // === TOURELLE ===
                                 const posEntry = Object.entries(casesPlacement).find(
                                     ([, v]) => v.col === col && v.row === row
                                 );
@@ -186,8 +212,12 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     return (
                                         <div key={key}
                                              data-col={col} data-row={row}
-                                             style={{ gridColumn: col, gridRow: row }}
-                                             className="rounded-lg border-2 border-[#c9a84c] bg-[#2a2a35] flex flex-col items-center justify-center gap-0.5">
+                                             style={{
+                                                 gridColumn: col,
+                                                 gridRow: row,
+                                                 ...pixelCase.tourelle,
+                                             }}
+                                             className="flex flex-col items-center justify-center gap-0.5">
                                             {tourelle ? (
                                                 <>
                                                     <motion.span
@@ -196,16 +226,22 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                                         className="text-base">
                                                         {tourelle.aoe ? '🪨' : '🏹'}
                                                     </motion.span>
-                                                    <p className="text-[7px] text-[#c9a84c] truncate w-full text-center px-0.5">{tourelle.nom}</p>
+                                                    <p className="text-[7px] truncate w-full text-center px-0.5"
+                                                       style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
+                                                        {tourelle.nom}
+                                                    </p>
                                                 </>
                                             ) : (
-                                                <span className="text-gray-600 text-xs">{posEntry[0]}</span>
+                                                <span className="text-xs font-bold"
+                                                      style={{ color: 'rgba(220,180,100,0.35)', fontFamily: 'var(--font-cinzel)' }}>
+                                                    {posEntry[0]}
+                                                </span>
                                             )}
                                         </div>
                                     );
                                 }
 
-                                // Emplacement muraille
+                                // === MURAILLE ===
                                 const murEntry = Object.entries(emplacementsMuraille).find(
                                     ([, v]) => v.col === col && v.row === row
                                 );
@@ -213,39 +249,42 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     const muraille = getMurailleAt(col, row);
                                     if (muraille && !muraille.detruite) {
                                         const pvPct = (muraille.pvActuels / muraille.pvMax) * 100;
+                                        const pvColor = pvPct > 50 ? '#3c8cdc' : pvPct > 25 ? '#dcb464' : '#c44030';
                                         return (
                                             <motion.div
                                                 key={key}
                                                 data-col={col} data-row={row}
-                                                style={{ gridColumn: col, gridRow: row }}
+                                                style={{
+                                                    gridColumn: col,
+                                                    gridRow: row,
+                                                    ...pixelCase.muraille(pvPct),
+                                                }}
                                                 animate={pvPct <= 25 ? { x: [-1, 1, -1, 0] } : {}}
                                                 transition={pvPct <= 25 ? { duration: 0.3, repeat: Infinity, repeatDelay: 0.5 } : {}}
-                                                className={`rounded-lg border-2 flex flex-col items-center justify-center gap-0.5 ${getMurailleBorderClass(pvPct)}`}>
-                                                <span className="text-base">{getMurailleEmoji(pvPct, false)}</span>
-                                                <div className="w-4/5 h-1 bg-gray-700 rounded">
+                                                className="flex flex-col items-center justify-center gap-0.5">
+                                                <span className="text-base">🧱</span>
+                                                <div className="w-4/5 h-1" style={{ background: 'rgba(0,0,0,0.5)', outline: '1px solid rgba(0,0,0,0.3)' }}>
                                                     <motion.div
                                                         animate={{ width: `${pvPct}%` }}
                                                         transition={{ duration: 0.3 }}
-                                                        className={`h-1 rounded ${
-                                                            pvPct > 50 ? 'bg-blue-500'
-                                                                : pvPct > 25 ? 'bg-yellow-500'
-                                                                    : 'bg-red-500'
-                                                        }`}
+                                                        className="h-1"
+                                                        style={{ background: pvColor }}
                                                     />
                                                 </div>
                                             </motion.div>
                                         );
                                     }
-                                    // Muraille détruite ou absente
                                     return (
                                         <div key={key}
                                              data-col={col} data-row={row}
-                                             style={{ gridColumn: col, gridRow: row }}
-                                             className={`rounded flex items-center justify-center ${
-                                                 muraille?.detruite
-                                                     ? 'bg-[#2a1f0f]/40 border border-[#4a3a1a]/20'
-                                                     : 'bg-[#2a1f0f]/90 border border-[#4a3a1a]/50'
-                                             }`}>
+                                             style={{
+                                                 gridColumn: col,
+                                                 gridRow: row,
+                                                 background: muraille?.detruite ? 'rgba(42,31,15,0.3)' : 'rgba(60,40,20,0.5)',
+                                                 outline: '2px solid #1a0a00',
+                                                 boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.05), 0 2px 0 #0a0508',
+                                             }}
+                                             className="flex items-center justify-center">
                                             {muraille?.detruite && (
                                                 <motion.span
                                                     initial={{ scale: 1.5, opacity: 1 }}
@@ -259,22 +298,30 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     );
                                 }
 
-                                // Chemin
+                                // === CHEMIN ===
                                 if (estChemin(col, row)) {
                                     return (
                                         <div key={key}
                                              data-col={col} data-row={row}
-                                             style={{ gridColumn: col, gridRow: row }}
-                                             className="bg-[#2a1f0f]/90 border border-[#4a3a1a]/50 rounded" />
+                                             style={{
+                                                 gridColumn: col,
+                                                 gridRow: row,
+                                                 ...pixelCase.chemin,
+                                             }}
+                                        />
                                     );
                                 }
 
-                                // Case vide
+                                // === CASE VIDE ===
                                 return (
                                     <div key={key}
                                          data-col={col} data-row={row}
-                                         style={{ gridColumn: col, gridRow: row }}
-                                         className="rounded bg-[#0d1a0d]/30 border border-[#1a2a1a]/20" />
+                                         style={{
+                                             gridColumn: col,
+                                             gridRow: row,
+                                             ...pixelCase.vide,
+                                         }}
+                                    />
                                 );
                             })
                         )}
@@ -293,7 +340,6 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                             ))}
                         </AnimatePresence>
 
-                        {/* Explosions de mort */}
                         <AnimatePresence>
                             {explosions.map(exp => (
                                 <motion.div

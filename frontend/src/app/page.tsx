@@ -2,90 +2,171 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import { PixelShield, PixelBanner, PixelBorder, PixelTriangle, PixelCercle, PixelRectangle, PixelTourelle, PixelCoin } from '@/components/PixelSprites';
+import PixelTitle from '@/components/PixelTitle';
 
 export default function Home() {
     return (
-        <main className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center relative overflow-hidden px-6">
+        <main className="min-h-screen bg-medieval-hero flex flex-col items-center justify-end relative overflow-hidden px-6 pb-12 pt-[35vh]">
 
-            <div className="absolute inset-0 bg-gradient-radial from-[#1a0a00]/40 via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-5" />
 
-            <div className="relative z-10 flex flex-col items-center gap-10 text-center max-w-2xl">
+            {/* Bannières */}
+            <div className="absolute top-[28%] left-20 hidden lg:block">
+                <PixelBanner size={48} color="#c44030" className="opacity-50" />
+            </div>
+            <div className="absolute top-[28%] right-20 hidden lg:block">
+                <PixelBanner size={48} color="#dc8c3c" className="opacity-50" />
+            </div>
 
-                {/* Logo */}
+            {/* Contenu principal */}
+            <div className="relative z-10 flex flex-col items-center gap-6 text-center max-w-2xl w-full">
+
+                {/* Blason pixel art */}
                 <motion.div
-                    initial={{ opacity: 0, y: -30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="flex flex-col items-center gap-3">
-                    <Shield className="w-16 h-16 text-[#c9a84c]" strokeWidth={1.5} />
-                    <h1 className="text-5xl md:text-7xl font-black text-[#c9a84c] tracking-widest uppercase"
-                        style={{ fontFamily: 'var(--font-cinzel)', textShadow: '0 0 40px rgba(201,168,76,0.4)' }}>
-                        KCD Formes
-                    </h1>
-                    <p className="text-[#8a7a5a] text-lg tracking-widest uppercase">Tower Defense Médiéval</p>
+                    initial={{ opacity: 0, y: -20, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                    className="animate-float">
+                    <PixelShield size={72} />
                 </motion.div>
 
-                {/* Séparateur */}
+                {/* Titre pixel art */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="flex flex-col items-center gap-3">
+                    <PixelTitle size={72} />
+                    <p className="tracking-[0.4em] uppercase text-sm font-bold"
+                       style={{
+                           fontFamily: 'var(--font-cinzel)',
+                           color: '#dcb464',
+                           textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)',
+                       }}>
+                        Tower Defense Médiéval
+                    </p>
+                </motion.div>
+
+                {/* Séparateur pixel */}
                 <motion.div
                     initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="w-64 h-px bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent"
-                />
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="w-80">
+                    <PixelBorder />
+                </motion.div>
 
-                {/* Pitch */}
-                <motion.p
+                {/* Pitch — style pixel art panel */}
+                <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.6 }}
-                    className="text-gray-400 text-lg leading-relaxed"
-                    style={{ fontFamily: 'var(--font-crimson)' }}>
-                    Défendez votre citadelle contre des vagues d'envahisseurs.
-                    Composez vos tourelles à partir de <span className="text-[#c9a84c]">formes géométriques</span>,
-                    placez des <span className="text-[#8b6914]">murailles</span> sur le chemin
-                    et repoussez les 5 assauts.
-                </motion.p>
+                    className="max-w-lg w-full relative"
+                    style={{
+                        background: 'linear-gradient(180deg, rgba(26,20,32,0.92) 0%, rgba(20,14,24,0.95) 100%)',
+                        outline: '3px solid #1a0a00',
+                        boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.15), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00, 0 6px 16px rgba(0,0,0,0.5)',
+                        padding: '20px 24px',
+                    }}>
+                    {/* Bordure dorée pixel en haut et en bas */}
+                    <PixelBorder className="absolute top-0 left-0 right-0" />
+                    <PixelBorder className="absolute bottom-0 left-0 right-0 rotate-180" />
+                    <p className="text-[#d4c8a0] text-lg leading-relaxed py-2"
+                       style={{ fontFamily: 'var(--font-crimson)' }}>
+                        Défendez votre citadelle contre des vagues d&apos;envahisseurs.
+                        Composez vos tourelles à partir de{' '}
+                        <span className="text-[#dcb464] font-semibold">formes géométriques</span>,
+                        placez des <span className="text-[#dc8c3c] font-semibold">murailles</span> sur le chemin
+                        et repoussez les 5 assauts.
+                    </p>
+                </motion.div>
 
-                {/* 3 icônes résumé */}
+                {/* 3 piliers pixel art */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.8 }}
-                    className="flex gap-8">
+                    className="flex gap-6 w-full max-w-lg justify-center">
                     {[
-                        { emoji: '🏹', label: 'Construire' },
-                        { emoji: '⚔️', label: 'Défendre' },
-                        { emoji: '👑', label: 'Survivre' },
+                        { icon: <PixelTriangle size={40} />, label: 'Construire', sub: 'Tourelles' },
+                        { icon: <PixelCercle size={40} />, label: 'Défendre', sub: 'Forteresse' },
+                        { icon: <PixelRectangle size={40} />, label: 'Survivre', sub: '5 vagues' },
                     ].map((item, i) => (
-                        <div key={i} className="flex flex-col items-center gap-2">
-                            <span className="text-4xl">{item.emoji}</span>
-                            <p className="text-gray-500 text-xs uppercase tracking-widest">{item.label}</p>
-                        </div>
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.9 + i * 0.15 }}
+                            className="flex-1 flex flex-col items-center gap-2 py-4 px-2"
+                            style={{
+                                background: 'rgba(26,20,32,0.85)',
+                                outline: '2px solid #1a0a00',
+                                boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.1), inset 0 -2px 0 rgba(0,0,0,0.3), 0 3px 0 #1a0a00',
+                            }}>
+                            <div className="animate-float" style={{ animationDelay: `${i * 0.5}s` }}>
+                                {item.icon}
+                            </div>
+                            <p className="text-[#dcb464] text-[11px] uppercase tracking-widest font-bold"
+                               style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                {item.label}
+                            </p>
+                            <p className="text-[#6a6050] text-[9px] uppercase tracking-widest">{item.sub}</p>
+                        </motion.div>
                     ))}
                 </motion.div>
 
-           {/* Boutons */}
-                           <motion.div
-                               initial={{ opacity: 0, scale: 0.9 }}
-                               animate={{ opacity: 1, scale: 1 }}
-                               transition={{ duration: 0.6, delay: 1 }}
-                               className="flex flex-col items-center gap-4 w-full">
-                               <Link href="/setup"
-                                     className="inline-block w-full max-w-md bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black text-2xl px-16 py-5 rounded-lg tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_40px_rgba(201,168,76,0.6)] text-center"
-                                     style={{ fontFamily: 'var(--font-cinzel)' }}>
-                                   🛡️ Solo
-                               </Link>
-                               <Link href="/multi"
-                                     className="inline-block w-full max-w-md bg-[#8b1a1a] hover:bg-[#a52020] text-white font-black text-2xl px-16 py-5 rounded-lg tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,26,26,0.6)] text-center"
-                                     style={{ fontFamily: 'var(--font-cinzel)' }}>
-                                   ⚔️ Multijoueur
-                               </Link>
-                               <Link href="/guide"
-                                     className="text-[#8a7a5a] hover:text-[#c9a84c] text-sm uppercase tracking-widest transition-colors"
-                                     style={{ fontFamily: 'var(--font-cinzel)' }}>
-                                   📜 Guide du jeu — Tourelles, Ennemis & Stratégie
-                               </Link>
-                           </motion.div>
+                {/* Boutons */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 1.1 }}
+                    className="flex flex-col items-center gap-5 w-full max-w-sm mt-2">
+
+                    <Link href="/setup" className="w-full">
+                        <button className="btn-gold w-full text-xl py-4 flex items-center justify-center gap-3">
+                            <PixelTourelle size={24} />
+                            Bataille Solo
+                        </button>
+                    </Link>
+
+                    <Link href="/multi" className="w-full">
+                        <button className="btn-blood w-full text-xl py-4 flex items-center justify-center gap-3">
+                            <PixelBanner size={24} color="#ffe0d0" />
+                            Multijoueur
+                        </button>
+                    </Link>
+
+                    {/* Guide — style pixel art lien */}
+                    <Link href="/guide" className="w-full">
+                        <div className="flex items-center justify-center gap-2 py-3 px-6 group cursor-pointer transition-all"
+                             style={{
+                                 background: 'rgba(26,20,32,0.7)',
+                                 outline: '2px solid rgba(138,122,90,0.3)',
+                                 boxShadow: '0 2px 0 rgba(0,0,0,0.3)',
+                             }}>
+                            <span className="text-[#8a7a5a] group-hover:text-[#dcb464] text-xs uppercase tracking-widest transition-colors"
+                                  style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                📜 Guide du jeu — Tourelles, Ennemis &amp; Stratégie
+                            </span>
+                        </div>
+                    </Link>
+                </motion.div>
+
+                {/* Footer pixel art */}
+                <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    transition={{ delay: 1.4 }}
+                    className="flex flex-col items-center gap-3 mt-6">
+                    <div className="flex items-center gap-2">
+                        <PixelCoin size={12} />
+                        <div className="w-32"><PixelBorder /></div>
+                        <PixelShield size={16} />
+                        <div className="w-32"><PixelBorder /></div>
+                        <PixelCoin size={12} />
+                    </div>
+                    <p className="text-[#4a4a5a] text-[10px] tracking-widest uppercase"
+                       style={{ fontFamily: 'var(--font-cinzel)' }}>
+                        Kingdom Come Defenses — Licence Pro UHA 4.0
+                    </p>
+                </motion.div>
             </div>
         </main>
     );

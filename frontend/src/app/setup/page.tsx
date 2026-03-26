@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import { Shield, ChevronRight } from 'lucide-react';
+import { PixelShield, PixelBorder, PixelCoin, PixelTriangle, PixelCercle, PixelRectangle } from '@/components/PixelSprites';
 
 const BUDGET_PAR_DIFFICULTE: Record<string, number> = {
     ECUYER: 1000,
@@ -16,29 +16,35 @@ const DIFFICULTES = [
     {
         id: 'ECUYER',
         label: 'Écuyer',
-        emoji: '🛡️',
+        icon: <PixelTriangle size={28} />,
         desc: 'Pour les débutants. Budget généreux, ennemis faibles.',
         budget: 1000,
-        couleur: 'border-green-600 hover:border-green-400',
-        badge: 'bg-green-900/40 text-green-400',
+        borderSelected: '#5a8c28',
+        borderHover: '#8cb414',
+        badgeBg: 'rgba(90,140,40,0.2)',
+        badgeColor: '#8cb414',
     },
     {
         id: 'CHEVALIER',
         label: 'Chevalier',
-        emoji: '⚔️',
+        icon: <PixelCercle size={28} />,
         desc: 'Équilibré. Budget standard, ennemis redoutables.',
         budget: 700,
-        couleur: 'border-yellow-600 hover:border-yellow-400',
-        badge: 'bg-yellow-900/40 text-yellow-400',
+        borderSelected: '#dcb464',
+        borderHover: '#f0d070',
+        badgeBg: 'rgba(220,180,100,0.2)',
+        badgeColor: '#dcb464',
     },
     {
         id: 'SEIGNEUR',
         label: 'Seigneur',
-        emoji: '👑',
+        icon: <PixelRectangle size={28} />,
         desc: 'Pour les experts. Budget serré, ennemis impitoyables.',
         budget: 400,
-        couleur: 'border-red-700 hover:border-red-500',
-        badge: 'bg-red-900/40 text-red-400',
+        borderSelected: '#c44030',
+        borderHover: '#d04838',
+        badgeBg: 'rgba(196,64,48,0.2)',
+        badgeColor: '#c44030',
     },
 ];
 
@@ -66,29 +72,41 @@ export default function SetupPage() {
     const diff = DIFFICULTES.find(d => d.id === difficulte)!;
 
     return (
-        <main className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center px-6 py-12">
+        <main className="min-h-screen bg-medieval-setup flex flex-col items-center justify-center px-6 py-12">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-xl flex flex-col gap-8"
+                className="w-full max-w-xl flex flex-col gap-6"
             >
                 {/* Header */}
-                <div className="text-center">
-                    <Shield className="w-10 h-10 text-[#c9a84c] mx-auto mb-3" strokeWidth={1.5} />
-                    <h1 className="text-3xl font-black text-[#c9a84c] tracking-widest uppercase"
-                        style={{ fontFamily: 'var(--font-cinzel)' }}>
+                <div className="text-center flex flex-col items-center gap-3">
+                    <PixelShield size={48} />
+                    <h1 className="text-3xl font-black tracking-widest uppercase"
+                        style={{
+                            fontFamily: 'var(--font-cinzel)',
+                            color: '#dcb464',
+                            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                        }}>
                         Nouvelle Partie
                     </h1>
+                    <PixelBorder className="w-48" />
                 </div>
 
-                {/* Nom du joueur */}
+                {/* Nom du joueur — pixel art input */}
                 <div className="flex flex-col gap-2">
-                    <label className="text-[#c9a84c] text-sm tracking-widest uppercase"
+                    <label className="text-[#dcb464] text-xs tracking-widest uppercase"
                            style={{ fontFamily: 'var(--font-cinzel)' }}>
                         Ton nom de seigneur
                     </label>
                     <input
-                        className="bg-[#2a2a35] border border-[#c9a84c]/30 focus:border-[#c9a84c] rounded-lg px-4 py-3 text-white outline-none transition-colors text-lg"
+                        className="px-4 py-3 text-white text-lg outline-none transition-all"
+                        style={{
+                            background: 'rgba(26,20,32,0.9)',
+                            border: 'none',
+                            outline: '3px solid #1a0a00',
+                            boxShadow: 'inset 0 3px 0 rgba(0,0,0,0.3), inset 0 -3px 0 rgba(220,180,100,0.05), 0 3px 0 #1a0a00',
+                            fontFamily: 'var(--font-crimson)',
+                        }}
                         placeholder="Ex: Kim, CHU..."
                         value={nom}
                         onChange={e => { setNom(e.target.value); setErreur(''); }}
@@ -97,59 +115,122 @@ export default function SetupPage() {
 
                 {/* Choix difficulté */}
                 <div className="flex flex-col gap-3">
-                    <label className="text-[#c9a84c] text-sm tracking-widest uppercase"
+                    <label className="text-[#dcb464] text-xs tracking-widest uppercase"
                            style={{ fontFamily: 'var(--font-cinzel)' }}>
                         Difficulté
                     </label>
-                    {DIFFICULTES.map(d => (
-                        <button
-                            key={d.id}
-                            onClick={() => setDifficulte(d.id as 'ECUYER' | 'CHEVALIER' | 'SEIGNEUR')}
-                            className={`border-2 rounded-lg p-4 text-left transition-all duration-200 ${
-                                difficulte === d.id
-                                    ? d.couleur + ' bg-[#2a2a35]'
-                                    : 'border-[#2a2a35] hover:border-gray-600 bg-[#1a1a22]'
-                            }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <span className="text-2xl">{d.emoji}</span>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-bold text-white" style={{ fontFamily: 'var(--font-cinzel)' }}>
-                                            {d.label}
-                                        </span>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${d.badge}`}>
-                                            {d.budget} or
-                                        </span>
+                    {DIFFICULTES.map(d => {
+                        const selected = difficulte === d.id;
+                        return (
+                            <button
+                                key={d.id}
+                                onClick={() => setDifficulte(d.id as 'ECUYER' | 'CHEVALIER' | 'SEIGNEUR')}
+                                className="text-left transition-all duration-150"
+                                style={{
+                                    background: selected
+                                        ? 'rgba(26,20,32,0.95)'
+                                        : 'rgba(20,14,24,0.8)',
+                                    border: 'none',
+                                    outline: selected
+                                        ? `3px solid ${d.borderSelected}`
+                                        : '3px solid #1a0a00',
+                                    boxShadow: selected
+                                        ? `inset 0 3px 0 rgba(255,255,255,0.05), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00, 0 0 16px ${d.borderSelected}30`
+                                        : 'inset 0 2px 0 rgba(255,255,255,0.02), inset 0 -2px 0 rgba(0,0,0,0.2), 0 3px 0 #0a0a10',
+                                    padding: '14px 16px',
+                                    transform: selected ? 'translateY(-1px)' : 'none',
+                                }}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-shrink-0">
+                                        {d.icon}
                                     </div>
-                                    <p className="text-gray-400 text-sm mt-0.5">{d.desc}</p>
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-white text-sm"
+                                                  style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                                {d.label}
+                                            </span>
+                                            <span className="text-[10px] px-2 py-0.5 flex items-center gap-1"
+                                                  style={{
+                                                      background: d.badgeBg,
+                                                      color: d.badgeColor,
+                                                      outline: `1px solid ${d.badgeColor}40`,
+                                                      fontFamily: 'var(--font-cinzel)',
+                                                      fontWeight: 700,
+                                                  }}>
+                                                <PixelCoin size={10} className="inline-block" />
+                                                {d.budget} or
+                                            </span>
+                                        </div>
+                                        <p className="text-gray-400 text-xs mt-1"
+                                           style={{ fontFamily: 'var(--font-crimson)' }}>
+                                            {d.desc}
+                                        </p>
+                                    </div>
+                                    {selected && (
+                                        <div className="text-[#dcb464] text-lg">▶</div>
+                                    )}
                                 </div>
-                                {difficulte === d.id && (
-                                    <ChevronRight className="w-5 h-5 text-[#c9a84c]" />
-                                )}
-                            </div>
-                        </button>
-                    ))}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Erreur */}
-                {erreur && <p className="text-red-400 text-sm text-center">{erreur}</p>}
+                {erreur && (
+                    <div className="text-center py-2 px-4"
+                         style={{
+                             background: 'rgba(196,64,48,0.15)',
+                             outline: '2px solid #c44030',
+                             boxShadow: '0 2px 0 #1a0a00',
+                         }}>
+                        <p className="text-[#c44030] text-sm">{erreur}</p>
+                    </div>
+                )}
 
-                {/* Résumé */}
-                <div className="bg-[#2a2a35]/50 border border-[#c9a84c]/20 rounded-lg p-4 text-sm text-gray-400">
-                    <p>⚔️ <span className="text-white">5 vagues</span> d'envahisseurs à repousser</p>
-                    <p>💰 Budget de départ : <span className="text-[#c9a84c]">{diff.budget} or</span></p>
-                    <p>🏰 Défendez la Citadelle jusqu'au dernier assaut</p>
+                {/* Résumé — pixel art panel */}
+                <div className="relative py-4 px-5"
+                     style={{
+                         background: 'rgba(26,20,32,0.9)',
+                         outline: '3px solid #1a0a00',
+                         boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.08), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00',
+                     }}>
+                    <PixelBorder className="absolute top-0 left-0 right-0" />
+                    <div className="flex flex-col gap-2 text-sm pt-1"
+                         style={{ fontFamily: 'var(--font-crimson)' }}>
+                        <p className="text-gray-400 flex items-center gap-2">
+                            ⚔️ <span className="text-white font-semibold">5 vagues</span> d&apos;envahisseurs à repousser
+                        </p>
+                        <p className="text-gray-400 flex items-center gap-2">
+                            <PixelCoin size={14} /> Budget de départ : <span className="text-[#dcb464] font-semibold">{diff.budget} or</span>
+                        </p>
+                        <p className="text-gray-400 flex items-center gap-2">
+                            🏰 Défendez la Citadelle jusqu&apos;au dernier assaut
+                        </p>
+                    </div>
                 </div>
 
                 {/* Bouton lancer */}
                 <button
                     onClick={lancer}
                     disabled={loading}
-                    className="bg-[#c9a84c] hover:bg-[#e8c96d] disabled:opacity-50 text-black font-black text-lg px-8 py-4 rounded-lg tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.4)]"
-                    style={{ fontFamily: 'var(--font-cinzel)' }}
+                    className={`btn-gold w-full text-lg py-4 flex items-center justify-center gap-3 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                    {loading ? 'Chargement...' : 'Lancer la bataille ⚔️'}
+                    {loading ? 'Chargement...' : (
+                        <>
+                            <PixelShield size={20} />
+                            Lancer la bataille
+                        </>
+                    )}
+                </button>
+
+                {/* Retour */}
+                <button
+                    onClick={() => router.push('/')}
+                    className="btn-stone w-full text-sm py-3 flex items-center justify-center gap-2"
+                >
+                    ← Retour à l&apos;accueil
                 </button>
             </motion.div>
         </main>

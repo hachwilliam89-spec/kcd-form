@@ -10,6 +10,7 @@ import CarteCombat from './CarteCombat';
 import BarresEtat from './BarresEtat';
 import PanneauTourelles from './PanneauTourelles';
 import { CombatEtat } from '@/lib/types';
+import { PixelBorder, PixelShield, PixelBanner, PixelTourelle } from '@/components/PixelSprites';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -111,39 +112,88 @@ export default function CombatPage() {
         : 0;
 
     return (
-        <main className="h-screen bg-[#0a0a0f] text-white flex flex-col overflow-hidden p-4 gap-4">
+        <main className="h-screen bg-medieval-combat text-white flex flex-col overflow-hidden p-4 gap-3">
 
-            {/* Header */}
-            <div className="flex justify-between items-center border-b border-[#c9a84c]/20 pb-3 flex-shrink-0">
-                <div>
-                    <h1 className="text-xl font-black text-[#c9a84c] tracking-widest uppercase"
-                        style={{ fontFamily: 'var(--font-cinzel)' }}>
-                        ⚔️ Phase de Combat
-                    </h1>
-                    <p className="text-gray-400 text-sm">
-                        {partie?.joueurNom} — {partie?.difficulte}
-                        {connecte && <span className="text-green-400 ml-2">● Connecté</span>}
-                    </p>
+            {/* Header pixel art */}
+            <div className="flex justify-between items-center pb-2 flex-shrink-0 relative">
+                <div className="flex items-center gap-3">
+                    <PixelBanner size={28} color="#c44030" />
+                    <div>
+                        <h1 className="text-lg font-black tracking-widest uppercase"
+                            style={{
+                                fontFamily: 'var(--font-cinzel)',
+                                color: '#dcb464',
+                                textShadow: '0 2px 4px rgba(0,0,0,0.6)',
+                            }}>
+                            Phase de Combat
+                        </h1>
+                        <p className="text-xs"
+                           style={{
+                               fontFamily: 'var(--font-crimson)',
+                               color: 'rgba(212,200,160,0.7)',
+                               textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                           }}>
+                            {partie?.joueurNom} — {partie?.difficulte}
+                            {connecte && (
+                                <span className="ml-2" style={{ color: '#8cb414' }}>● Connecté</span>
+                            )}
+                        </p>
+                    </div>
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4">
                     {combatEtat && (
                         <>
-                            <div className="text-right">
-                                <p className="text-xs text-gray-400 uppercase tracking-widest">Score</p>
-                                <p className="text-2xl font-black text-[#c9a84c]">{combatEtat.score}</p>
+                            {/* Score */}
+                            <div className="flex flex-col items-center px-3 py-1"
+                                 style={{
+                                     background: 'rgba(26,20,32,0.8)',
+                                     outline: '2px solid #1a0a00',
+                                     boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.1), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #1a0a00',
+                                 }}>
+                                <p className="text-[9px] uppercase tracking-widest"
+                                   style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.5)' }}>
+                                    Score
+                                </p>
+                                <p className="text-xl font-black" style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
+                                    {combatEtat.score}
+                                </p>
                             </div>
-                            <div className="text-right">
-                                <p className="text-xs text-gray-400 uppercase tracking-widest">Vague</p>
-                                <p className="text-2xl font-black text-[#c9a84c]">
+
+                            {/* Vague */}
+                            <div className="flex flex-col items-center px-3 py-1"
+                                 style={{
+                                     background: 'rgba(26,20,32,0.8)',
+                                     outline: '2px solid #1a0a00',
+                                     boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.1), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #1a0a00',
+                                 }}>
+                                <p className="text-[9px] uppercase tracking-widest"
+                                   style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.5)' }}>
+                                    Vague
+                                </p>
+                                <p className="text-xl font-black" style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
                                     {combatEtat.vagueNumero} / 5
                                 </p>
                             </div>
+
+                            {/* Timer */}
                             {!combatEtat.derniereVague && (
-                                <div className="text-right">
-                                    <p className="text-xs text-gray-400 uppercase tracking-widest">Timer</p>
-                                    <p className={`text-2xl font-black ${
-                                        timerPct > 80 ? 'text-red-400 animate-pulse' : 'text-[#c9a84c]'
-                                    }`}>
+                                <div className="flex flex-col items-center px-3 py-1"
+                                     style={{
+                                         background: 'rgba(26,20,32,0.8)',
+                                         outline: `2px solid ${timerPct > 80 ? '#c44030' : '#1a0a00'}`,
+                                         boxShadow: timerPct > 80
+                                             ? 'inset 0 2px 0 rgba(196,64,48,0.2), 0 2px 0 #1a0a00, 0 0 12px rgba(196,64,48,0.2)'
+                                             : 'inset 0 2px 0 rgba(220,180,100,0.1), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #1a0a00',
+                                     }}>
+                                    <p className="text-[9px] uppercase tracking-widest"
+                                       style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.5)' }}>
+                                        Timer
+                                    </p>
+                                    <p className={`text-xl font-black ${timerPct > 80 ? 'animate-pulse' : ''}`}
+                                       style={{
+                                           color: timerPct > 80 ? '#c44030' : '#dcb464',
+                                           fontFamily: 'var(--font-cinzel)',
+                                       }}>
                                         {combatEtat.tempsEcoule}s / {combatEtat.dureeSecondes}s
                                     </p>
                                 </div>
@@ -152,12 +202,13 @@ export default function CombatPage() {
                     )}
                     {!combatLance && (
                         <button onClick={lancerCombat}
-                                className="bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black px-5 py-3 rounded-lg uppercase tracking-widest transition-all text-sm"
-                                style={{ fontFamily: 'var(--font-cinzel)' }}>
-                            Lancer le combat 👾
+                                className="btn-blood text-sm py-3 px-5 flex items-center gap-2">
+                            <PixelBanner size={16} color="#ffe0d0" />
+                            Lancer le combat
                         </button>
                     )}
                 </div>
+                <PixelBorder className="absolute bottom-0 left-0 right-0" />
             </div>
 
             <div className="flex gap-4 flex-1 min-h-0">
@@ -187,51 +238,66 @@ export default function CombatPage() {
                         getPixelForPos={getPixelForPos}
                     />
 
-                    {/* Entre vagues */}
+                    {/* Entre vagues — pixel art */}
                     {entreVagues && combatEtat && (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-[#1a1a22] border-2 border-[#c9a84c] rounded-xl p-6 flex-shrink-0">
-                            <div className="text-center mb-4">
-                                <p className="text-3xl mb-2">🛡️</p>
-                                <h2 className="text-xl font-black text-[#c9a84c] uppercase tracking-widest mb-2"
-                                    style={{ fontFamily: 'var(--font-cinzel)' }}>
+                            className="flex-shrink-0 relative p-6"
+                            style={{
+                                background: 'rgba(26,20,32,0.92)',
+                                outline: '3px solid #dcb464',
+                                boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.15), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00, 0 0 24px rgba(220,180,100,0.15)',
+                            }}>
+                            <PixelBorder className="absolute top-0 left-0 right-0" />
+                            <PixelBorder className="absolute bottom-0 left-0 right-0 rotate-180" />
+                            <div className="text-center mb-4 pt-2">
+                                <PixelShield size={40} className="mx-auto mb-2" />
+                                <h2 className="text-xl font-black uppercase tracking-widest mb-2"
+                                    style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
                                     Vague {combatEtat.vagueNumero} repoussée !
                                 </h2>
-                                <p className="text-gray-400">
+                                <p style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.7)' }}>
                                     {combatEtat.ennemisVivants > 0
                                         ? `⚠️ ${combatEtat.ennemisVivants} survivant${combatEtat.ennemisVivants > 1 ? 's' : ''} reporté${combatEtat.ennemisVivants > 1 ? 's' : ''} à la prochaine vague`
                                         : '✅ Tous les ennemis éliminés !'}
                                 </p>
                             </div>
-                            <div className="flex gap-3 justify-center">
+                            <div className="flex gap-4 justify-center">
                                 <button onClick={retourConstruction}
-                                        className="bg-[#2a2a35] hover:bg-[#3a3a48] text-white font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all text-sm"
-                                        style={{ fontFamily: 'var(--font-cinzel)' }}>
-                                    🔨 Fortifier
+                                        className="btn-stone text-sm py-3 px-5 flex items-center gap-2">
+                                    <PixelTourelle size={16} />
+                                    Fortifier
                                 </button>
                                 <button onClick={reprendreDirectement}
-                                        className="bg-[#c9a84c] hover:bg-[#e8c96d] text-black font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all text-sm"
-                                        style={{ fontFamily: 'var(--font-cinzel)' }}>
+                                        className="btn-gold text-sm py-3 px-5 flex items-center gap-2">
                                     Vague {combatEtat.vagueNumero + 1} ⚔️
                                 </button>
                             </div>
                         </motion.div>
                     )}
 
-                    {/* Fin de partie */}
+                    {/* Fin de partie — pixel art */}
                     {combatEtat && !entreVagues && (combatEtat.etat === 'GAGNE' || combatEtat.etat === 'PERDU') && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className={`text-center py-4 rounded-xl font-black text-2xl uppercase tracking-widest flex-shrink-0 ${
-                                combatEtat.etat === 'GAGNE'
-                                    ? 'bg-green-900/50 border border-green-500 text-green-400'
-                                    : 'bg-red-900/50 border border-red-500 text-red-400'
-                            }`}
-                            style={{ fontFamily: 'var(--font-cinzel)' }}>
-                            {combatEtat.etat === 'GAGNE' ? '👑 Victoire !' : '💀 Défaite...'}
+                            className="text-center py-5 flex-shrink-0 relative"
+                            style={{
+                                background: combatEtat.etat === 'GAGNE'
+                                    ? 'rgba(90,140,40,0.2)'
+                                    : 'rgba(196,64,48,0.2)',
+                                outline: `3px solid ${combatEtat.etat === 'GAGNE' ? '#5a8c28' : '#c44030'}`,
+                                boxShadow: `0 4px 0 #1a0a00, 0 0 20px ${combatEtat.etat === 'GAGNE' ? 'rgba(90,140,40,0.2)' : 'rgba(196,64,48,0.2)'}`,
+                            }}>
+                            <p className="font-black text-2xl uppercase tracking-widest"
+                               style={{
+                                   fontFamily: 'var(--font-cinzel)',
+                                   color: combatEtat.etat === 'GAGNE' ? '#8cb414' : '#c44030',
+                                   textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                               }}>
+                                {combatEtat.etat === 'GAGNE' ? '👑 Victoire !' : '💀 Défaite...'}
+                            </p>
                         </motion.div>
                     )}
                 </div>

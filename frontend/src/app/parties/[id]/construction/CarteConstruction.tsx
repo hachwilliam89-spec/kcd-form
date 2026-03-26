@@ -48,9 +48,13 @@ export default function CarteConstruction({
                                               budget, murailleCout, onSelectCase, onSelectMuraille
                                           }: CarteConstructionProps) {
     return (
-        <div className="bg-[#111820] border border-[#2a3a2a] rounded-xl p-3 relative flex-1 min-h-0 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0a150a] via-[#111820] to-[#0a150a] opacity-80" />
-            <div className="relative z-10 h-full">
+        <div className="relative flex-1 min-h-0 overflow-hidden"
+             style={{
+                 background: 'rgba(10,10,15,0.25)',
+                 outline: '3px solid #1a0a00',
+                 boxShadow: 'inset 0 0 30px rgba(0,0,0,0.2), 0 4px 0 #0a0508',
+             }}>
+            <div className="relative z-10 h-full p-3">
                 <div className="grid gap-1.5 h-full" style={{ gridTemplateColumns: 'repeat(10, 1fr)', gridTemplateRows: 'repeat(7, 1fr)' }}>
                     {Array.from({ length: 7 }, (_, rowIdx) =>
                         Array.from({ length: 10 }, (_, colIdx) => {
@@ -61,10 +65,19 @@ export default function CarteConstruction({
                             // Citadelle
                             if (col === 10 && row === 6) {
                                 return (
-                                    <div key={key} style={{ gridColumn: col, gridRow: row }}
-                                         className="bg-[#8b1a1a]/50 border-2 border-[#8b1a1a] rounded-lg flex flex-col items-center justify-center">
+                                    <div key={key} style={{
+                                        gridColumn: col,
+                                        gridRow: row,
+                                        background: 'rgba(139,26,26,0.6)',
+                                        outline: '3px solid #1a0a00',
+                                        boxShadow: 'inset 0 3px 0 rgba(196,64,48,0.2), inset 0 -3px 0 rgba(0,0,0,0.4), 0 3px 0 #0a0508, 0 0 12px rgba(196,64,48,0.15)',
+                                    }}
+                                         className="flex flex-col items-center justify-center">
                                         <span className="text-xl">🏰</span>
-                                        <span className="text-red-400 text-[7px] font-bold uppercase tracking-wider">Citadelle</span>
+                                        <span className="text-[7px] font-bold uppercase tracking-wider"
+                                              style={{ color: '#c44030', fontFamily: 'var(--font-cinzel)' }}>
+                                            Citadelle
+                                        </span>
                                     </div>
                                 );
                             }
@@ -106,15 +119,30 @@ export default function CarteConstruction({
                             if (estChemin(col, row)) {
                                 const f = getFleche(col, row);
                                 return (
-                                    <div key={key} style={{ gridColumn: col, gridRow: row }}
-                                         className="bg-[#2a1f0f]/90 border border-[#4a3a1a]/50 rounded flex items-center justify-center">
+                                    <div key={key} style={{
+                                        gridColumn: col,
+                                        gridRow: row,
+                                        background: 'rgba(60,40,20,0.6)',
+                                        outline: '2px solid #1a0a00',
+                                        boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.08), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a0508',
+                                    }}
+                                         className="flex items-center justify-center">
                                         {f && <span className="text-sm">{f}</span>}
                                     </div>
                                 );
                             }
 
                             // Case vide
-                            return <div key={key} style={{ gridColumn: col, gridRow: row }} className="rounded bg-[#0d1a0d]/30 border border-[#1a2a1a]/20" />;
+                            return (
+                                <div key={key}
+                                     style={{
+                                         gridColumn: col,
+                                         gridRow: row,
+                                         background: 'rgba(10,10,15,0.2)',
+                                         border: '1px solid rgba(255,255,255,0.03)',
+                                     }}
+                                />
+                            );
                         })
                     )}
                 </div>
