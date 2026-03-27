@@ -3,8 +3,11 @@
 import CaseButton from './CaseButton';
 import MurailleButton from './MurailleButton';
 import { Tourelle, Muraille } from '@/lib/api';
+import { PixelCitadel } from '@/components/PixelMapSprites';
 
+const px = { fontFamily: 'var(--font-pixel)' };
 
+const getTileIndex = (col: number, row: number) => ((col * 7 + row * 13) % 12) + 53;
 
 interface CarteConstructionProps {
     tourelles: Tourelle[];
@@ -62,26 +65,26 @@ export default function CarteConstruction({
                             const row = rowIdx + 1;
                             const key = `${col}-${row}`;
 
-                            // Citadelle
+                            // ═══ CITADELLE ═══
                             if (col === 10 && row === 6) {
                                 return (
                                     <div key={key} style={{
                                         gridColumn: col,
                                         gridRow: row,
-                                        background: 'rgba(139,26,26,0.6)',
+                                        background: 'rgba(139,26,26,0.4)',
                                         outline: '3px solid #1a0a00',
                                         boxShadow: 'inset 0 3px 0 rgba(196,64,48,0.2), inset 0 -3px 0 rgba(0,0,0,0.4), 0 3px 0 #0a0508, 0 0 12px rgba(196,64,48,0.15)',
                                     }}
                                          className="flex flex-col items-center justify-center">
-                                        <span className="text-xl">🏰</span>
-                                        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '0.25rem', color: '#c44030', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                                        <PixelCitadel size={40} />
+                                        <span style={{ ...px, fontSize: '0.25rem', color: '#c44030', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                                             Citadelle
                                         </span>
                                     </div>
                                 );
                             }
 
-                            // Emplacement tourelle
+                            // ═══ TOURELLE ═══
                             const posEntry = Object.entries(casesPlacement).find(([, v]) => v.col === col && v.row === row);
                             if (posEntry) {
                                 const pos = Number(posEntry[0]);
@@ -97,41 +100,50 @@ export default function CarteConstruction({
                                 );
                             }
 
-                            // Emplacement muraille
-                            const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
-                            if (murEntry) {
-                                const pos = Number(murEntry[0]);
-                                return (
-                                    <MurailleButton
-                                        key={key}
-                                        pos={pos}
-                                        muraille={murailles.find(m => m.position === pos)}
-                                        selectionnee={murailleSelectionnee === pos}
-                                        peutPayer={budget >= murailleCout}
-                                        onSelect={onSelectMuraille}
-                                        style={{ gridColumn: col, gridRow: row }}
-                                    />
-                                );
-                            }
-
-                            // Chemin
+                     // ═══ MURAILLE ═══
+                     const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
+                     if (murEntry) {
+                         const pos = Number(murEntry[0]);
+                         const tileIdx = getTileIndex(col, row);
+                         return (
+                             <MurailleButton
+                                 key={key}
+                                 pos={pos}
+                                 muraille={murailles.find(m => m.position === pos)}
+                                 selectionnee={murailleSelectionnee === pos}
+                                 peutPayer={budget >= murailleCout}
+                                 onSelect={onSelectMuraille}
+                                 style={{
+                                     gridColumn: col,
+                                     gridRow: row,
+                                     backgroundImage: `url(/sprites/tiles/FieldsTile_${tileIdx}.png)`,
+                                     backgroundSize: '100% 100%',
+                                     backgroundRepeat: 'no-repeat',
+                                 }}
+                             />
+                         );
+                     }
+                            // ═══ CHEMIN ═══
                             if (estChemin(col, row)) {
-                                const f = getFleche(col, row);
+                                const tileIdx = getTileIndex(col, row);
                                 return (
-                                    <div key={key} style={{
-                                        gridColumn: col,
-                                        gridRow: row,
-                                        background: 'rgba(60,40,20,0.6)',
-                                        outline: '2px solid #1a0a00',
-                                        boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.08), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a0508',
-                                    }}
-                                         className="flex items-center justify-center">
-                                        {f && <span className="text-sm">{f}</span>}
+                                    <div key={key} data-col={col} data-row={row}
+                                         className="pixel-render flex items-center justify-center"
+                                         style={{
+                                             gridColumn: col,
+                                             gridRow: row,
+                                             backgroundImage: `url(/sprites/tiles/FieldsTile_${tileIdx}.png)`,
+                                             backgroundSize: '100% 100%',
+                                             backgroundRepeat: 'no-repeat',
+                                             outline: '2px solid #1a0a00',
+                                             boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.08), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a0508',
+                                         }}>
+                                        {getFleche(col, row) && <span className="text-sm">{getFleche(col, row)}</span>}
                                     </div>
                                 );
                             }
 
-                            // Case vide
+                            // ═══ CASE VIDE ═══
                             return (
                                 <div key={key}
                                      style={{

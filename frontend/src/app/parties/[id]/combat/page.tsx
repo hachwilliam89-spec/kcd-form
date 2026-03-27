@@ -25,7 +25,6 @@ const CHEMIN_POSITIONS: { col: number; row: number }[] = [
     { col: 5, row: 6 }, { col: 6, row: 6 }, { col: 7, row: 6 },
     { col: 8, row: 6 }, { col: 9, row: 6 },
 ];
-
 export default function CombatPage() {
     const router = useRouter();
     const params = useParams();
@@ -52,9 +51,9 @@ export default function CombatPage() {
     const getPixelForPos = useCallback((pos: number) => {
         const idx = Math.max(0, Math.min(pos, CHEMIN_POSITIONS.length - 1));
         const cell = CHEMIN_POSITIONS[idx];
-        if (!grilleRef.current) return { x: 0, y: 0 };
+        if (!grilleRef.current) return { x: -999, y: -999 };
         const cellEl = grilleRef.current.querySelector(`[data-col="${cell.col}"][data-row="${cell.row}"]`) as HTMLElement;
-        if (!cellEl) return { x: 0, y: 0 };
+        if (!cellEl) return { x: -999, y: -999 };
         const grilleRect = grilleRef.current.getBoundingClientRect();
         const cellRect = cellEl.getBoundingClientRect();
         return { x: cellRect.left - grilleRect.left + cellRect.width / 2 - 16, y: cellRect.top - grilleRect.top + cellRect.height / 2 - 20 };
@@ -86,7 +85,6 @@ export default function CombatPage() {
     const retourConstruction = () => { clientRef.current?.deactivate(); router.push(`/parties/${partieId}/construction`); };
 
     const timerPct = combatEtat ? (combatEtat.tempsEcoule / combatEtat.dureeSecondes) * 100 : 0;
-
     return (
             <main className="h-screen bg-medieval-combat text-white flex flex-col overflow-hidden p-4 gap-3">
 
@@ -158,7 +156,6 @@ export default function CombatPage() {
                             murailles={combatEtat?.murailles ?? []} forteressePvActuels={combatEtat?.forteressePvActuels ?? 0}
                             forteressePvMax={combatEtat?.forteressePvMax ?? 1} getPixelForPos={getPixelForPos} />
 
-                        {/* Entre vagues */}
                         {entreVagues && combatEtat && (
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                                 className="flex-shrink-0 relative p-6"
@@ -173,8 +170,8 @@ export default function CombatPage() {
                                     </h2>
                                     <p style={{ ...px, fontSize: '0.35rem', color: 'rgba(212,200,160,0.7)', lineHeight: '2' }}>
                                         {combatEtat.ennemisVivants > 0
-                                            ? `️ ${combatEtat.ennemisVivants} survivant${combatEtat.ennemisVivants > 1 ? 's' : ''} reporté${combatEtat.ennemisVivants > 1 ? 's' : ''}`
-                                            : ' Tous les ennemis éliminés !'}
+                                            ? `${combatEtat.ennemisVivants} survivant${combatEtat.ennemisVivants > 1 ? 's' : ''} reporté${combatEtat.ennemisVivants > 1 ? 's' : ''}`
+                                            : 'Tous les ennemis éliminés !'}
                                     </p>
                                 </div>
                                 <div className="flex gap-4 justify-center">
@@ -190,7 +187,6 @@ export default function CombatPage() {
                             </motion.div>
                         )}
 
-                        {/* Fin de partie */}
                         {combatEtat && !entreVagues && (combatEtat.etat === 'GAGNE' || combatEtat.etat === 'PERDU') && (
                             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
                                 className="text-center py-5 flex-shrink-0 relative"
