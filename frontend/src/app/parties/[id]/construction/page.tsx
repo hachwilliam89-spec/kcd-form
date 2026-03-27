@@ -9,6 +9,8 @@ import ListeDefenses from './ListeDefenses';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { PixelBorder, PixelCoin, PixelTourelle, PixelRectangle, PixelShield } from '@/components/PixelSprites';
 
+const px = { fontFamily: 'var(--font-pixel)' };
+
 interface FormeSelectionnee {
     type: 'TRIANGLE' | 'CERCLE';
     valeur1: number;
@@ -21,18 +23,8 @@ const FORMES_DISPONIBLES = [
     { type: 'CERCLE' as const, label: 'Cercle', emoji: '🪨', desc: "Catapulte — zone d'effet", cout: 74, couleur: 'bleu', valeur1: 3.0, valeur2: 0 },
 ];
 
-const MURAILLE_CONFIG = {
-    largeur: 5.0,
-    longueur: 3.0,
-    cout: 33,
-    pvMax: 150,
-};
-
-const BUDGET_INITIAL: Record<string, number> = {
-    ECUYER: 1000,
-    CHEVALIER: 700,
-    SEIGNEUR: 400,
-};
+const MURAILLE_CONFIG = { largeur: 5.0, longueur: 3.0, cout: 33, pvMax: 150 };
+const BUDGET_INITIAL: Record<string, number> = { ECUYER: 1000, CHEVALIER: 700, SEIGNEUR: 400 };
 
 const coutFormes = (formes: FormeSelectionnee[]) =>
     formes.reduce((acc, f) => {
@@ -131,15 +123,8 @@ export default function ConstructionPage() {
         setLoading(false);
     };
 
-    const supprimerTourelle = async (id: number) => {
-        await api.supprimerTourelle(partieId, id);
-        await charger();
-    };
-
-    const supprimerMuraille = async (id: number) => {
-        await api.supprimerMuraille(partieId, id);
-        await charger();
-    };
+    const supprimerTourelle = async (id: number) => { await api.supprimerTourelle(partieId, id); await charger(); };
+    const supprimerMuraille = async (id: number) => { await api.supprimerMuraille(partieId, id); await charger(); };
 
     const lancerCombat = async () => {
         if (estReprise) {
@@ -153,28 +138,32 @@ export default function ConstructionPage() {
     return (
         <main className="h-screen bg-medieval-construction text-white flex flex-col overflow-hidden p-4 gap-3">
 
-            {/* Header pixel art */}
+            {/* ════════ Header ════════ */}
             <div className="flex justify-between items-center pb-2 flex-shrink-0 relative">
                 <div className="flex items-center gap-3">
                     <PixelTourelle size={28} />
                     <div>
-                        <h1 className="text-lg font-black tracking-widest uppercase"
-                            style={{
-                                fontFamily: 'var(--font-cinzel)',
-                                color: '#dcb464',
-                                textShadow: '0 2px 4px rgba(0,0,0,0.6)',
-                            }}>
+                        <h1 style={{
+                            ...px,
+                            fontSize: '0.6rem',
+                            color: '#dcb464',
+                            textShadow: '0 2px 4px rgba(0,0,0,0.6)',
+                            lineHeight: '1.8',
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase' as const,
+                        }}>
                             {estReprise ? 'Phase de Fortification' : 'Phase de Construction'}
                         </h1>
-                        <p className="text-xs"
-                           style={{
-                               fontFamily: 'var(--font-crimson)',
-                               color: 'rgba(212,200,160,0.7)',
-                               textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                           }}>
+                        <p style={{
+                            ...px,
+                            fontSize: '0.35rem',
+                            color: 'rgba(212,200,160,0.7)',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                            lineHeight: '1.8',
+                        }}>
                             {partie?.joueurNom} — {partie?.difficulte}
                             {estReprise && (
-                                <span className="text-[#dcb464] ml-2">
+                                <span style={{ color: '#dcb464', marginLeft: '8px' }}>
                                     — Préparez-vous pour la vague {vagueAffichee}
                                 </span>
                             )}
@@ -182,7 +171,7 @@ export default function ConstructionPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    {/* Budget pixel art */}
+                    {/* Budget */}
                     <div className="flex items-center gap-2 px-4 py-2"
                          style={{
                              background: 'rgba(26,20,32,0.8)',
@@ -190,49 +179,50 @@ export default function ConstructionPage() {
                              boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.1), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #1a0a00',
                          }}>
                         <PixelCoin size={18} />
-                        <span className="text-2xl font-black text-[#dcb464]"
-                              style={{ fontFamily: 'var(--font-cinzel)' }}>
-                            {budget}
-                        </span>
+                        <span style={{ ...px, fontSize: '0.8rem', color: '#dcb464' }}>{budget}</span>
                     </div>
 
                     {/* Bouton action */}
                     {fromLobby ? (
                         <button onClick={() => router.push(`/multi/${lobbyId}?role=DEFENSEUR&partieId=${partieId}`)}
-                                className="btn-gold text-sm py-3 px-5 flex items-center gap-2">
+                                className="btn-gold py-3 px-5 flex items-center gap-2"
+                                style={{ ...px, fontSize: '0.45rem' }}>
                             <PixelShield size={16} />
                             Retour au lobby
                         </button>
                     ) : (
                         <button onClick={lancerCombat}
-                                className="btn-blood text-sm py-3 px-5 flex items-center gap-2">
+                                className="btn-blood py-3 px-5 flex items-center gap-2"
+                                style={{ ...px, fontSize: '0.45rem' }}>
                             {estReprise ? `⚔️ Vague ${vagueAffichee}` : '⚔️ Lancer le combat'}
                         </button>
                     )}
                 </div>
-                {/* Séparateur pixel en bas du header */}
                 <PixelBorder className="absolute bottom-0 left-0 right-0" />
             </div>
 
-            {/* Contenu */}
+            {/* ════════ Contenu ════════ */}
             <div className="flex gap-4 flex-1 min-h-0">
 
                 {/* Carte */}
                 <div className="flex flex-col gap-2 flex-1 min-w-0">
                     <div className="flex items-center justify-between flex-shrink-0">
-                        <h2 className="text-xs uppercase tracking-widest"
-                            style={{
-                                fontFamily: 'var(--font-cinzel)',
-                                color: '#dcb464',
-                                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                            }}>
+                        <h2 style={{
+                            ...px,
+                            fontSize: '0.4rem',
+                            color: '#dcb464',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase' as const,
+                        }}>
                             Terrain de défense
                         </h2>
-                        <p className="text-xs"
-                           style={{
-                               color: 'rgba(212,200,160,0.5)',
-                               textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                           }}>
+                        <p style={{
+                            ...px,
+                            fontSize: '0.32rem',
+                            color: 'rgba(212,200,160,0.5)',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                        }}>
                             {etape === 'carte' ? 'Clique sur une case libre ou un emplacement muraille' :
                                 etape === 'muraille' ? `Muraille position ${murailleSelectionnee}` :
                                     `Case ${caseSelectionnee} sélectionnée`}
@@ -250,29 +240,21 @@ export default function ConstructionPage() {
                         onSelectMuraille={selectMuraille}
                     />
 
-                    {/* Légende pixel art */}
-                    <div className="flex gap-4 text-[10px] flex-shrink-0 flex-wrap px-1"
-                         style={{
-                             color: 'rgba(212,200,160,0.5)',
-                             fontFamily: 'var(--font-cinzel)',
-                             textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                         }}>
-                        <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 inline-block" style={{ background: 'rgba(26,20,32,0.5)', outline: '1px solid rgba(220,180,100,0.3)' }} />
-                            Tourelle
-                        </span>
-                        <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 inline-block" style={{ background: 'rgba(42,31,15,0.5)', outline: '1px solid rgba(139,105,20,0.3)' }} />
-                            Muraille
-                        </span>
-                        <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 inline-block" style={{ background: 'rgba(220,180,100,0.15)', outline: '1px solid rgba(220,180,100,0.6)' }} />
-                            Sélectionnée
-                        </span>
-                        <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 inline-block" style={{ background: 'rgba(42,31,15,0.4)' }} />
-                            Chemin
-                        </span>
+                    {/* Légende */}
+                    <div className="flex gap-4 flex-shrink-0 flex-wrap px-1">
+                        {[
+                            { label: 'Tourelle', bg: 'rgba(26,20,32,0.5)', border: 'rgba(220,180,100,0.3)' },
+                            { label: 'Muraille', bg: 'rgba(42,31,15,0.5)', border: 'rgba(139,105,20,0.3)' },
+                            { label: 'Sélectionnée', bg: 'rgba(220,180,100,0.15)', border: 'rgba(220,180,100,0.6)' },
+                            { label: 'Chemin', bg: 'rgba(42,31,15,0.4)', border: 'transparent' },
+                        ].map((item, i) => (
+                            <span key={i} className="flex items-center gap-1"
+                                  style={{ ...px, fontSize: '0.3rem', color: 'rgba(212,200,160,0.5)' }}>
+                                <span className="w-3 h-3 inline-block"
+                                      style={{ background: item.bg, outline: `1px solid ${item.border}` }} />
+                                {item.label}
+                            </span>
+                        ))}
                     </div>
                 </div>
 
@@ -287,14 +269,12 @@ export default function ConstructionPage() {
                                  boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.08), inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 0 #1a0a00',
                              }}>
                             <PixelBorder className="absolute top-0 left-0 right-0" />
-                            <div className="pt-2">
+                            <div className="pt-3">
                                 {estReprise ? <PixelTourelle size={32} className="mx-auto mb-2" /> : <PixelShield size={32} className="mx-auto mb-2" />}
-                                <p className="text-sm font-bold"
-                                   style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
+                                <p style={{ ...px, fontSize: '0.5rem', color: '#dcb464', lineHeight: '1.8' }}>
                                     {estReprise ? 'Renforcez vos défenses' : 'Sélectionne un emplacement'}
                                 </p>
-                                <p className="text-xs mt-1"
-                                   style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.6)' }}>
+                                <p style={{ ...px, fontSize: '0.32rem', color: 'rgba(212,200,160,0.6)', lineHeight: '2', marginTop: '4px' }}>
                                     {estReprise
                                         ? 'Ajoutez des tourelles ou murailles avant la prochaine vague'
                                         : 'Case numérotée pour une tourelle, ou 🧱 pour une muraille sur le chemin'}

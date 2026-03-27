@@ -74,8 +74,7 @@ export default function CarteConstruction({
                                     }}
                                          className="flex flex-col items-center justify-center">
                                         <span className="text-xl">🏰</span>
-                                        <span className="text-[7px] font-bold uppercase tracking-wider"
-                                              style={{ color: '#c44030', fontFamily: 'var(--font-cinzel)' }}>
+                                        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '0.25rem', color: '#c44030', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                                             Citadelle
                                         </span>
                                     </div>

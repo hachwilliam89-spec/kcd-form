@@ -6,7 +6,7 @@ import EnnemiSprite from './EnnemiSprite';
 import { Tourelle } from '@/lib/api';
 import { EnnemiEtat, MurailleEtat } from '@/lib/types';
 
-
+const px = { fontFamily: 'var(--font-pixel)' };
 
 interface Explosion {
     id: number;
@@ -54,8 +54,7 @@ const cheminCases = [
 
 const estChemin = (col: number, row: number) => cheminCases.some(c => c.col === col && c.row === row);
 
-// Style pixel art pour les cases
-const pixelCase = {
+const pixelCaseStyles = {
     tourelle: {
         background: 'rgba(26,20,32,0.7)',
         outline: '3px solid #1a0a00',
@@ -80,7 +79,7 @@ const pixelCase = {
         const color = pvPct > 50 ? '#3c8cdc' : pvPct > 25 ? '#dcb464' : '#c44030';
         return {
             background: 'rgba(60,40,20,0.65)',
-            outline: `3px solid #1a0a00`,
+            outline: '3px solid #1a0a00',
             boxShadow: `inset 0 3px 0 ${color}20, inset 0 -3px 0 rgba(0,0,0,0.4), 0 3px 0 #0a0508, 0 0 8px ${color}15`,
         };
     },
@@ -110,40 +109,28 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
         useEffect(() => {
             const prevMap = prevEnnemisRef.current;
             const newExplosions: Explosion[] = [];
-
             for (const e of ennemis) {
                 const wasAlive = prevMap.get(e.id);
                 if (wasAlive === true && !e.vivant) {
-                    const px = getPixelForPos(e.position);
-                    newExplosions.push({
-                        id: explosionIdRef.current++,
-                        x: px.x + 16,
-                        y: px.y + 10,
-                    });
+                    const p = getPixelForPos(e.position);
+                    newExplosions.push({ id: explosionIdRef.current++, x: p.x + 16, y: p.y + 10 });
                 }
             }
-
             if (newExplosions.length > 0) {
                 setExplosions(prev => [...prev, ...newExplosions]);
                 setTimeout(() => {
-                    setExplosions(prev => prev.filter(
-                        exp => !newExplosions.some(ne => ne.id === exp.id)
-                    ));
+                    setExplosions(prev => prev.filter(exp => !newExplosions.some(ne => ne.id === exp.id)));
                 }, 800);
             }
-
             const newMap = new Map<number, boolean>();
-            for (const e of ennemis) {
-                newMap.set(e.id, e.vivant);
-            }
+            for (const e of ennemis) newMap.set(e.id, e.vivant);
             prevEnnemisRef.current = newMap;
         }, [ennemis]);
 
         const getMurailleAt = (col: number, row: number): MurailleEtat | undefined => {
             const entry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
             if (!entry) return undefined;
-            const pos = Number(entry[0]);
-            return murailles.find(m => m.position === pos);
+            return murailles.find(m => m.position === Number(entry[0]));
         };
 
         return (
@@ -153,203 +140,101 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                      outline: '3px solid #1a0a00',
                      boxShadow: 'inset 0 0 30px rgba(0,0,0,0.2), 0 4px 0 #0a0508',
                  }}>
-
                 <div className="relative z-10 h-full p-3">
-                    <div
-                        ref={ref}
-                        className="grid gap-1.5 h-full"
-                        style={{
-                            gridTemplateColumns: 'repeat(10, 1fr)',
-                            gridTemplateRows: 'repeat(7, 1fr)',
-                        }}>
+                    <div ref={ref} className="grid gap-1.5 h-full"
+                         style={{ gridTemplateColumns: 'repeat(10, 1fr)', gridTemplateRows: 'repeat(7, 1fr)' }}>
                         {Array.from({ length: 7 }, (_, rowIdx) =>
                             Array.from({ length: 10 }, (_, colIdx) => {
                                 const col = colIdx + 1;
                                 const row = rowIdx + 1;
                                 const key = `${col}-${row}`;
 
-                                // === CITADELLE ===
                                 if (col === 10 && row === 6) {
                                     return (
-                                        <motion.div
-                                            key={key}
-                                            data-col={col} data-row={row}
-                                            style={{
-                                                gridColumn: col,
-                                                gridRow: row,
-                                                ...(forteresseFlash ? pixelCase.citadelleFlash : pixelCase.citadelle),
-                                            }}
+                                        <motion.div key={key} data-col={col} data-row={row}
+                                            style={{ gridColumn: col, gridRow: row, ...(forteresseFlash ? pixelCaseStyles.citadelleFlash : pixelCaseStyles.citadelle) }}
                                             animate={forteresseFlash ? { scale: [1, 1.05, 1] } : {}}
                                             transition={{ duration: 0.4 }}
                                             className="flex flex-col items-center justify-center">
-                                            <motion.span
-                                                animate={forteresseFlash ? { scale: [1, 1.2, 1] } : {}}
-                                                transition={{ duration: 0.3 }}
-                                                className="text-xl">
-                                                🏰
-                                            </motion.span>
-                                            <span className="text-[7px] font-bold uppercase"
-                                                  style={{ color: '#c44030', fontFamily: 'var(--font-cinzel)' }}>
-                                                Citadelle
-                                            </span>
+                                            <motion.span animate={forteresseFlash ? { scale: [1, 1.2, 1] } : {}} transition={{ duration: 0.3 }} className="text-xl">🏰</motion.span>
+                                            <span style={{ ...px, fontSize: '0.25rem', color: '#c44030', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Citadelle</span>
                                             <div className="w-4/5 h-1 mt-0.5" style={{ background: 'rgba(0,0,0,0.5)', outline: '1px solid rgba(0,0,0,0.3)' }}>
-                                                <motion.div
-                                                    animate={{ width: `${forteressePvMax > 0 ? (forteressePvActuels / forteressePvMax) * 100 : 0}%` }}
-                                                    className="h-1"
-                                                    style={{ background: '#c44030' }}
-                                                />
+                                                <motion.div animate={{ width: `${forteressePvMax > 0 ? (forteressePvActuels / forteressePvMax) * 100 : 0}%` }} className="h-1" style={{ background: '#c44030' }} />
                                             </div>
                                         </motion.div>
                                     );
                                 }
 
-                                // === TOURELLE ===
-                                const posEntry = Object.entries(casesPlacement).find(
-                                    ([, v]) => v.col === col && v.row === row
-                                );
+                                const posEntry = Object.entries(casesPlacement).find(([, v]) => v.col === col && v.row === row);
                                 if (posEntry) {
                                     const tourelle = tourelles.find(t => t.position === Number(posEntry[0]));
                                     return (
-                                        <div key={key}
-                                             data-col={col} data-row={row}
-                                             style={{
-                                                 gridColumn: col,
-                                                 gridRow: row,
-                                                 ...pixelCase.tourelle,
-                                             }}
+                                        <div key={key} data-col={col} data-row={row}
+                                             style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.tourelle }}
                                              className="flex flex-col items-center justify-center gap-0.5">
                                             {tourelle ? (
                                                 <>
-                                                    <motion.span
-                                                        animate={{ rotate: [0, -5, 5, -3, 3, 0] }}
-                                                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                                                        className="text-base">
+                                                    <motion.span animate={{ rotate: [0, -5, 5, -3, 3, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }} className="text-base">
                                                         {tourelle.aoe ? '🪨' : '🏹'}
                                                     </motion.span>
-                                                    <p className="text-[7px] truncate w-full text-center px-0.5"
-                                                       style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
-                                                        {tourelle.nom}
-                                                    </p>
+                                                    <p className="truncate w-full text-center px-0.5" style={{ ...px, fontSize: '0.25rem', color: '#dcb464' }}>{tourelle.nom}</p>
                                                 </>
                                             ) : (
-                                                <span className="text-xs font-bold"
-                                                      style={{ color: 'rgba(220,180,100,0.35)', fontFamily: 'var(--font-cinzel)' }}>
-                                                    {posEntry[0]}
-                                                </span>
+                                                <span style={{ ...px, fontSize: '0.3rem', color: 'rgba(220,180,100,0.35)' }}>{posEntry[0]}</span>
                                             )}
                                         </div>
                                     );
                                 }
 
-                                // === MURAILLE ===
-                                const murEntry = Object.entries(emplacementsMuraille).find(
-                                    ([, v]) => v.col === col && v.row === row
-                                );
+                                const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
                                 if (murEntry) {
                                     const muraille = getMurailleAt(col, row);
                                     if (muraille && !muraille.detruite) {
                                         const pvPct = (muraille.pvActuels / muraille.pvMax) * 100;
                                         const pvColor = pvPct > 50 ? '#3c8cdc' : pvPct > 25 ? '#dcb464' : '#c44030';
                                         return (
-                                            <motion.div
-                                                key={key}
-                                                data-col={col} data-row={row}
-                                                style={{
-                                                    gridColumn: col,
-                                                    gridRow: row,
-                                                    ...pixelCase.muraille(pvPct),
-                                                }}
+                                            <motion.div key={key} data-col={col} data-row={row}
+                                                style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.muraille(pvPct) }}
                                                 animate={pvPct <= 25 ? { x: [-1, 1, -1, 0] } : {}}
                                                 transition={pvPct <= 25 ? { duration: 0.3, repeat: Infinity, repeatDelay: 0.5 } : {}}
                                                 className="flex flex-col items-center justify-center gap-0.5">
                                                 <span className="text-base">🧱</span>
                                                 <div className="w-4/5 h-1" style={{ background: 'rgba(0,0,0,0.5)', outline: '1px solid rgba(0,0,0,0.3)' }}>
-                                                    <motion.div
-                                                        animate={{ width: `${pvPct}%` }}
-                                                        transition={{ duration: 0.3 }}
-                                                        className="h-1"
-                                                        style={{ background: pvColor }}
-                                                    />
+                                                    <motion.div animate={{ width: `${pvPct}%` }} transition={{ duration: 0.3 }} className="h-1" style={{ background: pvColor }} />
                                                 </div>
                                             </motion.div>
                                         );
                                     }
                                     return (
-                                        <div key={key}
-                                             data-col={col} data-row={row}
-                                             style={{
-                                                 gridColumn: col,
-                                                 gridRow: row,
-                                                 background: muraille?.detruite ? 'rgba(42,31,15,0.3)' : 'rgba(60,40,20,0.5)',
-                                                 outline: '2px solid #1a0a00',
-                                                 boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.05), 0 2px 0 #0a0508',
-                                             }}
+                                        <div key={key} data-col={col} data-row={row}
+                                             style={{ gridColumn: col, gridRow: row, background: muraille?.detruite ? 'rgba(42,31,15,0.3)' : 'rgba(60,40,20,0.5)', outline: '2px solid #1a0a00', boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.05), 0 2px 0 #0a0508' }}
                                              className="flex items-center justify-center">
                                             {muraille?.detruite && (
-                                                <motion.span
-                                                    initial={{ scale: 1.5, opacity: 1 }}
-                                                    animate={{ scale: 1, opacity: 0.5 }}
-                                                    transition={{ duration: 1 }}
-                                                    className="text-[10px]">
-                                                    💥
-                                                </motion.span>
+                                                <motion.span initial={{ scale: 1.5, opacity: 1 }} animate={{ scale: 1, opacity: 0.5 }} transition={{ duration: 1 }} className="text-[10px]">💥</motion.span>
                                             )}
                                         </div>
                                     );
                                 }
 
-                                // === CHEMIN ===
                                 if (estChemin(col, row)) {
-                                    return (
-                                        <div key={key}
-                                             data-col={col} data-row={row}
-                                             style={{
-                                                 gridColumn: col,
-                                                 gridRow: row,
-                                                 ...pixelCase.chemin,
-                                             }}
-                                        />
-                                    );
+                                    return <div key={key} data-col={col} data-row={row} style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.chemin }} />;
                                 }
 
-                                // === CASE VIDE ===
-                                return (
-                                    <div key={key}
-                                         data-col={col} data-row={row}
-                                         style={{
-                                             gridColumn: col,
-                                             gridRow: row,
-                                             ...pixelCase.vide,
-                                         }}
-                                    />
-                                );
+                                return <div key={key} data-col={col} data-row={row} style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.vide }} />;
                             })
                         )}
                     </div>
 
-                    {/* Ennemis animés */}
                     <div className="absolute inset-3 pointer-events-none">
                         <AnimatePresence>
-                            {ennemis.filter(e => e.vivant).map((ennemi) => (
-                                <EnnemiSprite
-                                    key={`ennemi-${ennemi.id}`}
-                                    ennemi={ennemi}
-                                    getPixelForPos={getPixelForPos}
-                                    tailleChemin={TAILLE_CHEMIN}
-                                />
+                            {ennemis.filter(e => e.vivant).map(ennemi => (
+                                <EnnemiSprite key={`ennemi-${ennemi.id}`} ennemi={ennemi} getPixelForPos={getPixelForPos} tailleChemin={TAILLE_CHEMIN} />
                             ))}
                         </AnimatePresence>
-
                         <AnimatePresence>
                             {explosions.map(exp => (
-                                <motion.div
-                                    key={`exp-${exp.id}`}
-                                    initial={{ scale: 0, opacity: 1 }}
-                                    animate={{ scale: [0, 1.5, 2], opacity: [1, 0.8, 0] }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.6 }}
-                                    className="absolute pointer-events-none"
-                                    style={{ left: exp.x - 16, top: exp.y - 16 }}>
+                                <motion.div key={`exp-${exp.id}`} initial={{ scale: 0, opacity: 1 }} animate={{ scale: [0, 1.5, 2], opacity: [1, 0.8, 0] }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }}
+                                    className="absolute pointer-events-none" style={{ left: exp.x - 16, top: exp.y - 16 }}>
                                     <span className="text-2xl">💀</span>
                                 </motion.div>
                             ))}
@@ -362,5 +247,4 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
 );
 
 CarteCombat.displayName = 'CarteCombat';
-
 export default CarteCombat;

@@ -2,7 +2,9 @@
 
 import { Trash2 } from 'lucide-react';
 import { Tourelle, Muraille } from '@/lib/api';
+import { PixelCoin } from '@/components/PixelSprites';
 
+const px = { fontFamily: 'var(--font-pixel)' };
 
 interface ListeDefensesProps {
     tourelles: Tourelle[];
@@ -14,19 +16,27 @@ interface ListeDefensesProps {
 
 export default function ListeDefenses({ tourelles, murailles, budget, onSupprimerTourelle, onSupprimerMuraille }: ListeDefensesProps) {
     return (
-        <div className="bg-[#1a1a22] border border-[#3a3a48] rounded-lg p-4 flex flex-col gap-2 flex-1">
-            <h2 className="text-[#c9a84c] text-xs uppercase tracking-widest mb-1" style={{ fontFamily: 'var(--font-cinzel)' }}>
+        <div className="flex flex-col gap-2 flex-1 p-4"
+             style={{
+                 background: 'rgba(26,20,32,0.85)',
+                 outline: '3px solid #1a0a00',
+                 boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.08), inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 0 #1a0a00',
+             }}>
+            <h2 style={{ ...px, fontSize: '0.4rem', color: '#dcb464', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                 Défenses ({tourelles.length} tourelles, {murailles.length} murailles)
             </h2>
             {tourelles.length === 0 && murailles.length === 0 ? (
-                <p className="text-gray-600 text-xs text-center py-4">Aucune défense placée</p>
+                <p className="text-center py-4" style={{ ...px, fontSize: '0.32rem', color: 'rgba(180,170,150,0.4)' }}>
+                    Aucune défense placée
+                </p>
             ) : (
                 <>
                     {tourelles.map(t => (
-                        <div key={`t-${t.id}`} className="flex justify-between items-center bg-[#2a2a35] rounded p-2 border border-[#3a3a48]">
+                        <div key={`t-${t.id}`} className="flex justify-between items-center p-2"
+                             style={{ background: 'rgba(10,10,15,0.4)', outline: '2px solid #1a0a00', boxShadow: '0 2px 0 #0a0508' }}>
                             <div>
-                                <p className="text-base font-bold">{t.nom}</p>
-                                <p className="text-sm text-gray-400">
+                                <p style={{ ...px, fontSize: '0.4rem', color: '#d4c8a0', lineHeight: '1.8' }}>{t.nom}</p>
+                                <p style={{ ...px, fontSize: '0.3rem', color: 'rgba(180,170,150,0.4)', lineHeight: '1.8' }}>
                                     pos.{t.position}
                                     {t.aoe ? ' 🪨' : ''}
                                     {t.nombreTirs > 0 ? ' 🏹' : ''}
@@ -39,10 +49,11 @@ export default function ListeDefenses({ tourelles, murailles, budget, onSupprime
                         </div>
                     ))}
                     {murailles.map(m => (
-                        <div key={`m-${m.id}`} className="flex justify-between items-center bg-[#3a2a10] rounded p-2 border border-[#8b6914]/30">
+                        <div key={`m-${m.id}`} className="flex justify-between items-center p-2"
+                             style={{ background: 'rgba(42,31,15,0.4)', outline: '2px solid rgba(139,105,20,0.3)', boxShadow: '0 2px 0 #0a0508' }}>
                             <div>
-                                <p className="text-base font-bold">🧱 Muraille</p>
-                                <p className="text-sm text-gray-400">
+                                <p style={{ ...px, fontSize: '0.4rem', color: '#8b6914', lineHeight: '1.8' }}>🧱 Muraille</p>
+                                <p style={{ ...px, fontSize: '0.3rem', color: 'rgba(180,170,150,0.4)', lineHeight: '1.8' }}>
                                     chemin pos.{m.position} — {m.pvMax} PV — {m.cout} or
                                 </p>
                             </div>
@@ -51,9 +62,11 @@ export default function ListeDefenses({ tourelles, murailles, budget, onSupprime
                             </button>
                         </div>
                     ))}
-                    <div className="border-t border-[#3a3a48] pt-2 flex justify-between text-xs mt-auto">
-                        <span className="text-gray-400">Budget restant</span>
-                        <span className="text-[#c9a84c] font-bold">{budget} or</span>
+                    <div className="flex justify-between pt-2 mt-auto" style={{ borderTop: '2px solid rgba(26,10,0,0.5)' }}>
+                        <span style={{ ...px, fontSize: '0.35rem', color: 'rgba(180,170,150,0.5)' }}>Budget restant</span>
+                        <span className="flex items-center gap-1" style={{ ...px, fontSize: '0.4rem', color: '#dcb464' }}>
+                            <PixelCoin size={12} />{budget}
+                        </span>
                     </div>
                 </>
             )}

@@ -40,38 +40,50 @@ export default function MultiPage() {
         setLoading(false);
     };
 
+    /* ── Style helpers ── */
+    const pixelFont = { fontFamily: 'var(--font-pixel)' };
+    const cinzelFont = { fontFamily: 'var(--font-cinzel)' };
+    const crimsonFont = { fontFamily: 'var(--font-crimson)' };
+
     return (
         <main className="min-h-screen bg-medieval-multi text-white flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-md flex flex-col gap-6 items-center">
 
-                {/* Header */}
+                {/* ════════ Header ════════ */}
                 <div className="text-center flex flex-col items-center gap-3">
                     <div className="flex items-center gap-3">
                         <PixelShield size={36} />
                         <span className="text-3xl" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>⚔️</span>
                         <PixelBanner size={36} color="#c44030" />
                     </div>
-                    <h1 className="text-3xl font-black tracking-widest uppercase"
+                    <h1 className="text-xl tracking-widest uppercase"
                         style={{
-                            fontFamily: 'var(--font-cinzel)',
+                            ...pixelFont,
                             color: '#dcb464',
                             textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 0 20px rgba(220,180,100,0.2)',
+                            lineHeight: '1.6',
                         }}>
                         Mode Multijoueur
                     </h1>
-                    <p style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.6)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                    <p style={{
+                        ...pixelFont,
+                        fontSize: '0.55rem',
+                        color: 'rgba(212,200,160,0.6)',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                        letterSpacing: '0.15em',
+                    }}>
                         Défenseur vs Attaquant
                     </p>
                     <PixelBorder className="w-56" />
                 </div>
 
-                {/* Choix */}
+                {/* ════════ Choix ════════ */}
                 {mode === 'choix' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-4 w-full">
 
                         {/* Créer — défenseur */}
                         <button onClick={() => setMode('creer')}
-                                className="w-full text-left p-5 transition-all hover:translate-y-[-2px]"
+                                className="w-full text-left p-5 transition-all hover:translate-y-[-2px] active:translate-y-[1px]"
                                 style={{
                                     background: 'rgba(26,20,32,0.85)',
                                     outline: '3px solid #1a0a00',
@@ -80,12 +92,22 @@ export default function MultiPage() {
                             <div className="flex items-center gap-4">
                                 <PixelShield size={40} />
                                 <div>
-                                    <p className="text-lg font-bold"
-                                       style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
+                                    <p className="font-bold"
+                                       style={{
+                                           ...pixelFont,
+                                           fontSize: '0.7rem',
+                                           color: '#dcb464',
+                                           lineHeight: '1.8',
+                                       }}>
                                         Créer un lobby
                                     </p>
-                                    <p className="text-xs mt-0.5"
-                                       style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.5)' }}>
+                                    <p className="mt-1"
+                                       style={{
+                                           ...pixelFont,
+                                           fontSize: '0.45rem',
+                                           color: 'rgba(212,200,160,0.5)',
+                                           lineHeight: '1.6',
+                                       }}>
                                         Défendez votre forteresse
                                     </p>
                                 </div>
@@ -94,7 +116,7 @@ export default function MultiPage() {
 
                         {/* Rejoindre — attaquant */}
                         <button onClick={() => setMode('rejoindre')}
-                                className="w-full text-left p-5 transition-all hover:translate-y-[-2px]"
+                                className="w-full text-left p-5 transition-all hover:translate-y-[-2px] active:translate-y-[1px]"
                                 style={{
                                     background: 'rgba(60,20,20,0.7)',
                                     outline: '3px solid #1a0a00',
@@ -103,12 +125,22 @@ export default function MultiPage() {
                             <div className="flex items-center gap-4">
                                 <PixelBanner size={40} color="#c44030" />
                                 <div>
-                                    <p className="text-lg font-bold"
-                                       style={{ fontFamily: 'var(--font-cinzel)', color: '#c44030' }}>
+                                    <p className="font-bold"
+                                       style={{
+                                           ...pixelFont,
+                                           fontSize: '0.7rem',
+                                           color: '#c44030',
+                                           lineHeight: '1.8',
+                                       }}>
                                         Rejoindre un lobby
                                     </p>
-                                    <p className="text-xs mt-0.5"
-                                       style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.5)' }}>
+                                    <p className="mt-1"
+                                       style={{
+                                           ...pixelFont,
+                                           fontSize: '0.45rem',
+                                           color: 'rgba(212,200,160,0.5)',
+                                           lineHeight: '1.6',
+                                       }}>
                                         Attaquez la forteresse adverse
                                     </p>
                                 </div>
@@ -116,13 +148,14 @@ export default function MultiPage() {
                         </button>
 
                         <button onClick={() => router.push('/')}
-                                className="btn-stone w-full text-sm py-3 mt-2">
+                                className="btn-stone w-full py-3 mt-2"
+                                style={{ ...pixelFont, fontSize: '0.55rem' }}>
                             ← Retour à l&apos;accueil
                         </button>
                     </motion.div>
                 )}
 
-                {/* Créer */}
+                {/* ════════ Créer ════════ */}
                 {mode === 'creer' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                 className="flex flex-col gap-4 w-full items-center">
@@ -134,23 +167,30 @@ export default function MultiPage() {
                              }}>
                             <PixelBorder className="absolute top-0 left-0 right-0" />
                             <PixelShield size={32} className="mx-auto mb-3 mt-2" />
-                            <p style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.7)' }}>
+                            <p style={{
+                                ...pixelFont,
+                                fontSize: '0.45rem',
+                                color: 'rgba(212,200,160,0.7)',
+                                lineHeight: '2',
+                            }}>
                                 Un lobby sera créé avec une partie en difficulté Chevalier.
                             </p>
                         </div>
                         <button onClick={creerLobby} disabled={loading}
-                                className={`btn-gold w-full text-base py-4 flex items-center justify-center gap-2 ${loading ? 'opacity-50' : ''}`}>
+                                className={`btn-gold w-full py-4 flex items-center justify-center gap-2 ${loading ? 'opacity-50' : ''}`}
+                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
                             <PixelShield size={18} />
                             {loading ? 'Création...' : 'Créer le lobby'}
                         </button>
                         <button onClick={() => setMode('choix')}
-                                className="btn-stone w-full text-sm py-3">
+                                className="btn-stone w-full py-3"
+                                style={{ ...pixelFont, fontSize: '0.55rem' }}>
                             ← Retour
                         </button>
                     </motion.div>
                 )}
 
-                {/* Rejoindre */}
+                {/* ════════ Rejoindre ════════ */}
                 {mode === 'rejoindre' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                 className="flex flex-col gap-4 w-full items-center">
@@ -162,36 +202,48 @@ export default function MultiPage() {
                              }}>
                             <PixelBorder className="absolute top-0 left-0 right-0" />
                             <PixelBanner size={32} color="#c44030" className="mx-auto mb-3 mt-2" />
+                            <label style={{
+                                ...pixelFont,
+                                fontSize: '0.45rem',
+                                color: 'rgba(212,200,160,0.6)',
+                                display: 'block',
+                                marginBottom: '8px',
+                                textAlign: 'center',
+                            }}>
+                                Code du lobby
+                            </label>
                             <input
                                 type="text"
                                 value={code}
                                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                                 placeholder="CODE"
                                 maxLength={6}
-                                className="w-full px-4 py-3 text-center text-2xl tracking-[0.5em] font-black placeholder-gray-700"
+                                className="w-full px-4 py-3 text-center text-lg tracking-[0.5em] placeholder-gray-700"
                                 style={{
+                                    ...pixelFont,
                                     background: 'rgba(10,10,15,0.6)',
                                     color: '#dcb464',
                                     border: 'none',
                                     outline: '3px solid #1a0a00',
                                     boxShadow: 'inset 0 3px 0 rgba(0,0,0,0.3), 0 2px 0 #1a0a00',
-                                    fontFamily: 'var(--font-cinzel)',
                                 }}
                             />
                         </div>
                         <button onClick={rejoindreLobby} disabled={loading || !code.trim()}
-                                className={`btn-blood w-full text-base py-4 flex items-center justify-center gap-2 ${loading || !code.trim() ? 'opacity-50' : ''}`}>
+                                className={`btn-blood w-full py-4 flex items-center justify-center gap-2 ${loading || !code.trim() ? 'opacity-50' : ''}`}
+                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
                             <PixelBanner size={18} color="#ffe0d0" />
                             {loading ? 'Connexion...' : 'Rejoindre'}
                         </button>
                         <button onClick={() => setMode('choix')}
-                                className="btn-stone w-full text-sm py-3">
+                                className="btn-stone w-full py-3"
+                                style={{ ...pixelFont, fontSize: '0.55rem' }}>
                             ← Retour
                         </button>
                     </motion.div>
                 )}
 
-                {/* Erreur */}
+                {/* ════════ Erreur ════════ */}
                 {erreur && (
                     <div className="text-center py-2 px-4 w-full"
                          style={{
@@ -199,7 +251,9 @@ export default function MultiPage() {
                              outline: '2px solid #c44030',
                              boxShadow: '0 2px 0 #1a0a00',
                          }}>
-                        <p className="text-sm" style={{ color: '#c44030' }}>{erreur}</p>
+                        <p style={{ ...pixelFont, fontSize: '0.45rem', color: '#c44030', lineHeight: '1.8' }}>
+                            {erreur}
+                        </p>
                     </div>
                 )}
             </div>

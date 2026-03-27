@@ -6,9 +6,12 @@ import { PixelShield, PixelBanner, PixelBorder, PixelTriangle, PixelCercle, Pixe
 import PixelTitle from '@/components/PixelTitle';
 
 export default function Home() {
+
+    /* ── Style helper ── */
+    const pixelFont = { fontFamily: 'var(--font-pixel)' };
+
     return (
         <main className="min-h-screen bg-medieval-hero flex flex-col items-center justify-end relative overflow-hidden px-6 pb-12 pt-[35vh]">
-
 
             {/* Bannières */}
             <div className="absolute top-[28%] left-20 hidden lg:block">
@@ -37,12 +40,15 @@ export default function Home() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="flex flex-col items-center gap-3">
                     <PixelTitle size={72} />
-                    <p className="tracking-[0.4em] uppercase text-sm font-bold"
-                       style={{
-                           fontFamily: 'var(--font-cinzel)',
-                           color: '#dcb464',
-                           textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)',
-                       }}>
+                    <p style={{
+                        ...pixelFont,
+                        fontSize: '0.5rem',
+                        letterSpacing: '0.3em',
+                        textTransform: 'uppercase' as const,
+                        color: '#dcb464',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)',
+                        lineHeight: '1.8',
+                    }}>
                         Tower Defense Médiéval
                     </p>
                 </motion.div>
@@ -66,15 +72,19 @@ export default function Home() {
                         boxShadow: 'inset 0 3px 0 rgba(220,180,100,0.15), inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 0 #1a0a00, 0 6px 16px rgba(0,0,0,0.5)',
                         padding: '20px 24px',
                     }}>
-                    {/* Bordure dorée pixel en haut et en bas */}
                     <PixelBorder className="absolute top-0 left-0 right-0" />
                     <PixelBorder className="absolute bottom-0 left-0 right-0 rotate-180" />
-                    <p className="text-[#d4c8a0] text-lg leading-relaxed py-2"
-                       style={{ fontFamily: 'var(--font-crimson)' }}>
+                    <p className="py-2"
+                       style={{
+                           ...pixelFont,
+                           fontSize: '0.42rem',
+                           color: '#d4c8a0',
+                           lineHeight: '2.4',
+                       }}>
                         Défendez votre citadelle contre des vagues d&apos;envahisseurs.
                         Composez vos tourelles à partir de{' '}
-                        <span className="text-[#dcb464] font-semibold">formes géométriques</span>,
-                        placez des <span className="text-[#dc8c3c] font-semibold">murailles</span> sur le chemin
+                        <span style={{ color: '#dcb464' }}>formes géométriques</span>,
+                        placez des <span style={{ color: '#dc8c3c' }}>murailles</span> sur le chemin
                         et repoussez les 5 assauts.
                     </p>
                 </motion.div>
@@ -104,11 +114,25 @@ export default function Home() {
                             <div className="animate-float" style={{ animationDelay: `${i * 0.5}s` }}>
                                 {item.icon}
                             </div>
-                            <p className="text-[#dcb464] text-[11px] uppercase tracking-widest font-bold"
-                               style={{ fontFamily: 'var(--font-cinzel)' }}>
+                            <p style={{
+                                ...pixelFont,
+                                fontSize: '0.45rem',
+                                color: '#dcb464',
+                                letterSpacing: '0.1em',
+                                textTransform: 'uppercase' as const,
+                                lineHeight: '1.6',
+                            }}>
                                 {item.label}
                             </p>
-                            <p className="text-[#6a6050] text-[9px] uppercase tracking-widest">{item.sub}</p>
+                            <p style={{
+                                ...pixelFont,
+                                fontSize: '0.35rem',
+                                color: '#6a6050',
+                                letterSpacing: '0.1em',
+                                textTransform: 'uppercase' as const,
+                            }}>
+                                {item.sub}
+                            </p>
                         </motion.div>
                     ))}
                 </motion.div>
@@ -121,14 +145,16 @@ export default function Home() {
                     className="flex flex-col items-center gap-5 w-full max-w-sm mt-2">
 
                     <Link href="/setup" className="w-full">
-                        <button className="btn-gold w-full text-xl py-4 flex items-center justify-center gap-3">
+                        <button className="btn-gold w-full py-4 flex items-center justify-center gap-3"
+                                style={{ ...pixelFont, fontSize: '0.65rem' }}>
                             <PixelTourelle size={24} />
                             Bataille Solo
                         </button>
                     </Link>
 
                     <Link href="/multi" className="w-full">
-                        <button className="btn-blood w-full text-xl py-4 flex items-center justify-center gap-3">
+                        <button className="btn-blood w-full py-4 flex items-center justify-center gap-3"
+                                style={{ ...pixelFont, fontSize: '0.65rem' }}>
                             <PixelBanner size={24} color="#ffe0d0" />
                             Multijoueur
                         </button>
@@ -142,8 +168,14 @@ export default function Home() {
                                  outline: '2px solid rgba(138,122,90,0.3)',
                                  boxShadow: '0 2px 0 rgba(0,0,0,0.3)',
                              }}>
-                            <span className="text-[#8a7a5a] group-hover:text-[#dcb464] text-xs uppercase tracking-widest transition-colors"
-                                  style={{ fontFamily: 'var(--font-cinzel)' }}>
+                            <span className="group-hover:text-[#dcb464] transition-colors"
+                                  style={{
+                                      ...pixelFont,
+                                      fontSize: '0.38rem',
+                                      color: '#8a7a5a',
+                                      letterSpacing: '0.1em',
+                                      lineHeight: '2',
+                                  }}>
                                 📜 Guide du jeu — Tourelles, Ennemis &amp; Stratégie
                             </span>
                         </div>
@@ -162,8 +194,13 @@ export default function Home() {
                         <div className="w-32"><PixelBorder /></div>
                         <PixelCoin size={12} />
                     </div>
-                    <p className="text-[#4a4a5a] text-[10px] tracking-widest uppercase"
-                       style={{ fontFamily: 'var(--font-cinzel)' }}>
+                    <p style={{
+                        ...pixelFont,
+                        fontSize: '0.32rem',
+                        color: '#4a4a5a',
+                        letterSpacing: '0.15em',
+                        textTransform: 'uppercase' as const,
+                    }}>
                         Kingdom Come Defenses — Licence Pro UHA 4.0
                     </p>
                 </motion.div>
