@@ -16,7 +16,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const px = { fontFamily: 'var(--font-pixel)' };
 
 const CHEMIN_POSITIONS: { col: number; row: number }[] = [
-    { col: 1, row: 1 }, // case de spawn
     { col: 1, row: 2 }, { col: 2, row: 2 }, { col: 3, row: 2 },
     { col: 4, row: 2 }, { col: 5, row: 2 },
     { col: 5, row: 3 }, { col: 5, row: 4 },
@@ -25,7 +24,8 @@ const CHEMIN_POSITIONS: { col: number; row: number }[] = [
     { col: 2, row: 6 }, { col: 3, row: 6 }, { col: 4, row: 6 },
     { col: 5, row: 6 }, { col: 6, row: 6 }, { col: 7, row: 6 },
     { col: 8, row: 6 }, { col: 9, row: 6 },
-];
+    { col: 8, row: 6 }, { col: 9, row: 6 }, { col: 10, row: 6 },
+    ];
 export default function CombatPage() {
     const router = useRouter();
     const params = useParams();

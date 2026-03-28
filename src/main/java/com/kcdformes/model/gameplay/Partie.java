@@ -176,7 +176,9 @@ public class Partie {
                 e.avancer();
                 // S'il vient d'arriver à la forteresse, première attaque
                 if (e.getPosition() >= tailleChemin - 1) {
-                    e.setPosition(tailleChemin - 1);
+                    if (e.getPosition() < tailleChemin - 1) {
+                        e.avancer();
+                    }
                     forteresse.subirAttaque(e);
                 }
             }

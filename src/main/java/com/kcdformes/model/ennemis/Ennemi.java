@@ -15,6 +15,7 @@ public class Ennemi implements ComposantCombat {
     private int degatsForteresse;
     private int pointsScore;
     private boolean scoreComptabilise = false;
+    private int ticksDeplacement = 0;
 
     public Ennemi(String nom, Forme forme, double coeffDifficulte) {
         setNom(nom);
@@ -78,7 +79,12 @@ public class Ennemi implements ComposantCombat {
     // GAMEPLAY
 
     public void avancer() {
-        position += Math.max(1, (int) vitesse);
+        ticksDeplacement++;
+        int ticksParDeplacement = Math.max(1, (int)(2 / vitesse));
+        if (ticksDeplacement >= ticksParDeplacement) {
+            position++;
+            ticksDeplacement = 0;
+        }
     }
 
     public double getForceAttaque() {

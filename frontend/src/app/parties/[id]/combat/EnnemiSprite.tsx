@@ -42,7 +42,7 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
     const queueRef = useRef<number[]>([]);
     const prevPvRef = useRef(ennemi.pvActuels);
     const pvPct = (ennemi.pvActuels / ennemi.pvMax) * 100;
-    const estALaForteresse = ennemi.position >= tailleChemin - 1;
+    const estALaForteresse = ennemi.position >= tailleChemin - 2;
 
     const OFFSETS = OFFSETS_PAR_TYPE[ennemi.type] ?? OFFSETS_PAR_TYPE['Cercle'];
 
@@ -96,122 +96,124 @@ export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: E
     }, [ennemi.position]);
 
     const px = getPixelForPos(displayPos);
+    const visualOffset = (ennemi.id % 5) * 8 - 16;
     const bgX = -(frame * FRAME_WIDTH);
+
     return (
-            <motion.div
-                animate={{ left: px.x, top: px.y }}
-                transition={{ duration: 0.25, ease: 'linear' }}
-                className="absolute flex flex-col items-center"
-                style={{ width: 64 }}>
+        <motion.div
+            animate={{ left: px.x + visualOffset, top: px.y }}
+            transition={{ duration: 0.25, ease: 'linear' }}
+            className="absolute flex flex-col items-center"
+            style={{ width: 64 }}>
 
-                {ennemi.type === 'Rectangle' ? (
-                    <div style={{ position: 'relative', width: 64, height: 48 }}>
-                        {OFFSETS.map((offset, i) => (
-                            <motion.div
-                                key={i}
-                                animate={
-                                    attaqueForteresse
-                                        ? { x: [offset.dx, offset.dx + 4, offset.dx - 4, offset.dx + 3, offset.dx - 3, offset.dx], scale: [1, 1.15, 1, 1.1, 1] }
-                                        : flashing
-                                            ? { scale: [1, 1.3, 1] }
-                                            : { scale: 1 }
-                                }
-                                transition={
-                                    attaqueForteresse
-                                        ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
-                                        : { duration: 0.3 }
-                                }
-                                style={{
-                                    position: 'absolute',
-                                    left: offset.dx,
-                                    top: offset.dy,
-                                    fontSize: 36,
-                                    filter: flashing ? 'brightness(3) saturate(5)' : 'none',
-                                }}>
-                                🐏
-                            </motion.div>
-                        ))}
-                    </div>
-                ) : (
-                    <div style={{ position: 'relative', width: 64, height: 48 }}>
-                        {OFFSETS.map((offset, i) => (
-                            <motion.div
-                                key={i}
-                                animate={
-                                    attaqueForteresse
-                                        ? { x: [offset.dx, offset.dx + 4, offset.dx - 4, offset.dx + 3, offset.dx - 3, offset.dx], scale: [1, 1.15, 1, 1.1, 1] }
-                                        : flashing
-                                            ? { scale: [1, 1.3, 1] }
-                                            : { scale: 1 }
-                                }
-                                transition={
-                                    attaqueForteresse
-                                        ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
-                                        : { duration: 0.3 }
-                                }
-                                style={{
-                                    position: 'absolute',
-                                    left: offset.dx,
-                                    top: offset.dy,
-                                    width: FRAME_WIDTH,
-                                    height: FRAME_HEIGHT,
-                                    overflow: 'hidden',
-                                    transform: `scale(${SCALE})`,
-                                    transformOrigin: 'center center',
-                                    filter: flashing ? 'brightness(3) saturate(5)' : 'none',
-                                }}>
-                                <div style={{
-                                    width: FRAME_WIDTH * COLS,
-                                    height: FRAME_HEIGHT,
-                                    backgroundImage: `url(${getEnnemiSprite(ennemi.type)})`,
-                                    backgroundSize: '256px 448px',
-                                    backgroundPosition: `${bgX}px 0px`,
-                                    backgroundRepeat: 'no-repeat',
-                                    imageRendering: 'pixelated' as const,
-                                }} />
-                            </motion.div>
-                        ))}
-                    </div>
-                )}
-
-                <AnimatePresence>
-                    {flashing && !attaqueForteresse && (
-                        <motion.span
-                            initial={{ opacity: 1, y: 0 }}
-                            animate={{ opacity: 0, y: -20 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="absolute text-red-400 font-black text-xs"
-                            style={{ top: -16, left: 4 }}>
-                            💢
-                        </motion.span>
-                    )}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                    {attaqueForteresse && (
-                        <motion.span
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: [1, 0], scale: [0.5, 1.5], y: [0, -25] }}
-                            transition={{ duration: 0.8, repeat: Infinity }}
-                            className="absolute text-orange-400 font-black text-xs"
-                            style={{ top: -18 }}>
-                            💥
-                        </motion.span>
-                    )}
-                </AnimatePresence>
-
-                <div className="w-full h-1 bg-gray-700 rounded mt-0.5">
-                    <motion.div
-                        animate={{ width: `${pvPct}%` }}
-                        transition={{ duration: 0.3 }}
-                        className={`h-1 rounded ${
-                            pvPct > 50 ? 'bg-green-500'
-                                : pvPct > 25 ? 'bg-yellow-500'
-                                    : 'bg-red-500'
-                        }`}
-                    />
+            {ennemi.type === 'Rectangle' ? (
+                <div style={{ position: 'relative', width: 64, height: 48 }}>
+                    {OFFSETS.map((offset, i) => (
+                        <motion.div
+                            key={i}
+                            animate={
+                                attaqueForteresse
+                                    ? { x: [offset.dx, offset.dx + 4, offset.dx - 4, offset.dx + 3, offset.dx - 3, offset.dx], scale: [1, 1.15, 1, 1.1, 1] }
+                                    : flashing
+                                        ? { scale: [1, 1.3, 1] }
+                                        : { scale: 1 }
+                            }
+                            transition={
+                                attaqueForteresse
+                                    ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
+                                    : { duration: 0.3 }
+                            }
+                            style={{
+                                position: 'absolute',
+                                left: offset.dx,
+                                top: offset.dy,
+                                fontSize: 36,
+                                filter: flashing ? 'brightness(3) saturate(5)' : 'none',
+                            }}>
+                            🐏
+                        </motion.div>
+                    ))}
                 </div>
-            </motion.div>
-        );
-    }
+            ) : (
+                <div style={{ position: 'relative', width: 64, height: 48 }}>
+                    {OFFSETS.map((offset, i) => (
+                        <motion.div
+                            key={i}
+                            animate={
+                                attaqueForteresse
+                                    ? { x: [offset.dx, offset.dx + 4, offset.dx - 4, offset.dx + 3, offset.dx - 3, offset.dx], scale: [1, 1.15, 1, 1.1, 1] }
+                                    : flashing
+                                        ? { scale: [1, 1.3, 1] }
+                                        : { scale: 1 }
+                            }
+                            transition={
+                                attaqueForteresse
+                                    ? { duration: 0.6, repeat: Infinity, repeatType: 'loop' }
+                                    : { duration: 0.3 }
+                            }
+                            style={{
+                                position: 'absolute',
+                                left: offset.dx,
+                                top: offset.dy,
+                                width: FRAME_WIDTH,
+                                height: FRAME_HEIGHT,
+                                overflow: 'hidden',
+                                transform: `scale(${SCALE})`,
+                                transformOrigin: 'center center',
+                                filter: flashing ? 'brightness(3) saturate(5)' : 'none',
+                            }}>
+                            <div style={{
+                                width: FRAME_WIDTH * COLS,
+                                height: FRAME_HEIGHT,
+                                backgroundImage: `url(${getEnnemiSprite(ennemi.type)})`,
+                                backgroundSize: '256px 448px',
+                                backgroundPosition: `${bgX}px 0px`,
+                                backgroundRepeat: 'no-repeat',
+                                imageRendering: 'pixelated' as const,
+                            }} />
+                        </motion.div>
+                    ))}
+                </div>
+            )}
+
+            <AnimatePresence>
+                {flashing && !attaqueForteresse && (
+                    <motion.span
+                        initial={{ opacity: 1, y: 0 }}
+                        animate={{ opacity: 0, y: -20 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute text-red-400 font-black text-xs"
+                        style={{ top: -16, left: 4 }}>
+                        💢
+                    </motion.span>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {attaqueForteresse && (
+                    <motion.span
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: [1, 0], scale: [0.5, 1.5], y: [0, -25] }}
+                        transition={{ duration: 0.8, repeat: Infinity }}
+                        className="absolute text-orange-400 font-black text-xs"
+                        style={{ top: -18 }}>
+                        💥
+                    </motion.span>
+                )}
+            </AnimatePresence>
+
+            <div className="w-full h-1 bg-gray-700 rounded mt-0.5">
+                <motion.div
+                    animate={{ width: `${pvPct}%` }}
+                    transition={{ duration: 0.3 }}
+                    className={`h-1 rounded ${
+                        pvPct > 50 ? 'bg-green-500'
+                            : pvPct > 25 ? 'bg-yellow-500'
+                                : 'bg-red-500'
+                    }`}
+                />
+            </div>
+        </motion.div>
+    );
+}

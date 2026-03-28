@@ -20,7 +20,7 @@ interface CarteCombatProps {
     getPixelForPos: (pos: number) => { x: number; y: number };
 }
 
-const TAILLE_CHEMIN = 22; // +1 pour la case de spawn
+const TAILLE_CHEMIN = 21; // +1 pour la case de spawn
 
 const casesPlacement: Record<number, { col: number; row: number }> = {
     1: { col: 1, row: 1 }, 2: { col: 2, row: 1 },
@@ -48,6 +48,7 @@ const cheminCases = [
     { col: 2, row: 6 }, { col: 3, row: 6 }, { col: 4, row: 6 },
     { col: 5, row: 6 }, { col: 6, row: 6 }, { col: 7, row: 6 },
     { col: 8, row: 6 }, { col: 9, row: 6 },
+    { col: 8, row: 6 }, { col: 9, row: 6 }, { col: 10, row: 6 },
 ];
 
 const estChemin = (col: number, row: number) => cheminCases.some(c => c.col === col && c.row === row);
