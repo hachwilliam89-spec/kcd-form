@@ -20,7 +20,7 @@ interface CarteCombatProps {
     getPixelForPos: (pos: number) => { x: number; y: number };
 }
 
-const TAILLE_CHEMIN = 21;
+const TAILLE_CHEMIN = 22; // +1 pour la case de spawn
 
 const casesPlacement: Record<number, { col: number; row: number }> = {
     1: { col: 1, row: 1 }, 2: { col: 2, row: 1 },
@@ -39,6 +39,7 @@ const emplacementsMuraille: Record<number, { col: number; row: number }> = {
 };
 
 const cheminCases = [
+    { col: 1, row: 1 }, // case de spawn
     { col: 1, row: 2 }, { col: 2, row: 2 }, { col: 3, row: 2 },
     { col: 4, row: 2 }, { col: 5, row: 2 },
     { col: 5, row: 3 }, { col: 5, row: 4 },
@@ -173,98 +174,99 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                         </div>
                                     );
                                 }
-                            // ═══ MURAILLE ═══
-                                                            const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
-                                                            if (murEntry) {
-                                                                const tileIdx = getTileIndex(col, row);
-                                                                const tileBg = {
-                                                                    backgroundImage: `url(/sprites/tiles/FieldsTile_${tileIdx}.png)`,
-                                                                    backgroundSize: '100% 100%',
-                                                                    backgroundRepeat: 'no-repeat' as const,
-                                                                };
-                                                                const muraille = getMurailleAt(col, row);
-                                                                if (muraille && !muraille.detruite) {
-                                                                    const pvPct = (muraille.pvActuels / muraille.pvMax) * 100;
-                                                                    const pvColor = pvPct > 50 ? '#3c8cdc' : pvPct > 25 ? '#dcb464' : '#c44030';
-                                                                    return (
-                                                                        <motion.div key={key} data-col={col} data-row={row}
-                                                                            style={{
-                                                                                gridColumn: col, gridRow: row,
-                                                                                ...tileBg,
-                                                                                outline: '3px solid #1a0a00',
-                                                                                boxShadow: '0 3px 0 #0a0508',
-                                                                            }}
-                                                                            animate={pvPct <= 25 ? { x: [-1, 1, -1, 0] } : {}}
-                                                                            transition={pvPct <= 25 ? { duration: 0.3, repeat: Infinity, repeatDelay: 0.5 } : {}}
-                                                                            className="pixel-render flex flex-col items-center justify-center gap-0.5">
-                                                                            <PixelStoneWall pvPct={pvPct} />
-                                                                            <div className="w-4/5 h-1" style={{ background: 'rgba(0,0,0,0.5)', outline: '1px solid rgba(0,0,0,0.3)' }}>
-                                                                                <motion.div animate={{ width: `${pvPct}%` }} transition={{ duration: 0.3 }} className="h-1" style={{ background: pvColor }} />
-                                                                            </div>
-                                                                        </motion.div>
-                                                                    );
-                                                                }
-                                                                return (
-                                                                    <div key={key} data-col={col} data-row={row}
-                                                                         className="pixel-render flex items-center justify-center"
-                                                                         style={{
-                                                                             gridColumn: col, gridRow: row,
-                                                                             ...tileBg,
-                                                                             outline: '2px solid #1a0a00',
-                                                                             boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.05), 0 2px 0 #0a0508',
-                                                                         }}>
-                                                                        {muraille?.detruite && (
-                                                                            <motion.span initial={{ scale: 1.5, opacity: 1 }} animate={{ scale: 1, opacity: 0.5 }} transition={{ duration: 1 }} className="text-[10px]">💥</motion.span>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            }
 
-                                                            // ═══ CHEMIN ═══
-                                                            if (estChemin(col, row)) {
-                                                                const tileIdx = getTileIndex(col, row);
-                                                                return (
-                                                                    <div key={key} data-col={col} data-row={row}
-                                                                         className="pixel-render"
-                                                                         style={{
-                                                                             gridColumn: col,
-                                                                             gridRow: row,
-                                                                             backgroundImage: `url(/sprites/tiles/FieldsTile_${tileIdx}.png)`,
-                                                                             backgroundSize: '100% 100%',
-                                                                             backgroundRepeat: 'no-repeat',
-                                                                             outline: '2px solid #1a0a00',
-                                                                             boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.08), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a0508',
-                                                                         }}
-                                                                    />
-                                                                );
-                                                            }
-
-                                                            // ═══ CASE VIDE ═══
-                                                            return <div key={key} data-col={col} data-row={row} style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.vide }} />;
-                                                        })
-                                                    )}
+                                // ═══ MURAILLE ═══
+                                const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
+                                if (murEntry) {
+                                    const tileIdx = getTileIndex(col, row);
+                                    const tileBg = {
+                                        backgroundImage: `url(/sprites/tiles/FieldsTile_${tileIdx}.png)`,
+                                        backgroundSize: '100% 100%',
+                                        backgroundRepeat: 'no-repeat' as const,
+                                    };
+                                    const muraille = getMurailleAt(col, row);
+                                    if (muraille && !muraille.detruite) {
+                                        const pvPct = (muraille.pvActuels / muraille.pvMax) * 100;
+                                        const pvColor = pvPct > 50 ? '#3c8cdc' : pvPct > 25 ? '#dcb464' : '#c44030';
+                                        return (
+                                            <motion.div key={key} data-col={col} data-row={row}
+                                                style={{
+                                                    gridColumn: col, gridRow: row,
+                                                    ...tileBg,
+                                                    outline: '3px solid #1a0a00',
+                                                    boxShadow: '0 3px 0 #0a0508',
+                                                }}
+                                                animate={pvPct <= 25 ? { x: [-1, 1, -1, 0] } : {}}
+                                                transition={pvPct <= 25 ? { duration: 0.3, repeat: Infinity, repeatDelay: 0.5 } : {}}
+                                                className="pixel-render flex flex-col items-center justify-center gap-0.5">
+                                                <PixelStoneWall pvPct={pvPct} />
+                                                <div className="w-4/5 h-1" style={{ background: 'rgba(0,0,0,0.5)', outline: '1px solid rgba(0,0,0,0.3)' }}>
+                                                    <motion.div animate={{ width: `${pvPct}%` }} transition={{ duration: 0.3 }} className="h-1" style={{ background: pvColor }} />
                                                 </div>
-
-                                                <div className="absolute inset-3 pointer-events-none">
-                                                    <AnimatePresence>
-                                                        {ennemis.filter(e => e.vivant).map(ennemi => (
-                                                            <EnnemiSprite key={`ennemi-${ennemi.id}`} ennemi={ennemi} getPixelForPos={getPixelForPos} tailleChemin={TAILLE_CHEMIN} />
-                                                        ))}
-                                                    </AnimatePresence>
-                                                    <AnimatePresence>
-                                                        {explosions.map(exp => (
-                                                            <motion.div key={`exp-${exp.id}`} initial={{ scale: 0, opacity: 1 }} animate={{ scale: [0, 1.5, 2], opacity: [1, 0.8, 0] }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }}
-                                                                className="absolute pointer-events-none" style={{ left: exp.x - 16, top: exp.y - 16 }}>
-                                                                <span className="text-2xl">💀</span>
-                                                            </motion.div>
-                                                        ))}
-                                                    </AnimatePresence>
-                                                </div>
-                                            </div>
+                                            </motion.div>
+                                        );
+                                    }
+                                    return (
+                                        <div key={key} data-col={col} data-row={row}
+                                             className="pixel-render flex items-center justify-center"
+                                             style={{
+                                                 gridColumn: col, gridRow: row,
+                                                 ...tileBg,
+                                                 outline: '2px solid #1a0a00',
+                                                 boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.05), 0 2px 0 #0a0508',
+                                             }}>
+                                            {muraille?.detruite && (
+                                                <motion.span initial={{ scale: 1.5, opacity: 1 }} animate={{ scale: 1, opacity: 0.5 }} transition={{ duration: 1 }} className="text-[10px]">💥</motion.span>
+                                            )}
                                         </div>
                                     );
                                 }
-                            );
 
-                            CarteCombat.displayName = 'CarteCombat';
-                            export default CarteCombat;
+                                // ═══ CHEMIN ═══
+                                if (estChemin(col, row)) {
+                                    const tileIdx = getTileIndex(col, row);
+                                    return (
+                                        <div key={key} data-col={col} data-row={row}
+                                             className="pixel-render"
+                                             style={{
+                                                 gridColumn: col,
+                                                 gridRow: row,
+                                                 backgroundImage: `url(/sprites/tiles/FieldsTile_${tileIdx}.png)`,
+                                                 backgroundSize: '100% 100%',
+                                                 backgroundRepeat: 'no-repeat',
+                                                 outline: '2px solid #1a0a00',
+                                                 boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.08), inset 0 -2px 0 rgba(0,0,0,0.3), 0 2px 0 #0a0508',
+                                             }}
+                                        />
+                                    );
+                                }
+
+                                // ═══ CASE VIDE ═══
+                                return <div key={key} data-col={col} data-row={row} style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.vide }} />;
+                            })
+                        )}
+                    </div>
+
+                    <div className="absolute inset-3 pointer-events-none">
+                        <AnimatePresence>
+                            {ennemis.filter(e => e.vivant).map(ennemi => (
+                                <EnnemiSprite key={`ennemi-${ennemi.id}`} ennemi={ennemi} getPixelForPos={getPixelForPos} tailleChemin={TAILLE_CHEMIN} />
+                            ))}
+                        </AnimatePresence>
+                        <AnimatePresence>
+                            {explosions.map(exp => (
+                                <motion.div key={`exp-${exp.id}`} initial={{ scale: 0, opacity: 1 }} animate={{ scale: [0, 1.5, 2], opacity: [1, 0.8, 0] }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }}
+                                    className="absolute pointer-events-none" style={{ left: exp.x - 16, top: exp.y - 16 }}>
+                                    <span className="text-2xl">💀</span>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+);
+
+CarteCombat.displayName = 'CarteCombat';
+export default CarteCombat;

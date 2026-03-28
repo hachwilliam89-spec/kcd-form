@@ -34,7 +34,7 @@ interface EnnemiSpriteProps {
 }
 
 export default function EnnemiSprite({ ennemi, getPixelForPos, tailleChemin }: EnnemiSpriteProps) {
-    const [displayPos, setDisplayPos] = useState(ennemi.position);
+    const [displayPos, setDisplayPos] = useState(0);
     const [flashing, setFlashing] = useState(false);
     const [attaqueForteresse, setAttaqueForteresse] = useState(false);
     const [frame, setFrame] = useState(0);

@@ -16,6 +16,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const px = { fontFamily: 'var(--font-pixel)' };
 
 const CHEMIN_POSITIONS: { col: number; row: number }[] = [
+    { col: 1, row: 1 }, // case de spawn
     { col: 1, row: 2 }, { col: 2, row: 2 }, { col: 3, row: 2 },
     { col: 4, row: 2 }, { col: 5, row: 2 },
     { col: 5, row: 3 }, { col: 5, row: 4 },
