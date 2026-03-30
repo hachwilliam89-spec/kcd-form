@@ -186,7 +186,7 @@ kim-kcd-formes/
 │   │   ├── java/fr/kcdform/    # Code source
 │   │   └── resources/           # Configuration Spring
 │   └── test/                    # Tests unitaires
-├── frontend/                    # Next.js (à venir)
+├── frontend/                    # Next.js
 ├── docker-compose.yml           # Orchestration des containers
 ├── Dockerfile                   # Runtime JRE (pas de build)
 ├── .env.example                 # Modèle de configuration
