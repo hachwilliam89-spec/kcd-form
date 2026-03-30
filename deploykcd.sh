@@ -1,3 +1,4 @@
+cat > ~/IdeaProjects/kcd-form/deploykcd.sh << 'EOF'
 #!/bin/bash
 
 # ============================================================
@@ -7,6 +8,9 @@
 
 # Se place dans le dossier du script
 cd "$(dirname "$0")" || exit 1
+
+# Corrige les permissions des fichiers uploadés
+chmod -R u+w . 2>/dev/null
 
 # Vérifie que les fichiers nécessaires sont présents
 for f in app.jar Dockerfile docker-compose.yml .env; do
@@ -58,3 +62,5 @@ docker compose up -d --build
 # Affiche l'état
 echo ""
 docker compose ps
+EOF
+chmod +x ~/IdeaProjects/kcd-form/deploykcd.sh

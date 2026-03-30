@@ -30,14 +30,15 @@ services:
 
   front:
     container_name: kcdformes-front
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://${SERVER_IP}:${API_PORT}
     restart: unless-stopped
     depends_on:
       - api
-    environment:
-      NEXT_PUBLIC_API_URL: http://${SERVER_IP}:${API_PORT}
     ports:
       - "${FRONT_PORT}:3000"
-
 volumes:
   kcdformes-data:
