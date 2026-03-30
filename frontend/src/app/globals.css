@@ -1,0 +1,629 @@
+@import "tailwindcss";
+
+/* ============================================
+   KCD FORMES — Thème Pixel Art Médiéval
+   Palette extraite du fond d'écran
+   ============================================ */
+
+:root {
+  --font-cinzel: 'Cinzel', serif;
+  --font-crimson: 'Crimson Text', serif;
+  --font-pixel: 'Press Start 2P', monospace;
+
+  /* === Palette principale (de l'image) === */
+  --sky: #3c8cdc;
+  --sky-light: #64b4dc;
+  --sky-pale: #a8d8f0;
+
+  --stone: #b48c64;
+  --stone-dark: #8c643c;
+  --stone-darker: #5a3d28;
+  --stone-light: #d4b88c;
+
+  --grass: #5a8c28;
+  --grass-light: #8cb414;
+  --grass-dark: #14643c;
+
+  --wood: #dc8c3c;
+  --wood-dark: #a86428;
+  --wood-light: #dcb464;
+
+  --flag-red: #c44030;
+  --flag-orange: #dc6428;
+
+  --gold: #dcb464;
+  --gold-bright: #f0d070;
+  --gold-dark: #a88838;
+
+  --parchment: #f0e4c8;
+  --parchment-dark: #d4c8a0;
+  --parchment-darker: #b8a878;
+
+  /* Fonds */
+  --bg-deep: #1a1420;
+  --bg-dark: #221a2a;
+  --bg-panel: #2a2235;
+  --bg-card: #1e1828;
+
+  /* Sombres de l'image */
+  --night: #303050;
+  --night-light: #404060;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-deep);
+  font-family: var(--font-crimson);
+  color: #e8e0d0;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-cinzel);
+}
+
+/* ============================================
+   FOND PAGE D'ACCUEIL — Image pixel art
+   ============================================ */
+
+.bg-medieval-hero {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.05) 0%,
+      rgba(26,20,32,0.15) 30%,
+      rgba(26,20,32,0.6) 60%,
+      rgba(26,20,32,0.92) 85%,
+      rgba(26,20,32,0.98) 100%
+    ),
+    url('/bg-medieval.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+}
+
+.bg-medieval-construction {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.4) 0%,
+      rgba(26,20,32,0.7) 40%,
+      rgba(26,20,32,0.92) 70%,
+      rgba(26,20,32,0.98) 100%
+    ),
+    url('/bg-construction.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.bg-medieval-setup {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.3) 0%,
+      rgba(26,20,32,0.6) 40%,
+      rgba(26,20,32,0.92) 70%,
+      rgba(26,20,32,0.98) 100%
+    ),
+    url('/bg-setup.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+}
+
+.bg-medieval-combat {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.15) 0%,
+      rgba(26,20,32,0.3) 30%,
+      rgba(26,20,32,0.5) 60%,
+      rgba(26,20,32,0.7) 100%
+    ),
+    url('/bg-combat.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.bg-medieval-resultats {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.15) 0%,
+      rgba(26,20,32,0.4) 30%,
+      rgba(26,20,32,0.7) 60%,
+      rgba(26,20,32,0.92) 100%
+    ),
+    url('/bg-resultats.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+}
+
+.bg-medieval-multi {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.15) 0%,
+      rgba(26,20,32,0.4) 30%,
+      rgba(26,20,32,0.7) 60%,
+      rgba(26,20,32,0.92) 100%
+    ),
+    url('/bg-multi.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+}
+
+.bg-medieval-guide {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(26,20,32,0.15) 0%,
+      rgba(26,20,32,0.4) 30%,
+      rgba(26,20,32,0.7) 60%,
+      rgba(26,20,32,0.92) 100%
+    ),
+    url('/bg-guide.jpg');
+  background-size: 100% auto;
+  background-position: center 10%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* ============================================
+   FOND PAGES INTERNES — Texture subtile
+   ============================================ */
+
+.bg-medieval {
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"),
+    linear-gradient(to top, rgba(60,30,10,0.1) 0%, transparent 40%);
+}
+
+
+
+/* ============================================
+   PANNEAUX PIERRE
+   ============================================ */
+
+.panel-stone {
+  background: linear-gradient(160deg, var(--bg-panel) 0%, var(--bg-card) 100%);
+  border: 1px solid rgba(180,140,100,0.2);
+  border-radius: 8px;
+  position: relative;
+}
+
+.panel-stone-accent {
+  background: linear-gradient(160deg, var(--bg-panel) 0%, var(--bg-card) 100%);
+  border: 1px solid rgba(220,180,100,0.25);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-stone-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  opacity: 0.5;
+}
+
+/* ============================================
+   CARTES MÉDIÉVALES
+   ============================================ */
+
+.card-medieval {
+  background: linear-gradient(160deg, rgba(30,24,40,0.95) 0%, rgba(26,20,32,0.98) 100%);
+  border: 1px solid rgba(220,180,100,0.2);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.card-medieval::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  opacity: 0.4;
+}
+
+.card-blood {
+  background: linear-gradient(160deg, rgba(60,20,20,0.9) 0%, rgba(30,10,10,0.95) 100%);
+  border: 1px solid rgba(196,64,48,0.25);
+  border-radius: 10px;
+}
+
+.card-grass {
+  background: linear-gradient(160deg, rgba(20,40,20,0.9) 0%, rgba(10,30,15,0.95) 100%);
+  border: 1px solid rgba(90,140,40,0.25);
+  border-radius: 10px;
+}
+
+/* ============================================
+   SÉPARATEURS & BORDURES
+   ============================================ */
+
+.separator-medieval {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--parchment-darker) 20%,
+    var(--gold) 50%,
+    var(--parchment-darker) 80%,
+    transparent
+  );
+  opacity: 0.4;
+}
+
+.separator-pixel {
+  height: 4px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--stone-dark) 0px,
+    var(--stone-dark) 4px,
+    var(--stone) 4px,
+    var(--stone) 8px
+  );
+  image-rendering: pixelated;
+  opacity: 0.6;
+}
+
+.border-pixel {
+  border: 3px solid var(--stone-dark);
+  border-image: repeating-linear-gradient(
+    90deg,
+    var(--stone-dark) 0px,
+    var(--stone-dark) 4px,
+    var(--stone) 4px,
+    var(--stone) 8px
+  ) 3;
+}
+
+/* ============================================
+   BOUTONS PIXEL ART
+   ============================================ */
+
+.btn-gold {
+  background: linear-gradient(180deg, #f0d070 0%, #dcb464 40%, #a88838 100%);
+  color: #2a1a00;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px 32px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+  image-rendering: pixelated;
+  border: none;
+  outline: 4px solid #1a0a00;
+  box-shadow:
+    inset 0 4px 0 #f8e898,
+    inset 0 -4px 0 #8a6820,
+    inset 4px 0 0 #e8c050,
+    inset -4px 0 0 #c49830,
+    0 6px 0 #1a0a00,
+    0 8px 16px rgba(0,0,0,0.4);
+  border-radius: 0;
+}
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 4px 0 #fff0a0,
+    inset 0 -4px 0 #a88838,
+    inset 4px 0 0 #f0d070,
+    inset -4px 0 0 #dcb464,
+    0 8px 0 #1a0a00,
+    0 12px 24px rgba(220,180,100,0.3);
+}
+.btn-gold:active {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 4px 0 #c49830,
+    inset 0 -4px 0 #f8e898,
+    inset 4px 0 0 #a88838,
+    inset -4px 0 0 #e8c050,
+    0 2px 0 #1a0a00;
+}
+
+.btn-blood {
+  background: linear-gradient(180deg, #d04838 0%, #b83028 40%, #6a1810 100%);
+  color: #ffe0d0;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px 32px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  image-rendering: pixelated;
+  border: none;
+  outline: 4px solid #1a0a00;
+  box-shadow:
+    inset 0 4px 0 #e86858,
+    inset 0 -4px 0 #4a0c08,
+    inset 4px 0 0 #c44030,
+    inset -4px 0 0 #982018,
+    0 6px 0 #1a0a00,
+    0 8px 16px rgba(0,0,0,0.4);
+  border-radius: 0;
+}
+.btn-blood:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 4px 0 #f07868,
+    inset 0 -4px 0 #6a1810,
+    inset 4px 0 0 #d04838,
+    inset -4px 0 0 #b83028,
+    0 8px 0 #1a0a00,
+    0 12px 24px rgba(196,64,48,0.3);
+}
+.btn-blood:active {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 4px 0 #6a1810,
+    inset 0 -4px 0 #e86858,
+    inset 4px 0 0 #982018,
+    inset -4px 0 0 #c44030,
+    0 2px 0 #1a0a00;
+}
+
+.btn-stone {
+  background: linear-gradient(180deg, var(--night-light) 0%, var(--night) 100%);
+  color: #bbb;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.15s;
+  image-rendering: pixelated;
+  border: none;
+  outline: 3px solid #1a1a2a;
+  box-shadow:
+    inset 0 3px 0 #505070,
+    inset 0 -3px 0 #1a1a30,
+    inset 3px 0 0 #404060,
+    inset -3px 0 0 #2a2a40,
+    0 4px 0 #0a0a15;
+  border-radius: 0;
+}
+.btn-stone:hover {
+  color: white;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 3px 0 #606080,
+    inset 0 -3px 0 #2a2a40,
+    inset 3px 0 0 #505070,
+    inset -3px 0 0 #303050,
+    0 5px 0 #0a0a15,
+    0 8px 16px rgba(0,0,0,0.3);
+}
+.btn-stone:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 3px 0 #1a1a30,
+    inset 0 -3px 0 #505070,
+    0 1px 0 #0a0a15;
+}
+
+.btn-wood {
+  background: linear-gradient(180deg, var(--wood) 0%, var(--wood-dark) 100%);
+  color: #fff8e8;
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.15s;
+  image-rendering: pixelated;
+  border: none;
+  outline: 3px solid #3a1a08;
+  box-shadow:
+    inset 0 3px 0 #e8a048,
+    inset 0 -3px 0 #6a3818,
+    inset 3px 0 0 #dc8c3c,
+    inset -3px 0 0 #a86428,
+    0 4px 0 #3a1a08,
+    0 6px 12px rgba(0,0,0,0.3);
+  border-radius: 0;
+}
+.btn-wood:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 3px 0 #f0b058,
+    inset 0 -3px 0 #8a5020,
+    inset 3px 0 0 #e8a048,
+    inset -3px 0 0 #c07830,
+    0 5px 0 #3a1a08,
+    0 8px 16px rgba(220,140,60,0.2);
+}
+.btn-wood:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 3px 0 #6a3818,
+    inset 0 -3px 0 #e8a048,
+    0 1px 0 #3a1a08;
+}
+
+/* Bouton désactivé — universel */
+.btn-gold:disabled,
+.btn-blood:disabled,
+.btn-stone:disabled,
+.btn-wood:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================
+   LABELS PIXEL — pour stats, badges, compteurs
+   ============================================ */
+
+.label-pixel {
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.label-pixel-lg {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.label-pixel-xl {
+  font-family: var(--font-pixel);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   TEXTE
+   ============================================ */
+
+.text-gold { color: var(--gold); }
+.text-gold-glow {
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(220,180,100,0.4);
+}
+.text-parchment { color: var(--parchment); }
+.text-stone { color: var(--stone); }
+.text-flag { color: var(--flag-red); }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes torch-flicker {
+  0%, 100% { opacity: 0.85; }
+  25% { opacity: 0.65; }
+  50% { opacity: 0.95; }
+  75% { opacity: 0.7; }
+}
+
+@keyframes banner-sway {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pixel-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,180,100,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(220,180,100,0); }
+}
+
+.animate-torch { animation: torch-flicker 3s ease-in-out infinite; }
+.animate-banner { animation: banner-sway 4s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pixel-pulse { animation: pixel-pulse 2s ease-in-out infinite; }
+
+/* ============================================
+   DRAG & DROP
+   ============================================ */
+
+.draggable-forme {
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.draggable-forme:active { cursor: grabbing; }
+.draggable-forme:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(220,180,100,0.25);
+}
+
+.drop-zone {
+  transition: all 0.2s;
+  border: 2px dashed transparent;
+}
+.drop-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(220,180,100,0.08);
+  box-shadow: inset 0 0 20px rgba(220,180,100,0.08);
+}
+
+.dragging {
+  opacity: 0.7;
+  transform: scale(1.1) rotate(2deg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 100;
+}
+
+/* ============================================
+   PIXEL ART RENDERING
+   ============================================ */
+
+.pixel-render {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb {
+  background: var(--stone-dark);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--stone); }
+
+/* ============================================
+   TOOLTIP
+   ============================================ */
+
+.tooltip-medieval {
+  position: relative;
+}
+.tooltip-medieval::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: var(--bg-card);
+  border: 2px solid var(--stone-dark);
+  color: var(--parchment);
+  font-family: var(--font-crimson);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s;
+}
+.tooltip-medieval:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
