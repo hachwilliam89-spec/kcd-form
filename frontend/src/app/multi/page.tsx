@@ -67,7 +67,7 @@ export default function MultiPage() {
                     </h1>
                     <p style={{
                         ...pixelFont,
-                        fontSize: '0.55rem',
+                        fontSize: '0.65rem',
                         color: 'rgba(212,200,160,0.6)',
                         textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                         letterSpacing: '0.15em',
@@ -104,7 +104,7 @@ export default function MultiPage() {
                                     <p className="mt-1"
                                        style={{
                                            ...pixelFont,
-                                           fontSize: '0.45rem',
+                                           fontSize: '0.55rem',
                                            color: 'rgba(212,200,160,0.5)',
                                            lineHeight: '1.6',
                                        }}>
@@ -137,7 +137,7 @@ export default function MultiPage() {
                                     <p className="mt-1"
                                        style={{
                                            ...pixelFont,
-                                           fontSize: '0.45rem',
+                                           fontSize: '0.55rem',
                                            color: 'rgba(212,200,160,0.5)',
                                            lineHeight: '1.6',
                                        }}>
@@ -149,7 +149,7 @@ export default function MultiPage() {
 
                         <button onClick={() => router.push('/')}
                                 className="btn-stone w-full py-3 mt-2"
-                                style={{ ...pixelFont, fontSize: '0.55rem' }}>
+                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
                             ← Retour à l&apos;accueil
                         </button>
                     </motion.div>
@@ -169,7 +169,7 @@ export default function MultiPage() {
                             <PixelShield size={32} className="mx-auto mb-3 mt-2" />
                             <p style={{
                                 ...pixelFont,
-                                fontSize: '0.45rem',
+                                fontSize: '0.55rem',
                                 color: 'rgba(212,200,160,0.7)',
                                 lineHeight: '2',
                             }}>
@@ -178,13 +178,13 @@ export default function MultiPage() {
                         </div>
                         <button onClick={creerLobby} disabled={loading}
                                 className={`btn-gold w-full py-4 flex items-center justify-center gap-2 ${loading ? 'opacity-50' : ''}`}
-                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
+                                style={{ ...pixelFont, fontSize: '0.65rem' }}>
                             <PixelShield size={18} />
                             {loading ? 'Création...' : 'Créer le lobby'}
                         </button>
                         <button onClick={() => setMode('choix')}
                                 className="btn-stone w-full py-3"
-                                style={{ ...pixelFont, fontSize: '0.55rem' }}>
+                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
                             ← Retour
                         </button>
                     </motion.div>
@@ -204,7 +204,7 @@ export default function MultiPage() {
                             <PixelBanner size={32} color="#c44030" className="mx-auto mb-3 mt-2" />
                             <label style={{
                                 ...pixelFont,
-                                fontSize: '0.45rem',
+                                fontSize: '0.55rem',
                                 color: 'rgba(212,200,160,0.6)',
                                 display: 'block',
                                 marginBottom: '8px',
@@ -231,13 +231,13 @@ export default function MultiPage() {
                         </div>
                         <button onClick={rejoindreLobby} disabled={loading || !code.trim()}
                                 className={`btn-blood w-full py-4 flex items-center justify-center gap-2 ${loading || !code.trim() ? 'opacity-50' : ''}`}
-                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
+                                style={{ ...pixelFont, fontSize: '0.65rem' }}>
                             <PixelBanner size={18} color="#ffe0d0" />
                             {loading ? 'Connexion...' : 'Rejoindre'}
                         </button>
                         <button onClick={() => setMode('choix')}
                                 className="btn-stone w-full py-3"
-                                style={{ ...pixelFont, fontSize: '0.55rem' }}>
+                                style={{ ...pixelFont, fontSize: '0.6rem' }}>
                             ← Retour
                         </button>
                     </motion.div>
@@ -251,7 +251,7 @@ export default function MultiPage() {
                              outline: '2px solid #c44030',
                              boxShadow: '0 2px 0 #1a0a00',
                          }}>
-                        <p style={{ ...pixelFont, fontSize: '0.45rem', color: '#c44030', lineHeight: '1.8' }}>
+                        <p style={{ ...pixelFont, fontSize: '0.55rem', color: '#c44030', lineHeight: '1.8' }}>
                             {erreur}
                         </p>
                     </div>

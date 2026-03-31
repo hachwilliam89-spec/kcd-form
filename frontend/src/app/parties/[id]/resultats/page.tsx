@@ -37,8 +37,6 @@ export default function ResultatsPage() {
 
     if (!partie) return null;
 
-    /* Le backend stocke l'état du point de vue du défenseur.
-     * Pour l'attaquant, on inverse : PERDU backend = victoire attaquant. */
     const victoireBackend = partie.etat === 'GAGNE';
     const victoire = estAttaquant ? !victoireBackend : victoireBackend;
 
@@ -51,17 +49,13 @@ export default function ResultatsPage() {
     const scoreBudget = budgetInitial > 0
         ? (1.0 - partie.orDepense / budgetInitial) * 30 : 0;
 
-    /* Pour l'attaquant, le scoring est inversé :
-     * - Plus la forteresse est endommagée, mieux c'est
-     * - Moins d'ennemis éliminés = mieux (ils ont survécu)
-     * On recalcule des scores adaptés au rôle */
     const scoreRempartsAffiche = estAttaquant
         ? (partie.forteressePvMax > 0 ? (1.0 - partie.forteressePvRestants / partie.forteressePvMax) * 30 : 0)
         : scoreRemparts;
     const scoreEnnemisAffiche = estAttaquant
         ? (partie.ennemisTotal > 0 ? ((partie.ennemisTotal - partie.ennemisElimines) / partie.ennemisTotal) * 40 : 0)
         : scoreEnnemis;
-    const scoreBudgetAffiche = scoreBudget; // Budget reste le même pour les deux
+    const scoreBudgetAffiche = scoreBudget;
 
     const scoreFinalAffiche = estAttaquant
         ? Math.round(scoreRempartsAffiche + scoreEnnemisAffiche + scoreBudgetAffiche)
@@ -117,7 +111,7 @@ export default function ResultatsPage() {
                    style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
                     {etoilesAffichage}
                 </p>
-                <p className="text-sm mt-2 uppercase tracking-widest"
+                <p className="text-base mt-2 uppercase tracking-widest"
                    style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.6)' }}>
                     {etoilesAffiche === 3 ? 'Perfection !' :
                         etoilesAffiche === 2 ? 'Bien joué !' :
@@ -142,7 +136,7 @@ export default function ResultatsPage() {
                    style={{ color: scoreColor, fontFamily: 'var(--font-cinzel)' }}>
                     {scoreFinalAffiche}
                 </p>
-                <p className="text-xs uppercase tracking-widest mt-1"
+                <p className="text-sm uppercase tracking-widest mt-1"
                    style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.5)' }}>
                     Score / 100
                 </p>
@@ -178,7 +172,7 @@ export default function ResultatsPage() {
                         <p className="text-2xl font-black" style={{ color: critere.color, fontFamily: 'var(--font-cinzel)' }}>
                             {Math.round(critere.score)}
                         </p>
-                        <p className="text-[10px] mt-0.5" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>
+                        <p className="text-xs mt-0.5" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>
                             / {critere.max} pts
                         </p>
                         {/* Barre pixel art */}
@@ -187,23 +181,23 @@ export default function ResultatsPage() {
                         </div>
                         <div className="flex items-center justify-center gap-1 mt-2">
                             {critere.emoji ? (
-                                <span className="text-xs">{critere.emoji}</span>
+                                <span className="text-sm">{critere.emoji}</span>
                             ) : (
-                                <PixelCoin size={12} />
+                                <PixelCoin size={14} />
                             )}
-                            <p className="text-[10px] uppercase tracking-widest"
+                            <p className="text-xs uppercase tracking-widest"
                                style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.6)' }}>
                                 {critere.label}
                             </p>
                         </div>
-                        <p className="text-[9px] mt-0.5" style={{ color: 'rgba(212,200,160,0.35)' }}>
+                        <p className="text-[11px] mt-0.5" style={{ color: 'rgba(212,200,160,0.45)' }}>
                             {critere.detail}
                         </p>
                     </motion.div>
                 ))}
             </motion.div>
 
-            {/* Défenses utilisées — affiché seulement pour le défenseur ou en solo */}
+            {/* Défenses utilisées */}
             {!estAttaquant && (
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -212,7 +206,7 @@ export default function ResultatsPage() {
                     className="w-full max-w-2xl">
                     <div className="flex items-center gap-2 mb-3">
                         <PixelTourelle size={16} />
-                        <h2 className="text-xs uppercase tracking-widest"
+                        <h2 className="text-sm uppercase tracking-widest"
                             style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
                             Composition des défenses
                         </h2>
@@ -235,7 +229,7 @@ export default function ResultatsPage() {
                                     <p className="font-bold text-sm" style={{ fontFamily: 'var(--font-cinzel)', color: '#d4c8a0' }}>
                                         {t.nom}
                                     </p>
-                                    <p className="text-[10px]" style={{ color: 'rgba(212,200,160,0.4)' }}>
+                                    <p className="text-xs" style={{ color: 'rgba(212,200,160,0.5)' }}>
                                         Position {t.position}
                                     </p>
                                 </div>
@@ -244,15 +238,15 @@ export default function ResultatsPage() {
                                         <p className="font-black text-sm" style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
                                             {t.dps.toFixed(1)}
                                         </p>
-                                        <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>DPS</p>
+                                        <p className="text-[10px] uppercase" style={{ color: 'rgba(212,200,160,0.5)', fontFamily: 'var(--font-cinzel)' }}>DPS</p>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <PixelCoin size={10} />
+                                        <PixelCoin size={12} />
                                         <div>
                                             <p className="font-black text-sm" style={{ color: '#d4c8a0', fontFamily: 'var(--font-cinzel)' }}>
                                                 {t.cout}
                                             </p>
-                                            <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
+                                            <p className="text-[10px] uppercase" style={{ color: 'rgba(212,200,160,0.5)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
                                         </div>
                                     </div>
                                 </div>
@@ -275,7 +269,7 @@ export default function ResultatsPage() {
                                     <p className="font-bold text-sm" style={{ fontFamily: 'var(--font-cinzel)', color: '#d4c8a0' }}>
                                         Muraille
                                     </p>
-                                    <p className="text-[10px]" style={{ color: 'rgba(212,200,160,0.4)' }}>
+                                    <p className="text-xs" style={{ color: 'rgba(212,200,160,0.5)' }}>
                                         Chemin pos.{m.position}
                                     </p>
                                 </div>
@@ -284,15 +278,15 @@ export default function ResultatsPage() {
                                         <p className="font-black text-sm" style={{ color: '#3c8cdc', fontFamily: 'var(--font-cinzel)' }}>
                                             {m.pvMax}
                                         </p>
-                                        <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>PV</p>
+                                        <p className="text-[10px] uppercase" style={{ color: 'rgba(212,200,160,0.5)', fontFamily: 'var(--font-cinzel)' }}>PV</p>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <PixelCoin size={10} />
+                                        <PixelCoin size={12} />
                                         <div>
                                             <p className="font-black text-sm" style={{ color: '#d4c8a0', fontFamily: 'var(--font-cinzel)' }}>
                                                 {m.cout}
                                             </p>
-                                            <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
+                                            <p className="text-[10px] uppercase" style={{ color: 'rgba(212,200,160,0.5)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
                                         </div>
                                     </div>
                                 </div>

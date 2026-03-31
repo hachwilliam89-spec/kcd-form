@@ -42,7 +42,7 @@ export default function Home() {
                     <PixelTitle size={72} />
                     <p style={{
                         ...pixelFont,
-                        fontSize: '0.5rem',
+                        fontSize: '0.7rem',
                         letterSpacing: '0.3em',
                         textTransform: 'uppercase' as const,
                         color: '#dcb464',
@@ -77,7 +77,7 @@ export default function Home() {
                     <p className="py-2"
                        style={{
                            ...pixelFont,
-                           fontSize: '0.42rem',
+                           fontSize: '0.6rem',
                            color: '#d4c8a0',
                            lineHeight: '2.4',
                        }}>
@@ -116,7 +116,7 @@ export default function Home() {
                             </div>
                             <p style={{
                                 ...pixelFont,
-                                fontSize: '0.45rem',
+                                fontSize: '0.65rem',
                                 color: '#dcb464',
                                 letterSpacing: '0.1em',
                                 textTransform: 'uppercase' as const,
@@ -126,7 +126,7 @@ export default function Home() {
                             </p>
                             <p style={{
                                 ...pixelFont,
-                                fontSize: '0.35rem',
+                                fontSize: '0.5rem',
                                 color: '#6a6050',
                                 letterSpacing: '0.1em',
                                 textTransform: 'uppercase' as const,
@@ -171,7 +171,7 @@ export default function Home() {
                             <span className="group-hover:text-[#dcb464] transition-colors"
                                   style={{
                                       ...pixelFont,
-                                      fontSize: '0.38rem',
+                                      fontSize: '0.55rem',
                                       color: '#8a7a5a',
                                       letterSpacing: '0.1em',
                                       lineHeight: '2',
@@ -196,7 +196,7 @@ export default function Home() {
                     </div>
                     <p style={{
                         ...pixelFont,
-                        fontSize: '0.32rem',
+                        fontSize: '0.45rem',
                         color: '#4a4a5a',
                         letterSpacing: '0.15em',
                         textTransform: 'uppercase' as const,

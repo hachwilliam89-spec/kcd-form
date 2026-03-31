@@ -145,7 +145,7 @@ export default function ConstructionPage() {
                     <div>
                         <h1 style={{
                             ...px,
-                            fontSize: '0.6rem',
+                            fontSize: '0.7rem',
                             color: '#dcb464',
                             textShadow: '0 2px 4px rgba(0,0,0,0.6)',
                             lineHeight: '1.8',
@@ -156,7 +156,7 @@ export default function ConstructionPage() {
                         </h1>
                         <p style={{
                             ...px,
-                            fontSize: '0.35rem',
+                            fontSize: '0.45rem',
                             color: 'rgba(212,200,160,0.7)',
                             textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                             lineHeight: '1.8',
@@ -186,14 +186,14 @@ export default function ConstructionPage() {
                     {fromLobby ? (
                         <button onClick={() => router.push(`/multi/${lobbyId}?role=DEFENSEUR&partieId=${partieId}`)}
                                 className="btn-gold py-3 px-5 flex items-center gap-2"
-                                style={{ ...px, fontSize: '0.45rem' }}>
+                                style={{ ...px, fontSize: '0.55rem' }}>
                             <PixelShield size={16} />
                             Retour au lobby
                         </button>
                     ) : (
                         <button onClick={lancerCombat}
                                 className="btn-blood py-3 px-5 flex items-center gap-2"
-                                style={{ ...px, fontSize: '0.45rem' }}>
+                                style={{ ...px, fontSize: '0.55rem' }}>
                             {estReprise ? `⚔️ Vague ${vagueAffichee}` : '⚔️ Lancer le combat'}
                         </button>
                     )}
@@ -209,7 +209,7 @@ export default function ConstructionPage() {
                     <div className="flex items-center justify-between flex-shrink-0">
                         <h2 style={{
                             ...px,
-                            fontSize: '0.4rem',
+                            fontSize: '0.5rem',
                             color: '#dcb464',
                             textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                             letterSpacing: '0.1em',
@@ -219,7 +219,7 @@ export default function ConstructionPage() {
                         </h2>
                         <p style={{
                             ...px,
-                            fontSize: '0.32rem',
+                            fontSize: '0.45rem',
                             color: 'rgba(212,200,160,0.5)',
                             textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                         }}>
@@ -249,7 +249,7 @@ export default function ConstructionPage() {
                             { label: 'Chemin', bg: 'rgba(42,31,15,0.4)', border: 'transparent' },
                         ].map((item, i) => (
                             <span key={i} className="flex items-center gap-1"
-                                  style={{ ...px, fontSize: '0.3rem', color: 'rgba(212,200,160,0.5)' }}>
+                                  style={{ ...px, fontSize: '0.4rem', color: 'rgba(212,200,160,0.5)' }}>
                                 <span className="w-3 h-3 inline-block"
                                       style={{ background: item.bg, outline: `1px solid ${item.border}` }} />
                                 {item.label}
@@ -271,10 +271,10 @@ export default function ConstructionPage() {
                             <PixelBorder className="absolute top-0 left-0 right-0" />
                             <div className="pt-3">
                                 {estReprise ? <PixelTourelle size={32} className="mx-auto mb-2" /> : <PixelShield size={32} className="mx-auto mb-2" />}
-                                <p style={{ ...px, fontSize: '0.5rem', color: '#dcb464', lineHeight: '1.8' }}>
+                                <p style={{ ...px, fontSize: '0.6rem', color: '#dcb464', lineHeight: '1.8' }}>
                                     {estReprise ? 'Renforcez vos défenses' : 'Sélectionne un emplacement'}
                                 </p>
-                                <p style={{ ...px, fontSize: '0.32rem', color: 'rgba(212,200,160,0.6)', lineHeight: '2', marginTop: '4px' }}>
+                                <p style={{ ...px, fontSize: '0.45rem', color: 'rgba(212,200,160,0.6)', lineHeight: '2', marginTop: '4px' }}>
                                     {estReprise
                                         ? 'Ajoutez des tourelles ou murailles avant la prochaine vague'
                                         : 'Case numérotée pour une tourelle, ou 🧱 pour une muraille sur le chemin'}

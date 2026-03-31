@@ -63,9 +63,7 @@ export default function CombatPage() {
         return { x: cellRect.left - grilleRect.left + cellRect.width / 2 - 16, y: cellRect.top - grilleRect.top + cellRect.height / 2 - 20 };
     }, []);
 
-    /* ── Résultat adapté au rôle ──
-     * Le backend envoie GAGNE/PERDU du point de vue du DEFENSEUR.
-     * Pour l'attaquant, on inverse : PERDU backend = victoire attaquant. */
+    /* ── Résultat adapté au rôle ── */
     const getResultatPourRole = (etatBackend: string): 'GAGNE' | 'PERDU' => {
         if (estAttaquant) {
             return etatBackend === 'PERDU' ? 'GAGNE' : 'PERDU';
@@ -101,7 +99,6 @@ export default function CombatPage() {
 
     const timerPct = combatEtat ? (combatEtat.tempsEcoule / combatEtat.dureeSecondes) * 100 : 0;
 
-    /* Résultat affiché adapté au rôle */
     const resultatAffiche = combatEtat && (combatEtat.etat === 'GAGNE' || combatEtat.etat === 'PERDU')
         ? getResultatPourRole(combatEtat.etat)
         : null;
@@ -114,11 +111,11 @@ export default function CombatPage() {
                     <div className="flex items-center gap-3">
                         <PixelBanner size={28} color="#c44030" />
                         <div>
-                            <h1 style={{ ...px, fontSize: '0.6rem', color: '#dcb464', textShadow: '0 2px 4px rgba(0,0,0,0.6)', lineHeight: '1.8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                            <h1 style={{ ...px, fontSize: '0.7rem', color: '#dcb464', textShadow: '0 2px 4px rgba(0,0,0,0.6)', lineHeight: '1.8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                                 Phase de Combat
                                 {estAttaquant && <span style={{ color: '#c44030', marginLeft: '8px' }}>⚔ Attaquant</span>}
                             </h1>
-                            <p style={{ ...px, fontSize: '0.32rem', color: 'rgba(212,200,160,0.7)', lineHeight: '1.8' }}>
+                            <p style={{ ...px, fontSize: '0.45rem', color: 'rgba(212,200,160,0.7)', lineHeight: '1.8' }}>
                                 {partie?.joueurNom} — {partie?.difficulte}
                                 {connecte && <span style={{ color: '#8cb414', marginLeft: '8px' }}>● Connecté</span>}
                             </p>
@@ -129,13 +126,13 @@ export default function CombatPage() {
                             <>
                                 <div className="flex flex-col items-center px-3 py-1"
                                      style={{ background: 'rgba(26,20,32,0.8)', outline: '2px solid #1a0a00', boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.1), 0 2px 0 #1a0a00' }}>
-                                    <p style={{ ...px, fontSize: '0.25rem', color: 'rgba(212,200,160,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Score</p>
-                                    <p style={{ ...px, fontSize: '0.6rem', color: '#dcb464' }}>{combatEtat.score}</p>
+                                    <p style={{ ...px, fontSize: '0.4rem', color: 'rgba(212,200,160,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Score</p>
+                                    <p style={{ ...px, fontSize: '0.7rem', color: '#dcb464' }}>{combatEtat.score}</p>
                                 </div>
                                 <div className="flex flex-col items-center px-3 py-1"
                                      style={{ background: 'rgba(26,20,32,0.8)', outline: '2px solid #1a0a00', boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.1), 0 2px 0 #1a0a00' }}>
-                                    <p style={{ ...px, fontSize: '0.25rem', color: 'rgba(212,200,160,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vague</p>
-                                    <p style={{ ...px, fontSize: '0.6rem', color: '#dcb464' }}>{combatEtat.vagueNumero} / 5</p>
+                                    <p style={{ ...px, fontSize: '0.4rem', color: 'rgba(212,200,160,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vague</p>
+                                    <p style={{ ...px, fontSize: '0.7rem', color: '#dcb464' }}>{combatEtat.vagueNumero} / 5</p>
                                 </div>
                                 {!combatEtat.derniereVague && (
                                     <div className="flex flex-col items-center px-3 py-1"
@@ -146,9 +143,9 @@ export default function CombatPage() {
                                                  ? 'inset 0 2px 0 rgba(196,64,48,0.2), 0 2px 0 #1a0a00, 0 0 12px rgba(196,64,48,0.2)'
                                                  : 'inset 0 2px 0 rgba(220,180,100,0.1), 0 2px 0 #1a0a00',
                                          }}>
-                                        <p style={{ ...px, fontSize: '0.25rem', color: 'rgba(212,200,160,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Timer</p>
+                                        <p style={{ ...px, fontSize: '0.4rem', color: 'rgba(212,200,160,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Timer</p>
                                         <p className={timerPct > 80 ? 'animate-pulse' : ''}
-                                           style={{ ...px, fontSize: '0.5rem', color: timerPct > 80 ? '#c44030' : '#dcb464' }}>
+                                           style={{ ...px, fontSize: '0.6rem', color: timerPct > 80 ? '#c44030' : '#dcb464' }}>
                                             {combatEtat.tempsEcoule}s / {combatEtat.dureeSecondes}s
                                         </p>
                                     </div>
@@ -157,7 +154,7 @@ export default function CombatPage() {
                         )}
                         {!combatLance && (
                             <button onClick={lancerCombat} className="btn-blood py-3 px-5 flex items-center gap-2"
-                                    style={{ ...px, fontSize: '0.45rem' }}>
+                                    style={{ ...px, fontSize: '0.55rem' }}>
                                 <PixelBanner size={16} color="#ffe0d0" />
                                 Lancer le combat
                             </button>
@@ -187,10 +184,10 @@ export default function CombatPage() {
                                 <PixelBorder className="absolute bottom-0 left-0 right-0 rotate-180" />
                                 <div className="text-center mb-4 pt-2">
                                     <PixelShield size={40} className="mx-auto mb-2" />
-                                    <h2 style={{ ...px, fontSize: '0.6rem', color: '#dcb464', lineHeight: '1.8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                                    <h2 style={{ ...px, fontSize: '0.7rem', color: '#dcb464', lineHeight: '1.8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
                                         Vague {combatEtat.vagueNumero} repoussée !
                                     </h2>
-                                    <p style={{ ...px, fontSize: '0.35rem', color: 'rgba(212,200,160,0.7)', lineHeight: '2' }}>
+                                    <p style={{ ...px, fontSize: '0.5rem', color: 'rgba(212,200,160,0.7)', lineHeight: '2' }}>
                                         {combatEtat.ennemisVivants > 0
                                             ? `${combatEtat.ennemisVivants} survivant${combatEtat.ennemisVivants > 1 ? 's' : ''} reporté${combatEtat.ennemisVivants > 1 ? 's' : ''}`
                                             : 'Tous les ennemis éliminés !'}
@@ -198,11 +195,11 @@ export default function CombatPage() {
                                 </div>
                                 <div className="flex gap-4 justify-center">
                                     <button onClick={retourConstruction} className="btn-stone py-3 px-5 flex items-center gap-2"
-                                            style={{ ...px, fontSize: '0.4rem' }}>
+                                            style={{ ...px, fontSize: '0.55rem' }}>
                                         <PixelTourelle size={16} /> Fortifier
                                     </button>
                                     <button onClick={reprendreDirectement} className="btn-gold py-3 px-5 flex items-center gap-2"
-                                            style={{ ...px, fontSize: '0.4rem' }}>
+                                            style={{ ...px, fontSize: '0.55rem' }}>
                                         Vague {combatEtat.vagueNumero + 1} ⚔️
                                     </button>
                                 </div>
@@ -217,7 +214,7 @@ export default function CombatPage() {
                                     outline: `3px solid ${resultatAffiche === 'GAGNE' ? '#5a8c28' : '#c44030'}`,
                                     boxShadow: `0 4px 0 #1a0a00, 0 0 20px ${resultatAffiche === 'GAGNE' ? 'rgba(90,140,40,0.2)' : 'rgba(196,64,48,0.2)'}`,
                                 }}>
-                                <p style={{ ...px, fontSize: '0.7rem', color: resultatAffiche === 'GAGNE' ? '#8cb414' : '#c44030',
+                                <p style={{ ...px, fontSize: '0.8rem', color: resultatAffiche === 'GAGNE' ? '#8cb414' : '#c44030',
                                     textShadow: '0 2px 4px rgba(0,0,0,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                                     {resultatAffiche === 'GAGNE' ? '👑 Victoire !' : '💀 Défaite...'}
                                 </p>

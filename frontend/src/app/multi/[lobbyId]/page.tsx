@@ -66,7 +66,7 @@ const BudgetBar = ({ spent, max }: { spent: number; max: number }) => {
     return (
         <div className="panel-stone p-4">
             <div className="flex justify-between items-center mb-2">
-                <span className="label-pixel" style={{ color: 'var(--parchment-darker)' }}>
+                <span className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.6rem' }}>
                     Tresor de guerre
                 </span>
                 <span className="label-pixel-lg" style={{
@@ -254,7 +254,7 @@ export default function LobbyPage() {
                          style={{
                              background: 'var(--gold)',
                              color: 'var(--bg-deep)',
-                             fontSize: '0.45rem',
+                             fontSize: '0.55rem',
                          }}>
                         Vous
                     </div>
@@ -268,7 +268,7 @@ export default function LobbyPage() {
                            style={{ color: estDefenseur ? 'var(--sky-light)' : 'var(--flag-red)' }}>
                             {estDefenseur ? 'Defenseur' : 'Attaquant'}
                         </p>
-                        <p className="text-xs mt-1.5" style={{ color: 'var(--parchment-darker)', fontFamily: 'var(--font-crimson)' }}>
+                        <p className="text-sm mt-1.5" style={{ color: 'var(--parchment-darker)', fontFamily: 'var(--font-crimson)' }}>
                             {estDefenseur ? 'Place les tourelles' : 'Compose les vagues'}
                         </p>
                     </div>
@@ -285,7 +285,7 @@ export default function LobbyPage() {
                     }}>
                         <span className="label-pixel" style={{
                             color: pret ? 'var(--grass-light)' : connecte ? 'var(--gold)' : 'var(--night-light)',
-                            fontSize: '0.5rem',
+                            fontSize: '0.6rem',
                         }}>
                             {pret ? 'Pret !' : connecte ? 'Connecte' : 'Attente...'}
                         </span>
@@ -305,7 +305,7 @@ export default function LobbyPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center"
                 >
-                    <p className="label-pixel mb-3" style={{ color: 'var(--parchment-darker)', fontSize: '0.5rem' }}>
+                    <p className="label-pixel mb-3" style={{ color: 'var(--parchment-darker)', fontSize: '0.6rem' }}>
                         Salle de guerre
                     </p>
                     <h1 className="text-3xl font-black tracking-widest uppercase text-gold-glow"
@@ -315,7 +315,7 @@ export default function LobbyPage() {
                     <div className="flex items-center justify-center gap-2 mt-3">
                         <div className="w-2 h-2 rounded-full animate-pixel-pulse"
                              style={{ background: lobby?.etat === 'EN_COURS' ? 'var(--grass-light)' : 'var(--gold)' }} />
-                        <span className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.45rem' }}>
+                        <span className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.55rem' }}>
                             {lobby?.etat === 'ATTENTE' ? 'En preparation' : lobby?.etat === 'EN_COURS' ? 'Combat !' : lobby?.etat ?? '...'}
                         </span>
                     </div>
@@ -395,7 +395,7 @@ export default function LobbyPage() {
                                         </div>
                                         <div className="flex items-center gap-4">
                                             {totalUnites > 0 && (
-                                                <span className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.5rem' }}>
+                                                <span className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.6rem' }}>
                                                     {totalUnites} unite{totalUnites > 1 ? 's' : ''} - {coutVague} or
                                                 </span>
                                             )}
@@ -428,10 +428,10 @@ export default function LobbyPage() {
                                                                 <div className="flex items-center gap-3">
                                                                     <span className="text-2xl">{type.emoji}</span>
                                                                     <div>
-                                                                        <p className="label-pixel" style={{ color: type.color, fontSize: '0.55rem' }}>
+                                                                        <p className="label-pixel" style={{ color: type.color, fontSize: '0.65rem' }}>
                                                                             {type.label}
                                                                         </p>
-                                                                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--parchment-darker)', fontFamily: 'var(--font-crimson)' }}>
+                                                                        <p className="text-xs mt-0.5" style={{ color: 'var(--parchment-darker)', fontFamily: 'var(--font-crimson)' }}>
                                                                             {type.desc} · {type.cout} or
                                                                         </p>
                                                                     </div>
@@ -513,7 +513,7 @@ export default function LobbyPage() {
                             <motion.p
                                 animate={{ opacity: [0.4, 1, 0.4] }}
                                 transition={{ duration: 2, repeat: Infinity }}
-                                className="text-xs"
+                                className="text-sm"
                                 style={{ color: 'var(--parchment-darker)', fontFamily: 'var(--font-crimson)' }}
                             >
                                 En attente de l'adversaire...
@@ -551,7 +551,7 @@ export default function LobbyPage() {
                                 <p className="label-pixel-xl text-gold-glow mb-2">
                                     Aux armes !
                                 </p>
-                                <p className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.45rem' }}>
+                                <p className="label-pixel" style={{ color: 'var(--parchment-darker)', fontSize: '0.55rem' }}>
                                     Redirection...
                                 </p>
                             </div>
@@ -571,7 +571,7 @@ export default function LobbyPage() {
                                 color: 'var(--flag-red)',
                                 background: 'rgba(196,64,48,0.1)',
                                 border: '1px solid rgba(196,64,48,0.3)',
-                                fontSize: '0.5rem',
+                                fontSize: '0.6rem',
                             }}
                         >
                             {erreur}
