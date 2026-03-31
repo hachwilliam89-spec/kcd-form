@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { api, Partie, Tourelle, Muraille } from '@/lib/api';
 import { PixelBorder, PixelShield, PixelCoin, PixelTriangle, PixelCercle, PixelRectangle, PixelTourelle } from '@/components/PixelSprites';
 
@@ -15,7 +15,10 @@ const BUDGET_INITIAL: Record<string, number> = {
 export default function ResultatsPage() {
     const router = useRouter();
     const params = useParams();
+    const searchParams = useSearchParams();
     const partieId = Number(params.id);
+    const role = searchParams.get('role');
+    const estAttaquant = role === 'ATTAQUANT';
 
     const [partie, setPartie] = useState<Partie | null>(null);
     const [tourelles, setTourelles] = useState<Tourelle[]>([]);
@@ -34,7 +37,11 @@ export default function ResultatsPage() {
 
     if (!partie) return null;
 
-    const victoire = partie.etat === 'GAGNE';
+    /* Le backend stocke l'état du point de vue du défenseur.
+     * Pour l'attaquant, on inverse : PERDU backend = victoire attaquant. */
+    const victoireBackend = partie.etat === 'GAGNE';
+    const victoire = estAttaquant ? !victoireBackend : victoireBackend;
+
     const budgetInitial = BUDGET_INITIAL[partie.difficulte] ?? 400;
 
     const scoreRemparts = partie.forteressePvMax > 0
@@ -44,11 +51,31 @@ export default function ResultatsPage() {
     const scoreBudget = budgetInitial > 0
         ? (1.0 - partie.orDepense / budgetInitial) * 30 : 0;
 
-    const etoilesAffichage = '⭐'.repeat(partie.etoiles) + '☆'.repeat(3 - partie.etoiles);
+    /* Pour l'attaquant, le scoring est inversé :
+     * - Plus la forteresse est endommagée, mieux c'est
+     * - Moins d'ennemis éliminés = mieux (ils ont survécu)
+     * On recalcule des scores adaptés au rôle */
+    const scoreRempartsAffiche = estAttaquant
+        ? (partie.forteressePvMax > 0 ? (1.0 - partie.forteressePvRestants / partie.forteressePvMax) * 30 : 0)
+        : scoreRemparts;
+    const scoreEnnemisAffiche = estAttaquant
+        ? (partie.ennemisTotal > 0 ? ((partie.ennemisTotal - partie.ennemisElimines) / partie.ennemisTotal) * 40 : 0)
+        : scoreEnnemis;
+    const scoreBudgetAffiche = scoreBudget; // Budget reste le même pour les deux
 
-    const scoreColor = partie.scoreFinal >= 80 ? '#dcb464'
-        : partie.scoreFinal >= 50 ? '#dcb464'
-            : partie.scoreFinal > 0 ? '#dc8c3c' : '#c44030';
+    const scoreFinalAffiche = estAttaquant
+        ? Math.round(scoreRempartsAffiche + scoreEnnemisAffiche + scoreBudgetAffiche)
+        : partie.scoreFinal;
+
+    const etoilesAffiche = estAttaquant
+        ? (scoreFinalAffiche >= 80 ? 3 : scoreFinalAffiche >= 50 ? 2 : scoreFinalAffiche > 0 ? 1 : 0)
+        : partie.etoiles;
+
+    const etoilesAffichage = '⭐'.repeat(etoilesAffiche) + '☆'.repeat(3 - etoilesAffiche);
+
+    const scoreColor = scoreFinalAffiche >= 80 ? '#dcb464'
+        : scoreFinalAffiche >= 50 ? '#dcb464'
+            : scoreFinalAffiche > 0 ? '#dc8c3c' : '#c44030';
 
     return (
         <main className="min-h-screen bg-medieval-resultats text-white flex flex-col items-center justify-center p-8 gap-6">
@@ -73,6 +100,9 @@ export default function ResultatsPage() {
                 <p style={{ fontFamily: 'var(--font-crimson)', color: 'rgba(212,200,160,0.7)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
                    className="text-lg">
                     {partie.joueurNom} — {partie.difficulte}
+                    {role && <span style={{ marginLeft: '12px', color: estAttaquant ? '#c44030' : '#3c8cdc' }}>
+                        {estAttaquant ? '⚔ Attaquant' : '🛡 Défenseur'}
+                    </span>}
                 </p>
                 <PixelBorder className="w-48 mt-4" />
             </motion.div>
@@ -89,9 +119,9 @@ export default function ResultatsPage() {
                 </p>
                 <p className="text-sm mt-2 uppercase tracking-widest"
                    style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.6)' }}>
-                    {partie.etoiles === 3 ? 'Perfection !' :
-                        partie.etoiles === 2 ? 'Bien joué !' :
-                            partie.etoiles === 1 ? 'De justesse...' : 'Défaite'}
+                    {etoilesAffiche === 3 ? 'Perfection !' :
+                        etoilesAffiche === 2 ? 'Bien joué !' :
+                            etoilesAffiche === 1 ? 'De justesse...' : 'Défaite'}
                 </p>
             </motion.div>
 
@@ -110,7 +140,7 @@ export default function ResultatsPage() {
                 <PixelBorder className="absolute bottom-0 left-0 right-0 rotate-180" />
                 <p className="text-6xl font-black pt-1"
                    style={{ color: scoreColor, fontFamily: 'var(--font-cinzel)' }}>
-                    {partie.scoreFinal}
+                    {scoreFinalAffiche}
                 </p>
                 <p className="text-xs uppercase tracking-widest mt-1"
                    style={{ fontFamily: 'var(--font-cinzel)', color: 'rgba(212,200,160,0.5)' }}>
@@ -126,9 +156,13 @@ export default function ResultatsPage() {
                 className="grid grid-cols-3 gap-4 w-full max-w-2xl">
 
                 {[
-                    { score: scoreRemparts, max: 30, color: '#c44030', label: 'Citadelle', emoji: '🏰', detail: `${partie.forteressePvRestants} / ${partie.forteressePvMax} PV` },
-                    { score: scoreEnnemis, max: 40, color: '#8c64dc', label: 'Ennemis', emoji: '💀', detail: `${partie.ennemisElimines} / ${partie.ennemisTotal} éliminés` },
-                    { score: scoreBudget, max: 30, color: '#dcb464', label: 'Efficacité', emoji: null, detail: `${partie.orDepense} / ${budgetInitial} or dépensé` },
+                    estAttaquant
+                        ? { score: scoreRempartsAffiche, max: 30, color: '#c44030', label: 'Destruction', emoji: '🔥', detail: `${partie.forteressePvMax - partie.forteressePvRestants} / ${partie.forteressePvMax} dégâts` }
+                        : { score: scoreRempartsAffiche, max: 30, color: '#c44030', label: 'Citadelle', emoji: '🏰', detail: `${partie.forteressePvRestants} / ${partie.forteressePvMax} PV` },
+                    estAttaquant
+                        ? { score: scoreEnnemisAffiche, max: 40, color: '#8c64dc', label: 'Survivants', emoji: '⚔️', detail: `${partie.ennemisTotal - partie.ennemisElimines} / ${partie.ennemisTotal} survivants` }
+                        : { score: scoreEnnemisAffiche, max: 40, color: '#8c64dc', label: 'Ennemis', emoji: '💀', detail: `${partie.ennemisElimines} / ${partie.ennemisTotal} éliminés` },
+                    { score: scoreBudgetAffiche, max: 30, color: '#dcb464', label: 'Efficacité', emoji: null, detail: `${partie.orDepense} / ${budgetInitial} or dépensé` },
                 ].map((critere, i) => (
                     <motion.div
                         key={i}
@@ -169,102 +203,104 @@ export default function ResultatsPage() {
                 ))}
             </motion.div>
 
-            {/* Défenses utilisées */}
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-                className="w-full max-w-2xl">
-                <div className="flex items-center gap-2 mb-3">
-                    <PixelTourelle size={16} />
-                    <h2 className="text-xs uppercase tracking-widest"
-                        style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
-                        Composition des défenses
-                    </h2>
-                </div>
-                <div className="flex flex-col gap-2">
-                    {tourelles.map((t, i) => (
-                        <motion.div
-                            key={t.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.9 + i * 0.1 }}
-                            className="flex items-center gap-4 p-3"
-                            style={{
-                                background: 'rgba(26,20,32,0.8)',
-                                outline: '2px solid #1a0a00',
-                                boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.06), inset 0 -2px 0 rgba(0,0,0,0.2), 0 2px 0 #0a0508',
-                            }}>
-                            <span className="text-2xl">{t.aoe ? '🪨' : '🏹'}</span>
-                            <div className="flex-1">
-                                <p className="font-bold text-sm" style={{ fontFamily: 'var(--font-cinzel)', color: '#d4c8a0' }}>
-                                    {t.nom}
-                                </p>
-                                <p className="text-[10px]" style={{ color: 'rgba(212,200,160,0.4)' }}>
-                                    Position {t.position}
-                                </p>
-                            </div>
-                            <div className="flex gap-4 text-center">
-                                <div>
-                                    <p className="font-black text-sm" style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
-                                        {t.dps.toFixed(1)}
+            {/* Défenses utilisées — affiché seulement pour le défenseur ou en solo */}
+            {!estAttaquant && (
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.5 }}
+                    className="w-full max-w-2xl">
+                    <div className="flex items-center gap-2 mb-3">
+                        <PixelTourelle size={16} />
+                        <h2 className="text-xs uppercase tracking-widest"
+                            style={{ fontFamily: 'var(--font-cinzel)', color: '#dcb464' }}>
+                            Composition des défenses
+                        </h2>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        {tourelles.map((t, i) => (
+                            <motion.div
+                                key={t.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.9 + i * 0.1 }}
+                                className="flex items-center gap-4 p-3"
+                                style={{
+                                    background: 'rgba(26,20,32,0.8)',
+                                    outline: '2px solid #1a0a00',
+                                    boxShadow: 'inset 0 2px 0 rgba(220,180,100,0.06), inset 0 -2px 0 rgba(0,0,0,0.2), 0 2px 0 #0a0508',
+                                }}>
+                                <span className="text-2xl">{t.aoe ? '🪨' : '🏹'}</span>
+                                <div className="flex-1">
+                                    <p className="font-bold text-sm" style={{ fontFamily: 'var(--font-cinzel)', color: '#d4c8a0' }}>
+                                        {t.nom}
                                     </p>
-                                    <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>DPS</p>
+                                    <p className="text-[10px]" style={{ color: 'rgba(212,200,160,0.4)' }}>
+                                        Position {t.position}
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <PixelCoin size={10} />
+                                <div className="flex gap-4 text-center">
                                     <div>
-                                        <p className="font-black text-sm" style={{ color: '#d4c8a0', fontFamily: 'var(--font-cinzel)' }}>
-                                            {t.cout}
+                                        <p className="font-black text-sm" style={{ color: '#dcb464', fontFamily: 'var(--font-cinzel)' }}>
+                                            {t.dps.toFixed(1)}
                                         </p>
-                                        <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
+                                        <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>DPS</p>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <PixelCoin size={10} />
+                                        <div>
+                                            <p className="font-black text-sm" style={{ color: '#d4c8a0', fontFamily: 'var(--font-cinzel)' }}>
+                                                {t.cout}
+                                            </p>
+                                            <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                    {murailles.map((m, i) => (
-                        <motion.div
-                            key={`m-${m.id}`}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.9 + (tourelles.length + i) * 0.1 }}
-                            className="flex items-center gap-4 p-3"
-                            style={{
-                                background: 'rgba(60,40,20,0.6)',
-                                outline: '2px solid #1a0a00',
-                                boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.06), inset 0 -2px 0 rgba(0,0,0,0.2), 0 2px 0 #0a0508',
-                            }}>
-                            <PixelRectangle size={28} />
-                            <div className="flex-1">
-                                <p className="font-bold text-sm" style={{ fontFamily: 'var(--font-cinzel)', color: '#d4c8a0' }}>
-                                    Muraille
-                                </p>
-                                <p className="text-[10px]" style={{ color: 'rgba(212,200,160,0.4)' }}>
-                                    Chemin pos.{m.position}
-                                </p>
-                            </div>
-                            <div className="flex gap-4 text-center">
-                                <div>
-                                    <p className="font-black text-sm" style={{ color: '#3c8cdc', fontFamily: 'var(--font-cinzel)' }}>
-                                        {m.pvMax}
+                            </motion.div>
+                        ))}
+                        {murailles.map((m, i) => (
+                            <motion.div
+                                key={`m-${m.id}`}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.9 + (tourelles.length + i) * 0.1 }}
+                                className="flex items-center gap-4 p-3"
+                                style={{
+                                    background: 'rgba(60,40,20,0.6)',
+                                    outline: '2px solid #1a0a00',
+                                    boxShadow: 'inset 0 2px 0 rgba(180,140,80,0.06), inset 0 -2px 0 rgba(0,0,0,0.2), 0 2px 0 #0a0508',
+                                }}>
+                                <PixelRectangle size={28} />
+                                <div className="flex-1">
+                                    <p className="font-bold text-sm" style={{ fontFamily: 'var(--font-cinzel)', color: '#d4c8a0' }}>
+                                        Muraille
                                     </p>
-                                    <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>PV</p>
+                                    <p className="text-[10px]" style={{ color: 'rgba(212,200,160,0.4)' }}>
+                                        Chemin pos.{m.position}
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <PixelCoin size={10} />
+                                <div className="flex gap-4 text-center">
                                     <div>
-                                        <p className="font-black text-sm" style={{ color: '#d4c8a0', fontFamily: 'var(--font-cinzel)' }}>
-                                            {m.cout}
+                                        <p className="font-black text-sm" style={{ color: '#3c8cdc', fontFamily: 'var(--font-cinzel)' }}>
+                                            {m.pvMax}
                                         </p>
-                                        <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
+                                        <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>PV</p>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <PixelCoin size={10} />
+                                        <div>
+                                            <p className="font-black text-sm" style={{ color: '#d4c8a0', fontFamily: 'var(--font-cinzel)' }}>
+                                                {m.cout}
+                                            </p>
+                                            <p className="text-[8px] uppercase" style={{ color: 'rgba(212,200,160,0.4)', fontFamily: 'var(--font-cinzel)' }}>Coût</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            </motion.div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
 
             {/* Boutons */}
             <motion.div

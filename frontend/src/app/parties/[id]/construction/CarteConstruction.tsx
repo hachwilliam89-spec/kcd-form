@@ -58,14 +58,14 @@ export default function CarteConstruction({
                  boxShadow: 'inset 0 0 30px rgba(0,0,0,0.2), 0 4px 0 #0a0508',
              }}>
             <div className="relative z-10 h-full p-3">
-                <div className="grid gap-1.5 h-full" style={{ gridTemplateColumns: 'repeat(10, 1fr)', gridTemplateRows: 'repeat(7, 1fr)' }}>
+                <div className="grid gap-1.5 h-full" style={{ gridTemplateColumns: 'repeat(10, minmax(0, 1fr))', gridTemplateRows: 'repeat(7, minmax(0, 1fr))' }}>
                     {Array.from({ length: 7 }, (_, rowIdx) =>
                         Array.from({ length: 10 }, (_, colIdx) => {
                             const col = colIdx + 1;
                             const row = rowIdx + 1;
                             const key = `${col}-${row}`;
 
-                            // ═══ CITADELLE ═══
+                            // CITADELLE
                             if (col === 10 && row === 6) {
                                 return (
                                     <div key={key} style={{
@@ -84,7 +84,7 @@ export default function CarteConstruction({
                                 );
                             }
 
-                            // ═══ TOURELLE ═══
+                            //TOURELLE
                             const posEntry = Object.entries(casesPlacement).find(([, v]) => v.col === col && v.row === row);
                             if (posEntry) {
                                 const pos = Number(posEntry[0]);
@@ -100,7 +100,7 @@ export default function CarteConstruction({
                                 );
                             }
 
-                     // ═══ MURAILLE ═══
+                     //  MURAILLE
                      const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
                      if (murEntry) {
                          const pos = Number(murEntry[0]);
@@ -123,7 +123,7 @@ export default function CarteConstruction({
                              />
                          );
                      }
-                            // ═══ CHEMIN ═══
+                            // CHEMIN
                             if (estChemin(col, row)) {
                                 const tileIdx = getTileIndex(col, row);
                                 return (
@@ -143,7 +143,7 @@ export default function CarteConstruction({
                                 );
                             }
 
-                            // ═══ CASE VIDE ═══
+                            // CASE VIDE
                             return (
                                 <div key={key}
                                      style={{

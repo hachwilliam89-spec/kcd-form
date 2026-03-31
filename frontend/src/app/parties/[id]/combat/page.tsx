@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { api, Partie, Tourelle } from '@/lib/api';
@@ -29,7 +29,10 @@ const CHEMIN_POSITIONS: { col: number; row: number }[] = [
 export default function CombatPage() {
     const router = useRouter();
     const params = useParams();
+    const searchParams = useSearchParams();
     const partieId = Number(params.id);
+    const role = searchParams.get('role');
+    const estAttaquant = role === 'ATTAQUANT';
 
     const [partie, setPartie] = useState<Partie | null>(null);
     const [tourelles, setTourelles] = useState<Tourelle[]>([]);
@@ -60,6 +63,16 @@ export default function CombatPage() {
         return { x: cellRect.left - grilleRect.left + cellRect.width / 2 - 16, y: cellRect.top - grilleRect.top + cellRect.height / 2 - 20 };
     }, []);
 
+    /* ── Résultat adapté au rôle ──
+     * Le backend envoie GAGNE/PERDU du point de vue du DEFENSEUR.
+     * Pour l'attaquant, on inverse : PERDU backend = victoire attaquant. */
+    const getResultatPourRole = (etatBackend: string): 'GAGNE' | 'PERDU' => {
+        if (estAttaquant) {
+            return etatBackend === 'PERDU' ? 'GAGNE' : 'PERDU';
+        }
+        return etatBackend as 'GAGNE' | 'PERDU';
+    };
+
     const connecterWebSocket = () => {
         const client = new Client({
             webSocketFactory: () => new SockJS(`${API_URL}/ws`),
@@ -69,7 +82,8 @@ export default function CombatPage() {
                     const etat: CombatEtat = JSON.parse(message.body);
                     setCombatEtat(etat);
                     if (etat.etat === 'GAGNE' || etat.etat === 'PERDU') {
-                        setTimeout(() => { router.push(`/parties/${partieId}/resultats`); }, 2000);
+                        const roleParam = role ? `?role=${role}` : '';
+                        setTimeout(() => { router.push(`/parties/${partieId}/resultats${roleParam}`); }, 2000);
                     } else if (etat.etat === 'ENTRE_VAGUES') {
                         setEntreVagues(true);
                     }
@@ -86,6 +100,12 @@ export default function CombatPage() {
     const retourConstruction = () => { clientRef.current?.deactivate(); router.push(`/parties/${partieId}/construction`); };
 
     const timerPct = combatEtat ? (combatEtat.tempsEcoule / combatEtat.dureeSecondes) * 100 : 0;
+
+    /* Résultat affiché adapté au rôle */
+    const resultatAffiche = combatEtat && (combatEtat.etat === 'GAGNE' || combatEtat.etat === 'PERDU')
+        ? getResultatPourRole(combatEtat.etat)
+        : null;
+
     return (
             <main className="h-screen bg-medieval-combat text-white flex flex-col overflow-hidden p-4 gap-3">
 
@@ -96,6 +116,7 @@ export default function CombatPage() {
                         <div>
                             <h1 style={{ ...px, fontSize: '0.6rem', color: '#dcb464', textShadow: '0 2px 4px rgba(0,0,0,0.6)', lineHeight: '1.8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                                 Phase de Combat
+                                {estAttaquant && <span style={{ color: '#c44030', marginLeft: '8px' }}>⚔ Attaquant</span>}
                             </h1>
                             <p style={{ ...px, fontSize: '0.32rem', color: 'rgba(212,200,160,0.7)', lineHeight: '1.8' }}>
                                 {partie?.joueurNom} — {partie?.difficulte}
@@ -188,17 +209,17 @@ export default function CombatPage() {
                             </motion.div>
                         )}
 
-                        {combatEtat && !entreVagues && (combatEtat.etat === 'GAGNE' || combatEtat.etat === 'PERDU') && (
+                        {resultatAffiche && !entreVagues && (
                             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
                                 className="text-center py-5 flex-shrink-0 relative"
                                 style={{
-                                    background: combatEtat.etat === 'GAGNE' ? 'rgba(90,140,40,0.2)' : 'rgba(196,64,48,0.2)',
-                                    outline: `3px solid ${combatEtat.etat === 'GAGNE' ? '#5a8c28' : '#c44030'}`,
-                                    boxShadow: `0 4px 0 #1a0a00, 0 0 20px ${combatEtat.etat === 'GAGNE' ? 'rgba(90,140,40,0.2)' : 'rgba(196,64,48,0.2)'}`,
+                                    background: resultatAffiche === 'GAGNE' ? 'rgba(90,140,40,0.2)' : 'rgba(196,64,48,0.2)',
+                                    outline: `3px solid ${resultatAffiche === 'GAGNE' ? '#5a8c28' : '#c44030'}`,
+                                    boxShadow: `0 4px 0 #1a0a00, 0 0 20px ${resultatAffiche === 'GAGNE' ? 'rgba(90,140,40,0.2)' : 'rgba(196,64,48,0.2)'}`,
                                 }}>
-                                <p style={{ ...px, fontSize: '0.7rem', color: combatEtat.etat === 'GAGNE' ? '#8cb414' : '#c44030',
+                                <p style={{ ...px, fontSize: '0.7rem', color: resultatAffiche === 'GAGNE' ? '#8cb414' : '#c44030',
                                     textShadow: '0 2px 4px rgba(0,0,0,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                                    {combatEtat.etat === 'GAGNE' ? '👑 Victoire !' : '💀 Défaite...'}
+                                    {resultatAffiche === 'GAGNE' ? '👑 Victoire !' : '💀 Défaite...'}
                                 </p>
                             </motion.div>
                         )}

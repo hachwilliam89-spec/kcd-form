@@ -128,14 +128,14 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                  style={{ background: 'rgba(10,10,15,0.25)', outline: '3px solid #1a0a00', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.2), 0 4px 0 #0a0508' }}>
                 <div className="relative z-10 h-full p-3">
                     <div ref={ref} className="grid gap-1.5 h-full"
-                         style={{ gridTemplateColumns: 'repeat(10, 1fr)', gridTemplateRows: 'repeat(7, 1fr)' }}>
+                         style={{ gridTemplateColumns: 'repeat(10, minmax(0, 1fr))', gridTemplateRows: 'repeat(7, minmax(0, 1fr))' }}>
                         {Array.from({ length: 7 }, (_, rowIdx) =>
                             Array.from({ length: 10 }, (_, colIdx) => {
                                 const col = colIdx + 1;
                                 const row = rowIdx + 1;
                                 const key = `${col}-${row}`;
 
-                                // ═══ CITADELLE ═══
+                                // CITADELLE
                                 if (col === 10 && row === 6) {
                                     const pvPct = forteressePvMax > 0 ? (forteressePvActuels / forteressePvMax) * 100 : 0;
                                     return (
@@ -152,7 +152,7 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     );
                                 }
 
-                                // ═══ TOURELLE ═══
+                                // TOURELLE
                                 const posEntry = Object.entries(casesPlacement).find(([, v]) => v.col === col && v.row === row);
                                 if (posEntry) {
                                     const posNum = Number(posEntry[0]);
@@ -176,7 +176,7 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     );
                                 }
 
-                                // ═══ MURAILLE ═══
+                                // MURAILLE
                                 const murEntry = Object.entries(emplacementsMuraille).find(([, v]) => v.col === col && v.row === row);
                                 if (murEntry) {
                                     const tileIdx = getTileIndex(col, row);
@@ -223,7 +223,7 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     );
                                 }
 
-                                // ═══ CHEMIN ═══
+                                // CHEMIN
                                 if (estChemin(col, row)) {
                                     const tileIdx = getTileIndex(col, row);
                                     return (
@@ -242,7 +242,7 @@ const CarteCombat = forwardRef<HTMLDivElement, CarteCombatProps>(
                                     );
                                 }
 
-                                // ═══ CASE VIDE ═══
+                                // CASE VIDE
                                 return <div key={key} data-col={col} data-row={row} style={{ gridColumn: col, gridRow: row, ...pixelCaseStyles.vide }} />;
                             })
                         )}

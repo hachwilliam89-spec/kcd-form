@@ -150,7 +150,7 @@ export default function LobbyPage() {
                     setLobby(etat);
                     if (etat.etat === 'EN_COURS' && partieId) {
                         setTimeout(() => {
-                            router.push(`/parties/${partieId}/combat`);
+                            router.push(`/parties/${partieId}/combat?role=${role}`);
                         }, 1500);
                     }
                 });
