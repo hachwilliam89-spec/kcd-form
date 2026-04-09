@@ -1,6 +1,6 @@
 # KCD Formes
 
-**Tower Defense médiéval en formes géométriques**
+**Tower Defense médiéval en pixel art · Formes géométriques**
 
 Projet fil rouge — Licence Professionnelle Full Stack · UHA 4.0 (Université de Haute-Alsace, Mulhouse)
 
@@ -8,9 +8,30 @@ Projet fil rouge — Licence Professionnelle Full Stack · UHA 4.0 (Université 
 
 ## Présentation
 
-KCD Formes est un jeu de tower defense où les tours et les ennemis sont représentés par des formes géométriques. Le joueur place des tourelles (cercles, triangles, losanges) sur une carte pour défendre son territoire contre des vagues d'ennemis, avec un système d'équilibrage pierre-feuille-ciseaux entre les types de formes.
+KCD Formes est un jeu de tower defense médiéval en pixel art où la géométrie dicte la mécanique de jeu : l'**aire** d'une forme détermine ses dégâts et ses points de vie, son **périmètre** définit sa portée et sa vitesse. Le joueur place des tourelles composées de formes géométriques sur une carte pour défendre sa forteresse contre des vagues d'ennemis (infanterie, cavalerie, béliers).
 
-Le projet est développé dans le cadre du module PRO402, structuré en étapes progressives couvrant l'architecture backend, la logique de jeu, le temps réel via WebSocket et le déploiement Docker.
+Le jeu propose un **mode multijoueur asymétrique** en temps réel via WebSocket : un joueur défend (placement de tourelles), l'autre attaque (composition et envoi de vagues).
+
+Le projet est développé dans le cadre du module PRO402, structuré en étapes progressives couvrant la POO, les design patterns, l'architecture backend, le temps réel et le déploiement Docker.
+
+---
+
+## Gameplay
+
+- **Tourelles** : composées de formes géométriques (cercles, triangles, losanges) — nommées automatiquement selon leur position
+- **Ennemis** : Infanterie, Cavalerie, Béliers — chaque type a ses propres caractéristiques et animations spritesheet
+- **Vagues** : organisées en escouades, avec difficulté progressive
+- **Niveaux de difficulté** : Écuyer · Chevalier · Seigneur
+- **Équilibrage** : système pierre-feuille-ciseaux entre types de formes
+
+---
+
+## Design Patterns
+
+| Pattern | Utilisation |
+|---|---|
+| **Factory Method** | `EnnemiFactory` (interface) → `CavalierFactory`, `InfanterieFactory`, `BelierFactory` — instanciation des ennemis via `EnnemiFactoryRegistry` (injection Spring `@Component`), remplaçant les switch/case |
+| **Composite** | `ComposantCombat` (interface) → `Vague` → `Escouade` → `Ennemi` — hiérarchie de combat permettant de traiter un groupe ou un individu de manière uniforme |
 
 ---
 
@@ -20,23 +41,24 @@ Le projet est développé dans le cadre du module PRO402, structuré en étapes 
 |---|---|
 | Backend | Java 21 · Spring Boot 3.4 |
 | ORM | Spring Data JPA / Hibernate |
-| Base de données (prod) | MariaDB 11 |
-| Base de données (dev) | H2 (in-memory) |
-| Temps réel | WebSocket / STOMP |
-| Frontend | Next.js |
+| Base de données | MariaDB 11 |
+| Temps réel | WebSocket / STOMP (`@stomp/stompjs` · `sockjs-client`) |
+| Frontend | Next.js 14 · TypeScript · React |
+| Style | CSS pixel art · Police Press Start 2P |
 | Conteneurisation | Docker · Docker Compose |
-| Build | Maven 3.9 |
-| Versioning | Git (GitLab UHA 4.0) |
+| Build backend | Maven 3.9 |
+| Versioning | Git (GitLab UHA 4.0 + GitHub) |
 
 ---
 
 ## Prérequis
 
-**Machine locale (développement) :**
+**Développement local :**
 - Java 21
 - Maven 3.9+
+- Node.js 18+ / npm
 
-**Serveur (déploiement) :**
+**Déploiement serveur :**
 - Docker et Docker Compose
 - Accès SSH
 
@@ -45,6 +67,8 @@ Le projet est développé dans le cadre du module PRO402, structuré en étapes 
 ## Installation & Lancement
 
 ### Développement local
+
+#### Backend
 
 ```bash
 # Cloner le projet
@@ -57,54 +81,62 @@ mvn spring-boot:run
 
 L'API est accessible sur `http://localhost:8080`.
 
-### Déploiement Docker (production)
-
-Le déploiement suit une approche **JAR-only** : le code est compilé en local et seul le JAR est envoyé sur le serveur. Aucun code source n'est exposé sur le serveur.
-
-#### 1. Build en local
+#### Frontend
 
 ```bash
-mvn clean package -DskipTests
+cd frontend
+npm install
+npm run dev
 ```
 
-#### 2. Envoyer les fichiers sur le serveur
+Le front est accessible sur `http://localhost:3000`.
+
+> L'URL de l'API est configurée via `NEXT_PUBLIC_API_URL`.
+> Créer un fichier `.env.local` à la racine de `frontend/` :
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+### Déploiement Docker (serveurs école)
+
+Le déploiement utilise le script `deploykcd.sh` qui automatise l'ensemble du processus :
+- Détection automatique de l'IP du serveur via `hostname -I`
+- Recherche de ports libres via `ss -tlnp`
+- Mise à jour du `.env` via `sed`
+- Build et lancement des containers
+
+#### Envoi des fichiers sur le serveur
 
 ```bash
-# Envoyer le JAR
-scp target/kcd-form-1.0-SNAPSHOT.jar uha40@<IP_SERVEUR>:~/kcdformes/app.jar
-
-# Envoyer les fichiers Docker
-scp Dockerfile docker-compose.yml .env.example uha40@<IP_SERVEUR>:~/kcdformes/
+# Synchroniser le projet (sans node_modules)
+rsync -avz --exclude='node_modules' --exclude='.git' . uha40@<IP_SERVEUR>:~/kcdformes/
 ```
 
-#### 3. Configurer et lancer sur le serveur
+> **Ne jamais envoyer `node_modules` via `scp` ou `rsync`** — les dépendances sont installées dans le container Docker.
+
+#### Lancement sur le serveur
 
 ```bash
 ssh uha40@<IP_SERVEUR>
 cd ~/kcdformes
-
-# Créer le fichier .env
-cp .env.example .env
-# Adapter les valeurs si nécessaire
-
-# Lancer les containers
-docker compose up -d --build
-
-# Vérifier
-docker compose ps
-docker compose logs -f api
+chmod +x deploykcd.sh
+./deploykcd.sh
 ```
 
-L'API est accessible sur `http://<IP_SERVEUR>:8888`.
+Le script lance 3 containers : **API** (Spring Boot), **DB** (MariaDB) et **Frontend** (Next.js).
+
+> **Note** : `NEXT_PUBLIC_API_URL` est un **build ARG Docker** (intégré au bundle JS statique à la compilation), pas une simple variable d'environnement runtime.
 
 ---
 
 ## Configuration
 
-Les variables d'environnement sont externalisées dans un fichier `.env` (non versionné). Un fichier `.env.example` est fourni comme modèle :
+Les variables d'environnement sont dans un fichier `.env` (non versionné). Un `.env.example` est fourni :
 
 | Variable | Description | Valeur par défaut |
 |---|---|---|
+| `SERVER_IP` | IP du serveur (auto-détectée par `deploykcd.sh`) | — |
+| `NEXT_PUBLIC_API_URL` | URL de l'API pour le frontend (build ARG) | — |
 | `MARIADB_ROOT_PASSWORD` | Mot de passe root MariaDB | — |
 | `MARIADB_DATABASE` | Nom de la base de données | `kcdformes` |
 | `MARIADB_USER` | Utilisateur MariaDB | `kcdformes` |
@@ -122,19 +154,35 @@ Les variables d'environnement sont externalisées dans un fichier `.env` (non ve
 ## Architecture Docker
 
 ```
-[Machine locale]              [Serveur Docker]
- mvn package                   
- JAR ──── scp ────────>  Container API (port 8888)
-                                │
-                          réseau Docker interne
-                                │
-                          Container MariaDB (port 3306)
-                                │
-                          Volume Docker (kcdformes-data)
-                          → données persistantes
+[Machine locale]                     [Serveur Docker]
+
+rsync (sans node_modules)
+     ──────────────────────>   Container Frontend (Next.js)
+                                      │
+                               réseau Docker interne
+                                      │
+                               Container API (Spring Boot, port 8888)
+                                      │
+                               réseau Docker interne
+                                      │
+                               Container MariaDB (port 3306)
+                                      │
+                               Volume Docker (kcdformes-data)
+                               → données persistantes
 ```
 
-Le Dockerfile utilise une image **runtime JRE 21** uniquement — le build Maven est fait en local, ce qui garantit qu'aucun code source n'est présent sur le serveur.
+Le container MariaDB utilise un **healthcheck** (`healthcheck.sh`) pour garantir que la base est prête avant le démarrage de l'API.
+
+---
+
+## Architecture WebSocket (Multijoueur)
+
+Le mode multijoueur utilise **STOMP over WebSocket** pour la communication temps réel :
+
+- Le serveur envoie l'état du jeu mis à jour chaque seconde sur un topic STOMP
+- Le frontend traduit les positions (numéros de cases) en coordonnées pixel via `CHEMIN_POSITIONS`
+- Les sprites ennemis sont animés via spritesheets (48×48, 150ms/frame)
+- Le résultat de combat (`GAGNE`/`PERDU`) est envoyé du point de vue du défenseur — le frontend adapte l'affichage selon le rôle (`?role=ATTAQUANT` ou `?role=DEFENSEUR`)
 
 ---
 
@@ -144,6 +192,22 @@ Le Dockerfile utilise une image **runtime JRE 21** uniquement — le build Maven
 |---|---|
 | API REST | `http://<IP>:8888/api/` |
 | Swagger UI | `http://<IP>:8888/swagger-ui/index.html` |
+| Frontend | `http://<IP>:3000` |
+| WebSocket | `ws://<IP>:8888/ws` |
+
+---
+
+## Tests
+
+Le projet dispose d'une suite de tests JUnit 5 avec une approche Gherkin (Given/When/Then), couvrant **97% du code**.
+
+```bash
+# Lancer les tests
+mvn test
+
+# Lancer les tests avec rapport de couverture
+mvn test jacoco:report
+```
 
 ---
 
@@ -163,70 +227,47 @@ Le Dockerfile utilise une image **runtime JRE 21** uniquement — le build Maven
 
 ---
 
-## Tests
-
-Le projet dispose d'une suite de tests JUnit 5 avec une approche Gherkin (Given/When/Then).
-
-```bash
-# Lancer les tests
-mvn test
-
-# Lancer les tests avec couverture
-mvn test jacoco:report
-```
-
----
-
 ## Structure du projet
 
 ```
 kim-kcd-formes/
 ├── src/
 │   ├── main/
-│   │   ├── java/fr/kcdform/    # Code source
-│   │   └── resources/           # Configuration Spring
-│   └── test/                    # Tests unitaires
-├── frontend/                    # Next.js
-├── docker-compose.yml           # Orchestration des containers
-├── Dockerfile                   # Runtime JRE (pas de build)
-├── .env.example                 # Modèle de configuration
+│   │   ├── java/fr/kcdform/         # Code source backend
+│   │   │   ├── model/               # Entités (Forme, Tourelle, Ennemi, Vague, Escouade…)
+│   │   │   ├── factory/             # Factory Method (EnnemiFactory, Registry)
+│   │   │   ├── service/             # Logique métier (CombatService, LobbyService…)
+│   │   │   ├── controller/          # REST + WebSocket controllers
+│   │   │   └── dto/                 # LobbyDTO, VagueConfigDTO…
+│   │   └── resources/               # Configuration Spring
+│   └── test/                        # Tests unitaires (JUnit 5)
+├── frontend/                        # Application Next.js 14 (TypeScript)
+│   ├── src/app/                     # Pages et composants
+│   ├── public/sprites/              # Spritesheets ennemis (pixel art)
+│   ├── .env.local                   # Variables d'environnement (non versionné)
+│   └── .env.local.example           # Modèle
+├── docker-compose.yml               # Orchestration 3 containers
+├── Dockerfile                       # Build API
+├── deploykcd.sh                     # Script de déploiement automatisé
+├── .env.example                     # Modèle de configuration
 ├── .gitignore
-├── pom.xml                      # Dépendances Maven
+├── pom.xml                          # Dépendances Maven
 └── README.md
 ```
 
 ---
 
-## Auteur
+## Dépôts Git
 
-**Kim** — Licence Professionnelle Full Stack · UHA 4.0 · 2024-2026
+| Plateforme | URL |
+|---|---|
+| GitLab UHA 4.0 | `git.uha4point0.fr/UHA40/fil-rouge-2024/4.0.2-de/kim-kcd-formes` |
+| GitHub | `github.com/hachwilliam89-spec/kcd-form` |
 
 ---
 
-### Frontend (développement local)
-```bash
-cd frontend
-npm install
-npm run dev
-```
+## Auteurs
 
-Le front est accessible sur `http://localhost:3000`.
+**Kim** · **William Hach**
 
-> L'URL de l'API est configurée via la variable d'environnement `NEXT_PUBLIC_API_URL`.  
-> Crée un fichier `.env.local` à la racine de `frontend/` :
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8080
-```
-
-Pour pointer vers un serveur déployé, remplace par l'IP du serveur :
-```env
-NEXT_PUBLIC_API_URL=http://<IP_SERVEUR>:8888
-```
-```
-
-Et dans la section **Structure du projet**, remplace la ligne `frontend/` :
-```
-├── frontend/                    # Application Next.js (src/app/)
-│   ├── src/app/                 # Pages et composants
-│   ├── .env.local               # Variables d'environnement (non versionné)
-│   └── .env.local.example       # Modèle
+Licence Professionnelle Full Stack · UHA 4.0 · 2024–2026
